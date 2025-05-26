@@ -1,0 +1,341 @@
+/* Define theme-specific variables that will be overridden by the active theme */
+:root {
+  --active-theme-color: var(--theme-color);
+  --active-theme-light: var(--theme-color-light, rgba(var(--theme-color), 0.1));
+  --active-theme-hover: var(--theme-hover-color, rgba(var(--theme-color), 0.05));
+}
+
+.book-list-container-parent {
+  @apply w-full relative h-full;
+}
+
+.book-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  @apply w-full p-1;
+}
+
+.book-list-container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  user-select: text;
+}
+
+.pagination-container {
+  width: 100%;
+  display: flex;
+  padding: 0.75rem;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-color);
+}
+
+.booklist-shelf-list {
+  width: 169px;
+  height: 31px;
+  opacity: 1;
+  box-sizing: border-box;
+  margin-left: 16px;
+  font-size: 15px;
+  line-height: 31px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
+.booklist-shelf-list:hover {
+  background-color: var(--active-theme-hover);
+  border-color: var(--active-theme-color);
+}
+
+.delete-shelf-icon {
+  cursor: pointer;
+  margin-left: 20px;
+  color: var(--text-color);
+}
+
+.delete-shelf-icon:hover {
+  color: var(--active-theme-color);
+}
+
+.icon-cover {
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.booklist-shelf-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.booklist-manage-container {
+  cursor: pointer;
+}
+
+.book-manage-title {
+  font-size: 15px;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 5px;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+}
+
+.book-manage-title:hover {
+  background-color: var(--active-theme-hover);
+  border-color: var(--active-theme-color);
+}
+
+.loading-container {
+  width: 100%;
+  height: 110%;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  background-color: var(--bg-color-transparent);
+  color: var(--active-theme-color);
+}
+
+.dropdown-menu {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.dropdown-item {
+  color: var(--text-color);
+}
+
+.dropdown-item:hover {
+  background-color: var(--active-theme-hover);
+}
+
+.dropdown-item.active {
+  background-color: var(--active-theme-color) !important;
+  color: var(--text-color-inverse);
+}
+
+/* rc-pagination overrides to match theme */
+.rc-pagination {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  flex-wrap: wrap;
+}
+
+.rc-pagination-item,
+.rc-pagination-prev,
+.rc-pagination-next {
+  min-width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-color);
+  color: var(--text-color);
+  padding: 0;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+[data-theme="dark"] .rc-pagination-item,
+[data-theme="dark"] .rc-pagination-prev,
+[data-theme="dark"] .rc-pagination-next {
+  background: var(--bg-color-lighter);
+  border-color: var(--border-color-dark);
+}
+
+.rc-pagination-item:hover,
+.rc-pagination-prev:hover,
+.rc-pagination-next:hover {
+  background: var(--hover-color);
+  border-color: var(--border-color-hover);
+}
+
+.rc-pagination-item-active {
+  color: #ffffff !important;
+  font-weight: 500;
+  background: var(--theme-color) !important;
+  border-color: var(--theme-color) !important;
+}
+
+.rc-pagination-prev,
+.rc-pagination-next {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rc-pagination-jump-prev,
+.rc-pagination-jump-next {
+  color: var(--text-color);
+  margin: 0 8px;
+}
+
+.rc-pagination-disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Sort Dropdown Styles */
+.sort-select {
+  min-width: 180px;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid;
+  border-radius: 4px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-size: 14px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  padding-right: 32px;
+}
+
+.sort-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--theme-color-light);
+}
+
+/* Container for pagination and sort */
+.pagination-sort-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 20px 0;
+  padding: 0 16px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.pagination-info {
+  color: var(--text-color);
+  font-size: 14px;
+  opacity: 0.8;
+  width: 100%;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+@media screen and (min-width: 768px) {
+  .pagination-info {
+    width: auto;
+  }
+
+  .pagination-controls {
+    width: auto;
+    flex-wrap: nowrap;
+  }
+}
+
+.sort-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.sort-dropdown-content {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 200px;
+  background: var(--bg-color);
+  border: 2px solid;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px var(--shadow-color);
+  z-index: 1000;
+}
+
+.sort-dropdown-item {
+  padding: 8px 16px;
+  cursor: pointer;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sort-dropdown-item:hover {
+  opacity: 0.8;
+}
+
+.sort-dropdown-item.active {
+  color: var(--bg-color) !important;
+}
+
+.sort-dropdown-item svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.sort-dropdown-trigger {
+  padding: 6px 12px;
+  border: 2px solid;
+  border-radius: 5px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sort-dropdown-trigger:hover {
+  opacity: 0.8;
+}
+
+.sort-dropdown-trigger svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+/* Remove default arrow in IE */
+.sort-select::-ms-expand {
+  display: none;
+}
+
+@media screen and (max-width: 768px) {
+  .book-list-container-parent {
+    left: 0px;
+    width: 100%;
+  }
+  .sort-select {
+    width: 100%;
+  }
+  .pagination-body {
+    width: 100%;
+  }
+}

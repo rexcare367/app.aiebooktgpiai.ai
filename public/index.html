@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.png" />
+    <link rel="dns-prefetch" href="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="epub reader" />
+    <meta itemprop="name" content="AI eBook Library Tanjung Piai - Free Epub Reader for Windows, Mac and Web" />
+    <meta
+      itemprop="description"
+      content="AI eBook Library Tanjung Piai is an open-source epub reader with backup and restore support, runs on Windows, Mac and Web"
+    />
+
+    <style>
+      #root {
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+    <title>AI eBook Library Tanjung Piai</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <canvas id="the-canvas"></canvas>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/kookit/kookit.min.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/JSZip/jszip.min.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/chinese-s2t/chinese-s2t.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/fflate/fflate.min.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/localforage/localforage.min.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/filesaver/FileSaver.min.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/mhtml2html/mhtml2html.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/js-untar/untar.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/underscore/underscore-umd-min.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/7z-wasm/7zz.umd.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/zipjs/zip-no-worker.min.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/marked/marked.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/libunrar/rpc.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/pdf/build/pdf.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/Dropbox/Dropbox-sdk.min.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/Rangy/rangy-core.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/Rangy/rangy-serializer.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/Rangy/rangy-classapplier.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/Rangy/rangy-highlighter.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/Rangy/rangy-textrange.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/Hammer/hammer.min.js"></script>
+    <script type="text/javascript" src="%PUBLIC_URL%/lib/mammoth/mammoth.browser.min.js"></script>
+    <script>
+      // Add error handling for script loading
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.type = "text/javascript";
+          script.src = src;
+          script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+          script.onload = resolve;
+          document.head.appendChild(script);
+        });
+      }
+
+      // Handle localhost development case
+      if (window.location.href.indexOf("localhost") > -1) {
+        loadScript("%PUBLIC_URL%/lib/kookit/kookit.js").catch((error) => console.error(error));
+      }
+    </script>
+  </body>
+</html>

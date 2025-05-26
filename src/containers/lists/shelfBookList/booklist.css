@@ -1,0 +1,66 @@
+.book-list-container-parent {
+  @apply w-full relative h-full;
+}
+
+.book-list-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  user-select: text;
+}
+.pagination-container {
+  width: 100%;
+  display: flex;
+  padding: 0.75rem;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.booklist-shelf-list {
+  width: 169px;
+  height: 31px;
+  opacity: 1;
+  box-sizing: border-box;
+  margin-left: 16px;
+  font-size: 15px;
+  line-height: 31px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.delete-shelf-icon {
+  cursor: pointer;
+  margin-left: 20px;
+}
+.icon-cover {
+  font-weight: 500;
+}
+.booklist-shelf-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.booklist-manage-container {
+  cursor: pointer;
+}
+.book-manage-title {
+  font-size: 15px;
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 5px;
+}
+.loading-container {
+  width: 100%;
+  height: 110%;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed; /* Ensure it overlays other content */
+  top: 0; /* Align to the top */
+  left: 0; /* Align to the left */
+  z-index: 10000; /* High z-index to be on top */
+  background-color: rgba(255, 255, 255, 0.8); /* Transparent background */
+}

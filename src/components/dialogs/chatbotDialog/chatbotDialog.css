@@ -1,0 +1,98 @@
+/* src/components/dialogs/chatbotDialog/chatbotDialog.css */
+.icon-export-all {
+  line-height: 18px;
+  display: inline-block;
+  transform: rotate(-90deg) scale(0.7);
+}
+
+.user-panel-signout-button {
+  color: #ffffff;
+  background-color: #ff000022;
+  width: 100%;
+  border: 0;
+  padding: 0.25rem 0.5rem 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.user-panel-content {
+  position: relative;
+  top: 5px;
+  width: 100%;
+  left: 0;
+  background-color: rgba(75, 75, 75, 1);
+  border-radius: 10px;
+  padding: 0.4rem;
+}
+
+.user-panel-item {
+  padding: 0 0.5rem 0 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+}
+
+.user-panel-item:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.chatbot-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  margin: 0;
+  padding: 0;
+  border-radius: 25px;
+  cursor: pointer;
+  z-index: 1;
+  font-size: 15px;
+  transition: 0.1s;
+  font-weight: 500;
+}
+
+.chatbot-icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 25px;
+  background: #4b4b4b;
+  width: 42px;
+  height: 42px;
+  padding: 4px;
+}
+
+.chatbot-icon {
+  fill: #ffffff;
+}
+
+.message-personal .message-box-content {
+  background: var(--active-theme-color);
+  color: white;
+  border-top-right-radius: 4px;
+}
+
+.message-submit {
+  background: var(--active-theme-color);
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.message-submit:hover {
+  background: var(--active-theme-color);
+  opacity: 0.9;
+  transform: scale(1.05);
+}

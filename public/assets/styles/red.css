@@ -1,0 +1,165 @@
+:root {
+  --active-theme-color: rgba(255, 59, 48, 1);
+  --active-theme-light: rgba(255, 59, 48, 0.1);
+  --progress-bar-bg: rgba(255, 59, 48, 0.1);
+  --progress-fill-bg: rgba(255, 59, 48, 1);
+}
+
+.delete-digest-button,
+.add-dialog-confirm,
+.backup-page-backup-selector,
+.delete-dialog-confirm,
+.book-item-config,
+.book-cover-item-config,
+.side-menu-selector-container,
+.download-desk-button,
+.edit-dialog-confirm,
+.change-location-button,
+.token-dialog-confirm,
+.voice-add-confirm,
+.new-version-open,
+.update-dialog-container-button,
+.import-from-local,
+.single-control-switch,
+.previous-chapter-single-container,
+.next-chapter-single-container,
+.book-bookmark-link,
+.message-box-container,
+.only-local-icon {
+  background-color: rgba(241, 100, 100, 1) !important;
+}
+
+.header-search-box,
+.header-search-box::placeholder,
+.header-search-text,
+.card-list-item-show-more {
+  color: rgba(241, 100, 100, 0.8) !important;
+}
+.single-control-container,
+.book-list-view {
+  color: rgba(241, 100, 100, 1) !important;
+}
+.header-search-box,
+#jumpPage,
+#jumpChapter,
+#newTag {
+  background-color: rgba(241, 100, 100, 0.1) !important;
+}
+.backup-page-close-icon:hover,
+.sidebar-list-icon:hover,
+.nav-close-icon:hover,
+.setting-close-container:hover,
+.side-menu-hover-container,
+.setting-dialog-location-title,
+.header-search-text:hover,
+.reader-setting-icon-container:hover,
+.setting-icon-container:hover,
+.animation-mask,
+.animation-mask-local,
+.copy-option:hover {
+  background-color: rgba(241, 100, 100, 0.035) !important;
+}
+
+.book-content-name,
+.book-subcontent-name,
+.book-bookmark-list,
+.nav-search-list-item,
+.sort-dialog-seperator {
+  border-bottom: 1px solid rgba(241, 100, 100, 0.1) !important;
+}
+
+.user-panel-header {
+  background-color: rgba(241, 100, 100, 1) !important;
+  color: rgba(255, 255, 255, 1);
+}
+
+.user-panel-content {
+  background-color: rgba(241, 100, 100, 1) !important;
+  color: rgba(255, 255, 255, 1);
+}
+
+.chatbot-icon-container {
+  background-color: rgba(241, 100, 100, 1) !important;
+}
+
+.chat {
+  background: rgba(241, 100, 100, 0.1);
+  backdrop-filter: blur(8px);
+}
+
+.messages .message .message-box-content p {
+  background: rgba(241, 100, 100, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+.message-box .message-input {
+  background: rgba(241, 100, 100, 0.15);
+  backdrop-filter: blur(8px);
+  color: rgba(241, 100, 100, 1);
+}
+
+.message-box .message-submit:hover {
+  background: rgba(241, 100, 100, 0.1);
+  backdrop-filter: blur(8px);
+  color: rgba(241, 100, 100, 1);
+}
+
+.message-box .record-button .record-button-icon:hover {
+  fill: rgba(241, 100, 100, 1);
+}
+
+.profile-page-container h1,
+.form-group label,
+.profile-section-title {
+  color: rgba(241, 100, 100, 1) !important;
+}
+
+.form-input {
+  background-color: rgba(241, 100, 100, 0.1) !important;
+  border: 2px solid rgba(241, 100, 100, 0.3) !important;
+  color: rgba(241, 100, 100, 1) !important;
+}
+
+.form-input:focus {
+  border-color: rgba(241, 100, 100, 1) !important;
+  box-shadow: 0 0 0 2px rgba(241, 100, 100, 0.2) !important;
+}
+
+.form-button {
+  background-color: rgba(241, 100, 100, 0.1) !important;
+  color: rgba(241, 100, 100, 1) !important;
+}
+
+.form-button:hover {
+  background-color: rgba(241, 100, 100, 0.2) !important;
+}
+
+.profile-section span {
+  color: rgba(241, 100, 100, 0.8) !important;
+}
+
+.sort-select,
+.rc-pagination-item,
+.rc-pagination-prev,
+.rc-pagination-next,
+.sort-dropdown-trigger,
+.sort-dropdown-content {
+  border-color: rgba(235, 87, 87, 1) !important;
+}
+
+.sort-dropdown-item:hover,
+.sort-select:hover,
+.rc-pagination-item:hover,
+.rc-pagination-prev:hover,
+.rc-pagination-next:hover {
+  background-color: rgba(235, 87, 87, 0.035) !important;
+}
+
+.rc-pagination-item-active {
+  background-color: rgba(235, 87, 87, 1) !important;
+  border-color: rgba(235, 87, 87, 1) !important;
+}
+
+.sort-icon {
+  color: rgba(235, 87, 87, 1) !important;
+}

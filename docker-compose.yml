@@ -1,0 +1,10 @@
+version: '3.5'
+services:
+  ai-koodo:
+    container_name: ai-koodo
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80/tcp"
+    restart: unless-stopped
