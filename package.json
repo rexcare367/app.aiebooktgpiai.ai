@@ -33,7 +33,7 @@
     "axios": "^0.19.2",
     "buffer": "^6.0.3",
     "copy-text-to-clipboard": "^2.2.0",
-    "dompurify": "^3.0.1",
+    "dompurify": "^3.2.6",
     "electron-is-dev": "^1.1.0",
     "electron-store": "^8.0.1",
     "font-list": "^1.4.5",
