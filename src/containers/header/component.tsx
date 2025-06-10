@@ -4,19 +4,18 @@ import SearchBox from "../../components/searchBox";
 import ChatbotDialog from "../../components/dialogs/chatbotDialog";
 import { HeaderProps, HeaderState } from "./interface";
 import StorageUtil from "../../utils/serviceUtils/storageUtil";
-import UpdateInfo from "../../components/dialogs/updateDialog";
+// import UpdateInfo from "../../components/dialogs/updateDialog";
 import UserPanelDialog from "../../components/dialogs/userPanelDialog";
 import { restore } from "../../utils/syncUtils/restoreUtil";
 import { backup } from "../../utils/syncUtils/backupUtil";
-import { isElectron } from "react-device-detect";
 import { syncData } from "../../utils/syncUtils/common";
 import toast from "react-hot-toast";
-import { Trans } from "react-i18next";
-import { checkStableUpdate } from "../../utils/commonUtil";
-import packageInfo from "../../../package.json";
+// import { checkStableUpdate } from "../../utils/commonUtil";
+// import packageInfo from "../../../package.json";
 import { langList } from "../../constants/settingList";
 import i18n from "../../i18n";
 import { openExternalUrl } from "../../utils/serviceUtils/urlUtil";
+import { AlignJustify } from "lucide-react";
 
 class Header extends React.Component<HeaderProps, HeaderState> {
   constructor(props: HeaderProps) {
@@ -30,58 +29,10 @@ class Header extends React.Component<HeaderProps, HeaderState> {
       isdataChange: false,
       isDeveloperVer: false,
       user: "",
+      isMobile: window.innerWidth <= 768,
     };
   }
   async componentDidMount() {
-    // isElectron &&
-    //   (await window.require("electron").ipcRenderer.invoke("s3-download"));
-    if (isElectron) {
-      const fs = window.require("fs");
-      const path = window.require("path");
-      const { ipcRenderer } = window.require("electron");
-      const dirPath = ipcRenderer.sendSync("user-data", "ping");
-      if (!fs.existsSync(dirPath)) {
-        fs.mkdirSync(dirPath);
-        fs.mkdirSync(path.join(dirPath, "data"));
-        fs.mkdirSync(path.join(dirPath, "data", "book"));
-        console.log("folder created");
-      } else {
-        console.log("folder exist");
-      }
-
-      if (StorageUtil.getReaderConfig("storageLocation") && !localStorage.getItem("storageLocation")) {
-        localStorage.setItem("storageLocation", StorageUtil.getReaderConfig("storageLocation"));
-      }
-      try {
-        let stableLog = await checkStableUpdate();
-        if (packageInfo.version.localeCompare(stableLog.version) > 0) {
-          this.setState({ isDeveloperVer: true });
-          // this.props.handleFeedbackDialog(true);
-          // return;
-        }
-      } catch (error) {
-        console.log(error);
-      }
-      //Check for data update
-      let storageLocation = localStorage.getItem("storageLocation")
-        ? localStorage.getItem("storageLocation")
-        : window.require("electron").ipcRenderer.sendSync("storage-location", "ping");
-      let sourcePath = path.join(storageLocation, "config", "readerConfig.json");
-      //Detect data modification
-      fs.readFile(sourcePath, "utf8", (err, data) => {
-        if (err) {
-          console.log(err);
-          return;
-        }
-        const readerConfig = JSON.parse(data);
-        if (
-          localStorage.getItem("lastSyncTime") &&
-          parseInt(readerConfig.lastSyncTime) > parseInt(localStorage.getItem("lastSyncTime")!)
-        ) {
-          this.setState({ isdataChange: true });
-        }
-      });
-    }
     window.addEventListener("resize", () => {
       this.setState({ width: document.body.clientWidth });
     });
@@ -195,30 +146,23 @@ class Header extends React.Component<HeaderProps, HeaderState> {
   render() {
     return (
       <div className={`header`}>
-        <div className="flex md:flex-row flex-col items-start">
-          <div className="flex justify-center items-center p-2 pl-9">
-            <img
-              src="./assets/mobile_label.png"
-              alt="mobile_label"
-              onClick={(e) => {
-                e.preventDefault();
-                this.handleJump("/");
+        <div className="flex flex-row items-center">
+          {this.state.isMobile && (
+            <div
+              className="h-full w-fit px-1 md:mr-4"
+              onClick={() => {
+                this.props.handleSidebar(true);
               }}
-              className="md:hidden w-20"
-            />
-          </div>
-
-          <div className="header-search-container flex w-">
+            >
+              <AlignJustify className="w-4" />
+            </div>
+          )}
+          <div className="relative min-w-[120px] md:min-w-[200px] max-w-[400px]  flex">
             <SearchBox />
           </div>
         </div>
 
         <div className="header-controls flex md:flex-row flex-col-reverse items-end">
-          <div className="flex items-center gap-1 flex-row">
-            <ChatbotDialog />
-            <UserPanelDialog />
-          </div>
-
           <div className="right-controls">
             <div className="language-selector rounded-md">
               <span className="current-language">
@@ -245,49 +189,11 @@ class Header extends React.Component<HeaderProps, HeaderState> {
                 ))}
               </div>
             </div>
-
-            <div
-              className="setting-icon-container"
-              onClick={() => {
-                this.props.handleSetting(true);
-              }}
-            >
-              <span data-tooltip-id="my-tooltip">
-                <span
-                  className="icon-setting setting-icon"
-                  style={this.props.isNewWarning ? { color: "rgb(35, 170, 242)" } : {}}
-                ></span>
-              </span>
-            </div>
-
-            {isElectron && (
-              <div
-                className="setting-icon-container"
-                onClick={() => {
-                  this.handleSync();
-                }}
-              >
-                <span data-tooltip-id="my-tooltip" data-tooltip-content={this.props.t("Sync")}>
-                  <span
-                    className="icon-sync setting-icon"
-                    style={this.state.isdataChange ? { color: "rgb(35, 170, 242)" } : {}}
-                  ></span>
-                </span>
-              </div>
-            )}
+            <UserPanelDialog />
           </div>
         </div>
-        {this.state.isDeveloperVer && (
-          <div
-            className="header-report-container"
-            onClick={() => {
-              this.props.handleFeedbackDialog(true);
-            }}
-          >
-            <Trans>Report</Trans>
-          </div>
-        )}
-        <UpdateInfo />
+        {/* <UpdateInfo /> */}
+        <ChatbotDialog />
       </div>
     );
   }

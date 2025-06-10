@@ -74,8 +74,6 @@
   padding-bottom: clamp(1.5rem, 4vw, 2rem);
 }
 
-
-
 /* Responsive Breakpoints */
 @media (max-width: 1024px) {
   .profile-page-container {
@@ -85,14 +83,10 @@
 }
 
 @media (max-width: 768px) {
-  .profile-page-container {
-    top: 60px;
-  }
-
   .profile-action-buttons {
     justify-content: center;
   }
-  
+
   .form-button {
     width: 100%;
   }

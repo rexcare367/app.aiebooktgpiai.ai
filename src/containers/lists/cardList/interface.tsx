@@ -8,7 +8,7 @@ export interface CardListProps extends RouteComponentProps<any> {
   bookmarks: BookmarkModel[];
   chapters: any;
   books: BookModel[];
-  cards: NoteModel[];
+  cards: any[];
   mode: string;
   isCollapsed: boolean;
   noteSortCode: { sort: number; order: number };

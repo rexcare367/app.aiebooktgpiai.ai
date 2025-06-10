@@ -9,11 +9,9 @@ import AboutDialog from "../../components/dialogs/aboutDialog";
 import BackupDialog from "../../components/dialogs/backupDialog";
 import "./manager.css";
 import { ManagerProps, ManagerState } from "./interface";
-import { Trans } from "react-i18next";
 import StorageUtil from "../../utils/serviceUtils/storageUtil";
 import AddFavorite from "../../utils/readUtils/addFavorite";
 import SettingDialog from "../../components/dialogs/settingDialog";
-import Arrow from "../../components/arrow";
 import LoadingDialog from "../../components/dialogs/loadingDialog";
 import TipDialog from "../../components/dialogs/TipDialog";
 import { Toaster } from "react-hot-toast";
@@ -31,7 +29,6 @@ class Manager extends React.Component<ManagerProps, ManagerState> {
       isError: false,
       isCopied: false,
       isUpdated: false,
-      isDrag: false,
       token: "",
     };
   }
@@ -67,10 +64,6 @@ class Manager extends React.Component<ManagerProps, ManagerState> {
   componentDidMount() {
     this.props.handleReadingState(false);
   }
-
-  handleDrag = (isDrag: boolean) => {
-    this.setState({ isDrag });
-  };
   render() {
     return (
       <div className="manager flex flex-row">
@@ -89,7 +82,6 @@ class Manager extends React.Component<ManagerProps, ManagerState> {
               this.props.handleBackupDialog(false);
               this.props.handleSetting(false);
               this.props.handleFeedbackDialog(false);
-              this.handleDrag(false);
             }}
             style={
               this.props.isSettingOpen ||
@@ -101,28 +93,18 @@ class Manager extends React.Component<ManagerProps, ManagerState> {
               this.props.isDetailDialog ||
               this.props.isOpenAddDialog ||
               this.props.isTipDialog ||
-              this.props.isShowLoading ||
-              this.state.isDrag
+              this.props.isShowLoading
                 ? {}
                 : {
                     display: "none",
                   }
             }
-          >
-            {this.state.isDrag && (
-              <div className="drag-info">
-                <Arrow />
-                <p className="arrow-text">
-                  <Trans>Drop your books here</Trans>
-                </p>
-              </div>
-            )}
-          </div>
+          ></div>
         )}
         <Sidebar />
         <Toaster />
-        <div className="flex flex-col flex-1 w-full relative">
-          <Header {...{ handleDrag: this.handleDrag }} />
+        <div className="flex flex-col flex-1 w-full relative md:pl-1 bg-gray-main-bg">
+          <Header />
           {this.props.isOpenDeleteDialog && <DeleteDialog />}
           {this.props.isOpenEditDialog && <EditDialog />}
           {this.props.isOpenAddDialog && <AddDialog />}

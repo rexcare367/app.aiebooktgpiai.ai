@@ -7,6 +7,7 @@ export interface HeaderProps {
   isAboutOpen: boolean;
   isCollapsed: boolean;
   isNewWarning: boolean;
+  isSidebarShow: boolean;
 
   bookmarks: BookmarkModel[];
   notes: NoteModel[];
@@ -24,6 +25,7 @@ export interface HeaderProps {
   t: (title: string) => string;
   handleFetchNotes: () => void;
   handleFetchBookmarks: () => void;
+  handleSidebar: (isSidebarShow: boolean) => void;
 }
 
 export interface HeaderState {
@@ -34,4 +36,5 @@ export interface HeaderState {
   isdataChange: boolean;
   isDeveloperVer: boolean;
   user: string;
+  isMobile: boolean;
 }

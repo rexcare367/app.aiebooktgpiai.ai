@@ -215,7 +215,7 @@ class BookList extends React.Component<BookListProps, BookListState> {
       }
     });
   };
-  isElementInViewport = (element) => {
+  isElementInViewport = (element: any) => {
     const rect = element.getBoundingClientRect();
 
     return (
@@ -228,7 +228,7 @@ class BookList extends React.Component<BookListProps, BookListState> {
 
   // load book from backend then save to localforage
   loadContentBook = async (book: BookModel) => {
-    console.log("===== book", book);
+    console.log("===== loadContentBook", book);
     this.props.handleLoadingBook(true);
     await new Promise((resolve) => {
       book.source_url = book.source_url.replace(/_/g, "+");
@@ -238,9 +238,9 @@ class BookList extends React.Component<BookListProps, BookListState> {
         const { type, format } = this.getFileFormat(book.file_key);
         const blob = new Blob([new Uint8Array(arrayBuffer)], { type });
         const file = new File([blob], `${book.name}.${format}`, { type });
-        console.log("===========", false);
+
         await this.getMd5WithBrowser(file, book.file_key, book.thumbnail, book.thumb_url, book.source_url, book.key);
-        console.log("===========", true);
+
         resolve(book.key);
         this.props.handleLoadingBook(false);
       });
@@ -250,7 +250,6 @@ class BookList extends React.Component<BookListProps, BookListState> {
   handleJump = (book: BookModel) => {
     localStorage.setItem("tempBook", JSON.stringify(book));
     BookUtil.RedirectBook(book, this.props.t, this.props.history);
-    // this.props.history.push("/manager/home");
   };
   handleAddBook = (book: BookModel, buffer: ArrayBuffer) => {
     return new Promise<void>((resolve, reject) => {
@@ -316,7 +315,6 @@ class BookList extends React.Component<BookListProps, BookListState> {
     source_url: string = "",
     key: string = ""
   ) => {
-    console.log("file", file);
     return new Promise<void>(async (resolve, reject) => {
       const md5 = await fetchMD5(file);
       if (!md5) {
@@ -435,20 +433,18 @@ class BookList extends React.Component<BookListProps, BookListState> {
     } else {
       bookListContent = (
         <>
-          <div className="book-list-container-parent">
+          <div className="book-list-container-parent bg-white">
             <div className="book-list-container">
               {this.props.isLoadingBook && (
                 <div className="loading-container">
-                  <Loading />
+                  <Loading width="100%" height="100%" />
                 </div>
               )}
               <div className="pagination-sort-container">
                 <span className="pagination-info">
-                  Showing {(this.state.currentPage - 1) * this.state.pageSize + 1} to{" "}
-                  {this.state.currentPage * this.state.pageSize > this.state.totalItems
-                    ? this.state.totalItems
-                    : this.state.currentPage * this.state.pageSize}{" "}
-                  of {this.state.totalItems} books
+                  Displaying {Math.min((this.state.currentPage - 1) * this.state.pageSize + 1, this.state.totalItems)} -{" "}
+                  {Math.min(this.state.currentPage * this.state.pageSize, this.state.totalItems)} of{" "}
+                  {this.state.totalItems} books
                 </span>
                 <div className="pagination-controls">
                   <Pagination

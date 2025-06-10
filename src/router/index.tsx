@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Route, Switch, HashRouter } from "react-router-dom";
-import Manager from "../pages/manager";
 import HtmlReader from "../pages/htmlReader";
 import PDFReader from "../pages/pdfReader";
 import _Redirect from "../pages/redirect";
@@ -25,10 +24,7 @@ const Router = () => {
       if (navigator.language === "zh-CN" || navigator.language === "zh-SG") {
         i18n.changeLanguage("zhCN");
         StorageUtil.setReaderConfig("lang", "zhCN");
-      } else if (
-        navigator.language === "zh-TW" ||
-        navigator.language === "zh-HK"
-      ) {
+      } else if (navigator.language === "zh-TW" || navigator.language === "zh-HK") {
         i18n.changeLanguage("zhTW");
         StorageUtil.setReaderConfig("lang", "zhTW");
       } else if (navigator.language === "zh-MO") {
@@ -107,37 +103,33 @@ const Router = () => {
     }
   }, []);
   return (
-      <HashRouter>
-        <Switch>
-          {routes.map((ele) => (
-            <Route 
-            render={() => <ele.component />}
-              key={ele.path} 
-              path={`${ele.path}`} 
-            />
-          ))}
-          <Route component={HtmlReader} path="/epub" />
-          <Route component={HtmlReader} path="/mobi" />
-          <Route component={HtmlReader} path="/cbr" />
-          <Route component={HtmlReader} path="/cbt" />
-          <Route component={HtmlReader} path="/cbz" />
-          <Route component={HtmlReader} path="/cb7" />
-          <Route component={HtmlReader} path="/azw3" />
-          <Route component={HtmlReader} path="/azw" />
-          <Route component={HtmlReader} path="/txt" />
-          <Route component={HtmlReader} path="/docx" />
-          <Route component={HtmlReader} path="/md" />
-          <Route component={HtmlReader} path="/fb2" />
-          <Route component={HtmlReader} path="/html" />
-          <Route component={HtmlReader} path="/htm" />
-          <Route component={HtmlReader} path="/xml" />
-          <Route component={HtmlReader} path="/xhtml" />
-          <Route component={HtmlReader} path="/mhtml" />
-          <Route component={HtmlReader} path="/href" />
-          <Route component={PDFReader} path="/pdf" />
-          <Route component={_Redirect} path="/" />
-        </Switch>
-      </HashRouter>
+    <HashRouter>
+      <Switch>
+        {routes.map((ele) => (
+          <Route render={() => <ele.component />} key={ele.path} path={`${ele.path}`} />
+        ))}
+        <Route component={HtmlReader} path="/epub" />
+        <Route component={HtmlReader} path="/mobi" />
+        <Route component={HtmlReader} path="/cbr" />
+        <Route component={HtmlReader} path="/cbt" />
+        <Route component={HtmlReader} path="/cbz" />
+        <Route component={HtmlReader} path="/cb7" />
+        <Route component={HtmlReader} path="/azw3" />
+        <Route component={HtmlReader} path="/azw" />
+        <Route component={HtmlReader} path="/txt" />
+        <Route component={HtmlReader} path="/docx" />
+        <Route component={HtmlReader} path="/md" />
+        <Route component={HtmlReader} path="/fb2" />
+        <Route component={HtmlReader} path="/html" />
+        <Route component={HtmlReader} path="/htm" />
+        <Route component={HtmlReader} path="/xml" />
+        <Route component={HtmlReader} path="/xhtml" />
+        <Route component={HtmlReader} path="/mhtml" />
+        <Route component={HtmlReader} path="/href" />
+        <Route component={PDFReader} path="/pdf" />
+        <Route component={_Redirect} path="/" />
+      </Switch>
+    </HashRouter>
   );
 };
 

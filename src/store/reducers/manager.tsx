@@ -3,6 +3,7 @@ const initState = {
   deletedBooks: [],
   searchResults: [],
   isSearch: false,
+  isSidebarShow: false,
   isOpenFeedbackDialog: false,
   isAboutOpen: false,
   isBookSort: localStorage.getItem("bookSortCode") ? true : false,
@@ -24,10 +25,7 @@ const initState = {
   selectedBooks: [],
   keyword: "",
 };
-export function manager(
-  state = initState,
-  action: { type: string; payload: any }
-) {
+export function manager(state = initState, action: { type: string; payload: any }) {
   switch (action.type) {
     case "HANDLE_SEARCH_KEYWORD":
       return {
@@ -48,6 +46,11 @@ export function manager(
       return {
         ...state,
         deletedBooks: action.payload,
+      };
+    case "HANDLE_SIDEBAR":
+      return {
+        ...state,
+        isSidebarShow: action.payload,
       };
     case "HANDLE_FEEDBACK_DIALOG":
       return {

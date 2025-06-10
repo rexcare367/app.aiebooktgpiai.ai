@@ -58,7 +58,7 @@ Chat Container
 --------------------*/
 .chat {
   position: fixed;
-  top: 100px;
+  bottom: 10px;
   right: 20px;
   width: 350px;
   height: calc(60vh - 50px);

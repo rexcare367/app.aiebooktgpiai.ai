@@ -40,7 +40,7 @@
     background-color: rgba(17, 24, 39, 0.95) !important;
     color: #fff !important;
   }
-  
+
   .welcome-screen-container .welcome-content {
     color: #fff !important;
   }
@@ -181,27 +181,9 @@
   .welcome-image-container {
     flex: 0.5;
   }
-  
+
   .welcome-content {
     gap: 1rem;
-  }
-}
-
-/* Input styles */
-input {
-  color: #000 !important;
-  background-color: #fff !important;
-}
-
-@media (prefers-color-scheme: dark) {
-  input {
-    color: #fff !important;
-    background-color: #fff !important;
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  input::placeholder {
-    color: rgba(255, 255, 255, 0.5) !important;
   }
 }
 

@@ -6,6 +6,7 @@ export interface SidebarProps extends RouteComponentProps<any> {
   isCollapsed: boolean;
   shelfIndex: number;
   shelf: string;
+  isSidebarShow: boolean;
 
   handleMode: (mode: string) => void;
   handleSearch: (isSearch: boolean) => void;
@@ -17,6 +18,7 @@ export interface SidebarProps extends RouteComponentProps<any> {
   t: (title: string) => string;
   handleSearchKeyword: (keyword: string) => void;
   handleSearchResults: (results: any[]) => void;
+  handleSidebar: (isSidebarShow: boolean) => void;
 }
 
 export interface SidebarState {

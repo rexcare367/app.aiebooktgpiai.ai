@@ -7,7 +7,7 @@ import StorageUtil from "../../utils/serviceUtils/storageUtil";
 import { openExternalUrl } from "../../utils/serviceUtils/urlUtil";
 import ShelfUtil from "../../utils/readUtils/shelfUtil";
 import { Trans } from "react-i18next";
-import { X, AlignJustify } from "lucide-react";
+import { X } from "lucide-react";
 
 class Sidebar extends React.Component<SidebarProps, SidebarState> {
   constructor(props: SidebarProps) {
@@ -117,7 +117,7 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
               }
             >
               <div className="side-menu-icon" style={this.props.isCollapsed ? {} : { marginLeft: "38px" }}>
-                {item.icon }
+                {item.icon}
               </div>
 
               <span style={this.props.isCollapsed ? { display: "none", width: "70%" } : { width: "60%" }}>
@@ -175,39 +175,22 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
     };
     return (
       <>
-        {this.state.isMobile && (
-          <div
-            className={`h-full w-fit ${this.state.isHide ? "absolute top-4 left-4 z-10" : "hidden"}`}
-            onClick={() => {
-              this.handleHide(!this.state.isHide);
-            }}
-          >
-            <AlignJustify />
-          </div>
-        )}
         <div
           className={`h-full w-fit bg-white z-50 ${
-            this.state.isMobile && !this.state.isHide && "absolute top-0 left-0"
-          } ${this.state.isMobile && this.state.isHide && "hidden"}`}
+            this.state.isMobile &&
+            this.props.isSidebarShow &&
+            "absolute top-0 left-0  border-r-2 border-solid border-gray-main-bg"
+          } ${this.state.isMobile && !this.props.isSidebarShow && "hidden"}`}
         >
           <div className="flex justify-center items-center gap-3">
-            {this.state.isMobile ? (
+            {this.state.isMobile && (
               <div
-                className="sidebar-list-icon"
+                className="relative cursor-pointer text-xl flex justify-center items-center"
                 onClick={() => {
-                  this.handleHide(!this.state.isHide);
+                  this.props.handleSidebar(!this.props.isSidebarShow);
                 }}
               >
-                <X />
-              </div>
-            ) : (
-              <div
-                className="sidebar-list-icon"
-                onClick={() => {
-                  this.handleCollapse(!this.state.isCollapsed);
-                }}
-              >
-                <AlignJustify />
+                <X className="w-4" />
               </div>
             )}
 

@@ -6,20 +6,9 @@
   height: calc(100% - 75px);
   overflow: hidden;
 }
-.card-list-container {
-  width: 100%;
-  height: calc(100% - 38px);
-  overflow-y: scroll;
-  display: flex;
-  flex-wrap: wrap;
-  overflow-y: scroll;
-  align-content: flex-start;
-  user-select: text;
-}
 
 .card-page-item-date {
   /* float: left; */
-  position: absolute;
   font-size: 18px;
   line-height: 25px;
   opacity: 0.75;
@@ -46,23 +35,22 @@
 }
 .card-list-item {
   float: left;
-  /* display: inline-block; */
-  min-width: 330px;
   cursor: pointer;
   font-size: 15px;
-  width: calc(50vw - 135px);
-  height: 176px;
+  height: 250px;
   opacity: 1;
   border: 15px solid transparent;
   font-size: 15px;
   line-height: 18px;
   opacity: 1;
   position: relative;
-  bottom: 10px;
 }
 .card-list-item-card {
   height: 100%;
   border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
 }
 .card-list-item-chapter {
   overflow: hidden;
@@ -85,41 +73,17 @@
   white-space: normal;
   word-break: break-all;
 }
-.card-list-item-text-parent {
-  position: absolute;
-  width: 100%;
-  height: 104px;
-}
-.card-list-item-text-note {
-  position: absolute;
-  top: 90px;
-  width: 100%;
-  height: 104px;
-  opacity: 0.6;
-}
 .card-list-item-text {
-  width: calc(100% - 25px);
-  height: 53px;
+  width: calc(100% - 20px);
+  height: 100%;
   overflow-y: scroll;
   overflow-x: hidden;
-  margin: 14px 10px 0px 10px;
-  position: absolute;
+  margin: 0px 10px;
+  position: relative;
   cursor: text;
-  line-height: 18px;
-  font-size: 15px;
+  line-height: 1.5;
+  font-size: 14px;
   padding-right: 5px;
-}
-.card-list-item-note {
-  width: calc(100% - 25px);
-  height: 73px;
-  overflow-y: scroll;
-  margin: 14px 10px 0px 10px;
-  position: absolute;
-  cursor: text;
-  line-height: 18px;
-  font-size: 15px;
-  padding-right: 5px;
-  overflow-x: hidden;
 }
 ::-webkit-scrollbar {
   width: 7px;
@@ -140,11 +104,6 @@
 .card-list-item-title {
   float: left;
   /* width: 100px; */
-}
-.card-list-container-box {
-  margin-top: 40px;
-  height: calc(100% - 89px);
-  width: 100%;
 }
 .icon-card-right {
   margin-left: 5px;
@@ -173,4 +132,55 @@
   position: absolute;
   bottom: 5px;
   margin-left: calc(50% - 6px);
+}
+
+.card-list-item-header {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.card-list-item-date {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 5px;
+}
+
+.card-list-item-topic {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.card-list-item-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #ff9800;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.card-list-item-footer {
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+}
+
+.card-list-item-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.card-list-item-username {
+  font-size: 14px;
+  color: #555;
+}
+
+.card-list-item-citation,
+.note-tags,
+.card-list-item-show-more {
+  display: none;
 }

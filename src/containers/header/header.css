@@ -6,7 +6,6 @@
   display: flex;
   align-items: center;
   background: var(--bg-color);
-  border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   @apply w-full;
@@ -15,13 +14,6 @@
 .header.collapsed {
   width: calc(100% - 90px);
   margin-left: 40px;
-}
-
-.header-search-container {
-  min-width: 200px;
-  max-width: 400px;
-  position: relative;
-  margin-right: 20px;
 }
 
 .header-controls {
@@ -311,21 +303,16 @@
 
 @media screen and (max-width: 768px) {
   .header {
-    width: calc(100% - 20px);
-    margin-left: 10px;
-    margin-right: 10px;
-    margin-top: 5px;
-    padding: 0px;
+    width: 100%;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+    padding: 4px;
   }
 
   .header.collapsed {
     width: calc(100% - 20px);
     margin-left: 10px;
-  }
-
-  .header-search-container {
-    min-width: 120px;
-    margin-right: 10px;
   }
 
   .left-controls {
@@ -375,10 +362,6 @@
     top: calc(100vh - 80px) !important;
     width: 138px;
     padding: 0px !important;
-  }
-  .chat {
-    bottom: 560px;
-    left: 0px;
   }
   .header-report-container {
     right: 15px !important;

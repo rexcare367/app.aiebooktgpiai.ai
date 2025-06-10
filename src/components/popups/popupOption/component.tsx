@@ -114,7 +114,7 @@ class PopupOption extends React.Component<PopupOptionProps, PopupOptionState> {
       .post(`/api/highlights/add`, {
         ...digest,
         user_ic: username,
-        file_key,
+        book_id: bookKey,
       })
       .then(
         window.localforage.setItem("notes", noteArr).then(() => {

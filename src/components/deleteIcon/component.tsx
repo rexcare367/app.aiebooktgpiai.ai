@@ -3,8 +3,8 @@ import "./deleteIcon.css";
 import { DeleteIconProps, DeleteIconStates } from "./interface";
 import TagUtil from "../../utils/readUtils/tagUtil";
 import DeletePopup from "../dialogs/deletePopup";
+import { XIcon } from "lucide-react";
 import toast from "react-hot-toast";
-import axios from "axios";
 import api from "../../utils/axios";
 declare var window: any;
 class DeleteIcon extends React.Component<DeleteIconProps, DeleteIconStates> {
@@ -93,7 +93,9 @@ class DeleteIcon extends React.Component<DeleteIconProps, DeleteIconStates> {
             this.props.mode === "tags" ? this.handleDeletePopup(true) : this.handleDelete();
           }}
         >
-          <span className="icon-close delete-digest-icon"></span>
+          <div className="relative text-sm cursor-pointer p-1 rounded-full">
+            <XIcon className="w-3 h-3" />
+          </div>
         </div>
       </>
     );

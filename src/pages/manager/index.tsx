@@ -24,6 +24,7 @@ import "./manager.css";
 import { stateType } from "../../store";
 import Manager from "./component";
 import { withRouter } from "react-router-dom";
+
 const mapStateToProps = (state: stateType) => {
   return {
     books: state.manager.books,
@@ -34,22 +35,20 @@ const mapStateToProps = (state: stateType) => {
     mode: state.sidebar.mode,
     dragItem: state.book.dragItem,
     shelfIndex: state.sidebar.shelfIndex,
-    isOpenEditDialog: state.book.isOpenEditDialog,
-    isDetailDialog: state.manager.isDetailDialog,
     isOpenDeleteDialog: state.book.isOpenDeleteDialog,
+    isOpenEditDialog: state.book.isOpenEditDialog,
     isOpenAddDialog: state.book.isOpenAddDialog,
-    isSettingOpen: state.manager.isSettingOpen,
-    isOpenFeedbackDialog: state.manager.isOpenFeedbackDialog,
-    isAboutOpen: state.manager.isAboutOpen,
-    isBookSort: state.manager.isBookSort,
-    isSortDisplay: state.manager.isSortDisplay,
     isShowLoading: state.manager.isShowLoading,
-    isShowNew: state.manager.isShowNew,
-    isTipDialog: state.manager.isTipDialog,
-    DetailDialog: state.manager.isDetailDialog,
+    isSortDisplay: state.manager.isSortDisplay,
+    isAboutOpen: state.manager.isAboutOpen,
     isBackup: state.backupPage.isBackup,
+    isOpenFeedbackDialog: state.manager.isOpenFeedbackDialog,
+    isSettingOpen: state.manager.isSettingOpen,
+    isTipDialog: state.manager.isTipDialog,
+    isDetailDialog: state.manager.isDetailDialog,
   };
 };
+
 const actionCreator = {
   handleFetchBooks,
   handleFetchNotes,
@@ -69,7 +68,5 @@ const actionCreator = {
   handleBackupDialog,
   handleReadingState,
 };
-export default connect(
-  mapStateToProps,
-  actionCreator
-)(withTranslation()(withRouter(Manager as any) as any) as any);
+
+export default connect(mapStateToProps, actionCreator)(withTranslation()(withRouter(Manager as any) as any) as any);

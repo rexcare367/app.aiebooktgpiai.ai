@@ -6,11 +6,14 @@ import { Trans } from "react-i18next";
 import { NavigationPanelProps, NavigationPanelState } from "./interface";
 import SearchBox from "../../../components/searchBox";
 import Parser from "html-react-parser";
-import DOMPurify from "dompurify";
+import * as DOMPurify from 'dompurify';
 import EmptyCover from "../../../components/emptyCover";
 import StorageUtil from "../../../utils/serviceUtils/storageUtil";
 
-class NavigationPanel extends React.Component<NavigationPanelProps, NavigationPanelState> {
+class NavigationPanel extends React.Component<
+  NavigationPanelProps,
+  NavigationPanelState
+> {
   constructor(props: NavigationPanelProps) {
     super(props);
     this.state = {
@@ -20,7 +23,8 @@ class NavigationPanel extends React.Component<NavigationPanelProps, NavigationPa
       searchList: null,
       startIndex: 0,
       currentIndex: 0,
-      isNavLocked: StorageUtil.getReaderConfig("isNavLocked") === "yes" ? true : false,
+      isNavLocked:
+        StorageUtil.getReaderConfig("isNavLocked") === "yes" ? true : false,
     };
   }
   handleNavSearchState = (state: string) => {
@@ -38,7 +42,10 @@ class NavigationPanel extends React.Component<NavigationPanelProps, NavigationPa
   };
   handleLock = () => {
     this.setState({ isNavLocked: !this.state.isNavLocked }, () => {
-      StorageUtil.setReaderConfig("isNavLocked", this.state.isNavLocked ? "yes" : "no");
+      StorageUtil.setReaderConfig(
+        "isNavLocked",
+        this.state.isNavLocked ? "yes" : "no"
+      );
     });
   };
   renderBeforeSearch = () => {
@@ -80,14 +87,19 @@ class NavigationPanel extends React.Component<NavigationPanelProps, NavigationPa
                   chapterTitle: bookLocation.chapterTitle,
                   chapterDocIndex: bookLocation.chapterDocIndex,
                   chapterHref: bookLocation.chapterHref,
-                  count: bookLocation.hasOwnProperty("cfi") ? "ignore" : bookLocation.count,
+                  count: bookLocation.hasOwnProperty("cfi")
+                    ? "ignore"
+                    : bookLocation.count,
                   percentage: bookLocation.percentage,
                   cfi: bookLocation.cfi,
                   page: bookLocation.page,
                 })
               );
               let style = "background: #f3a6a68c";
-              this.props.htmlBook.rendition.highlightNode(bookLocation.text, style);
+              this.props.htmlBook.rendition.highlightNode(
+                bookLocation.text,
+                style
+              );
             }}
           >
             {Parser(DOMPurify.sanitize(item.excerpt))}
@@ -97,14 +109,19 @@ class NavigationPanel extends React.Component<NavigationPanelProps, NavigationPa
   };
   renderSearchPage = () => {
     let startIndex = this.state.startIndex;
-    let currentIndex = startIndex > 0 ? startIndex + 2 : this.state.currentIndex;
+    let currentIndex =
+      startIndex > 0 ? startIndex + 2 : this.state.currentIndex;
     let pageList: any[] = [];
     let total = Math.ceil(this.state.searchList.length / 10);
     if (total <= 5) {
       for (let i = 0; i < total; i++) {
         pageList.push(
           <li
-            className={currentIndex === i ? "nav-search-page-item active-page " : "nav-search-page-item"}
+            className={
+              currentIndex === i
+                ? "nav-search-page-item active-page "
+                : "nav-search-page-item"
+            }
             onClick={() => {
               this.setState({ currentIndex: i });
             }}
@@ -114,11 +131,19 @@ class NavigationPanel extends React.Component<NavigationPanelProps, NavigationPa
         );
       }
     } else {
-      for (let i = 0; i < (total - startIndex < 5 ? total - startIndex : 5); i++) {
+      for (
+        let i = 0;
+        i < (total - startIndex < 5 ? total - startIndex : 5);
+        i++
+      ) {
         let isShow = currentIndex > 2 ? i === 2 : currentIndex === i;
         pageList.push(
           <li
-            className={isShow ? "nav-search-page-item active-page " : "nav-search-page-item"}
+            className={
+              isShow
+                ? "nav-search-page-item active-page "
+                : "nav-search-page-item"
+            }
             onClick={() => {
               if (i === 3 && startIndex === 0) {
                 this.setState({
@@ -173,7 +198,10 @@ class NavigationPanel extends React.Component<NavigationPanelProps, NavigationPa
             </div>
 
             <div className="header-search-container">
-              <div className="navigation-search-title" style={{ height: "20px", margin: "0px 25px 13px" }}>
+              <div
+                className="navigation-search-title"
+                style={{ height: "20px", margin: "0px 25px 13px" }}
+              >
                 <Trans>Search in the Book</Trans>
               </div>
               <SearchBox {...searchProps} />
@@ -187,20 +215,31 @@ class NavigationPanel extends React.Component<NavigationPanelProps, NavigationPa
                 this.renderSearchList()
               ) : null}
             </ul>
-            <ul className="nav-search-page">{this.state.searchList ? this.renderSearchPage() : null}</ul>
+            <ul className="nav-search-page">
+              {this.state.searchList ? this.renderSearchPage() : null}
+            </ul>
           </>
         ) : (
           <>
             <div className="navigation-header">
               <span
-                className={this.state.isNavLocked ? "icon-lock nav-lock-icon" : "icon-unlock nav-lock-icon"}
+                className={
+                  this.state.isNavLocked
+                    ? "icon-lock nav-lock-icon"
+                    : "icon-unlock nav-lock-icon"
+                }
                 onClick={() => {
                   this.handleLock();
                 }}
               ></span>
 
-              {this.props.currentBook.cover && this.props.currentBook.cover !== "noCover" ? (
-                <img className="book-cover" src={this.props.currentBook.cover} alt="" />
+              {this.props.currentBook.cover &&
+              this.props.currentBook.cover !== "noCover" ? (
+                <img
+                  className="book-cover"
+                  src={this.props.currentBook.cover}
+                  alt=""
+                />
               ) : (
                 <div className="book-cover">
                   <EmptyCover
@@ -216,7 +255,11 @@ class NavigationPanel extends React.Component<NavigationPanelProps, NavigationPa
               <p className="book-title">{this.props.currentBook.name}</p>
               <p className="book-arthur">
                 <Trans>Author</Trans>:{" "}
-                <Trans>{this.props.currentBook.author ? this.props.currentBook.author : "Unknown author"}</Trans>
+                <Trans>
+                  {this.props.currentBook.author
+                    ? this.props.currentBook.author
+                    : "Unknown author"}
+                </Trans>
               </p>
               <span className="reading-duration">
                 <Trans>Reading time</Trans>: {Math.floor(this.props.time / 60)}
@@ -232,13 +275,19 @@ class NavigationPanel extends React.Component<NavigationPanelProps, NavigationPa
                   onClick={() => {
                     this.handleChangeTab("contents");
                   }}
-                  style={this.state.currentTab === "contents" ? {} : { opacity: 0.5 }}
+                  style={
+                    this.state.currentTab === "contents" ? {} : { opacity: 0.5 }
+                  }
                 >
                   <Trans>Content</Trans>
                 </span>
                 <span
                   className="book-bookmark-title"
-                  style={this.state.currentTab === "bookmarks" ? {} : { opacity: 0.5 }}
+                  style={
+                    this.state.currentTab === "bookmarks"
+                      ? {}
+                      : { opacity: 0.5 }
+                  }
                   onClick={() => {
                     this.handleChangeTab("bookmarks");
                   }}
@@ -247,7 +296,9 @@ class NavigationPanel extends React.Component<NavigationPanelProps, NavigationPa
                 </span>
                 <span
                   className="book-bookmark-title"
-                  style={this.state.currentTab === "notes" ? {} : { opacity: 0.5 }}
+                  style={
+                    this.state.currentTab === "notes" ? {} : { opacity: 0.5 }
+                  }
                   onClick={() => {
                     this.handleChangeTab("notes");
                   }}
@@ -256,7 +307,9 @@ class NavigationPanel extends React.Component<NavigationPanelProps, NavigationPa
                 </span>
                 <span
                   className="book-bookmark-title"
-                  style={this.state.currentTab === "digests" ? {} : { opacity: 0.5 }}
+                  style={
+                    this.state.currentTab === "digests" ? {} : { opacity: 0.5 }
+                  }
                   onClick={() => {
                     this.handleChangeTab("digests");
                   }}
@@ -267,7 +320,11 @@ class NavigationPanel extends React.Component<NavigationPanelProps, NavigationPa
             </div>
             <div className="navigation-body-parent">
               <div className="navigation-body">
-                {this.state.currentTab === "contents" ? <ContentList /> : <BookNavList {...bookmarkProps} />}
+                {this.state.currentTab === "contents" ? (
+                  <ContentList />
+                ) : (
+                  <BookNavList {...bookmarkProps} />
+                )}
               </div>
             </div>
           </>

@@ -9,6 +9,7 @@ import {
   handleShelf,
   handleSearchResults,
   handleSearchKeyword,
+  handleSidebar,
 } from "../../store/actions";
 import { connect } from "react-redux";
 import { stateType } from "../../store";
@@ -21,6 +22,7 @@ const mapStateToProps = (state: stateType) => {
     isCollapsed: state.sidebar.isCollapsed,
     shelfIndex: state.sidebar.shelfIndex,
     shelf: state.sidebar.shelf,
+    isSidebarShow: state.manager.isSidebarShow,
   };
 };
 const actionCreator = {
@@ -33,6 +35,7 @@ const actionCreator = {
   handleShelf,
   handleSearchResults,
   handleSearchKeyword,
+  handleSidebar,
 };
 
 export default connect(mapStateToProps, actionCreator)(withTranslation()(Sidebar as any) as any);

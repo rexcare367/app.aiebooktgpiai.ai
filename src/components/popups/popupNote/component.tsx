@@ -81,6 +81,7 @@ class PopupNote extends React.Component<PopupNoteProps, PopupNoteState> {
           _item = item;
         }
       });
+
       api
         .put(`/api/highlights/${this.props.noteKey}`, {
           ..._item,
@@ -140,7 +141,7 @@ class PopupNote extends React.Component<PopupNoteProps, PopupNoteState> {
         .post(`/api/highlights/add`, {
           ...note,
           user_ic: username,
-          file_key,
+          book_id: bookKey,
         })
         .then(
           window.localforage.setItem("notes", noteArr).then(() => {
@@ -228,7 +229,7 @@ class PopupNote extends React.Component<PopupNoteProps, PopupNoteState> {
                 this.createNote();
               }}
             >
-              <Trans>Confirm</Trans>
+              <Trans>Create Note</Trans>
             </span>
           </div>
         </div>

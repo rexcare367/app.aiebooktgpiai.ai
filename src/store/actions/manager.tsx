@@ -4,7 +4,7 @@ import BookModel from "../../models/Book";
 import { Dispatch } from "redux";
 import AddTrash from "../../utils/readUtils/addTrash";
 declare var window: any;
-export function handleSearchKeyword(keyword:string) {
+export function handleSearchKeyword(keyword: string) {
   return { type: "HANDLE_SEARCH_KEYWORD", payload: keyword };
 }
 
@@ -41,7 +41,9 @@ export function handleAbout(isAboutOpen: boolean) {
 export function handleViewMode(mode: string) {
   return { type: "HANDLE_VIEW_MODE", payload: mode };
 }
-
+export function handleSidebar(isSidebarShow: boolean) {
+  return { type: "HANDLE_SIDEBAR", payload: isSidebarShow };
+}
 export function handleSortDisplay(isSortDisplay: boolean) {
   return { type: "HANDLE_SORT_DISPLAY", payload: isSortDisplay };
 }
@@ -69,17 +71,11 @@ export function handleNoteSort(isNoteSort: boolean) {
 export function handleFeedbackDialog(mode: boolean) {
   return { type: "HANDLE_FEEDBACK_DIALOG", payload: mode };
 }
-export function handleBookSortCode(bookSortCode: {
-  sort: number;
-  order: number;
-}) {
+export function handleBookSortCode(bookSortCode: { sort: number; order: number }) {
   return { type: "HANDLE_SORT_CODE", payload: bookSortCode };
 }
 
-export function handleNoteSortCode(noteSortCode: {
-  sort: number;
-  order: number;
-}) {
+export function handleNoteSortCode(noteSortCode: { sort: number; order: number }) {
   return { type: "HANDLE_NOTE_SORT_CODE", payload: noteSortCode };
 }
 

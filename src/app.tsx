@@ -1,6 +1,6 @@
 import React from "react";
 
-import AuthenticatedApp from "./router/index";
+import Router from "./router/index";
 import Auth from "./pages/authentication/auth";
 import Loading from "./components/loading/component";
 
@@ -36,7 +36,7 @@ const App: React.FC = () => {
       ) : !isAuthenticated ? (
         <Auth />
       ) : (
-        <AuthenticatedApp />
+        <Router />
       )}
     </>
   );

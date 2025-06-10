@@ -54,6 +54,5 @@ export interface ManagerState {
   isError: boolean;
   isCopied: boolean;
   isUpdated: boolean;
-  isDrag: boolean;
   token: string;
 }

@@ -37,8 +37,10 @@
   border-radius: 10px;
 }
 
-.chatbot-container {
-  position: relative;
+.m-chatbot-container {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
   display: flex;
   align-items: center;
   justify-content: center;

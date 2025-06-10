@@ -3,9 +3,9 @@ import { Trans } from "react-i18next";
 import { withRouter, useHistory } from "react-router-dom";
 import "./userPanelDialog.css";
 import { useAuth } from "../../../hooks/useAuth";
-import { User2Icon, IdCard, LogOutIcon } from "lucide-react";
+import { User2Icon, IdCard, LogOutIcon, Settings } from "lucide-react";
 
-const UserPanelDialog = () => {
+const UserPanelDialog = ({ handleSetting, isNewWarning }) => {
   const [isShow, setIsShow] = useState(false);
 
   const { signOut, user } = useAuth();
@@ -29,7 +29,7 @@ const UserPanelDialog = () => {
   return (
     <div className="user-panel-container">
       <div className="user-panel-header" onClick={() => handleShow()}>
-        <User2Icon />
+        <User2Icon className="md:w-6 w-4" />
         <span>{user?.username}</span>
       </div>
 
@@ -48,6 +48,17 @@ const UserPanelDialog = () => {
             >
               <IdCard />
               <Trans>Profile</Trans>
+            </li>
+            <li
+              className="user-panel-item"
+              onClick={() => {
+                handleSetting(true);
+                handleShow();
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              <Settings style={isNewWarning ? { color: "rgb(35, 170, 242)" } : {}} />
+              <Trans>Settings</Trans>
             </li>
             <li className="user-panel-item" onClick={() => handleSignOut()}>
               <LogOutIcon />

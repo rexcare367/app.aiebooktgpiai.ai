@@ -11,6 +11,7 @@ import {
   handleFetchBooks,
   handleFetchNotes,
   handleFetchBookmarks,
+  handleSidebar,
 } from "../../store/actions";
 import { stateType } from "../../store";
 import Header from "./component";
@@ -24,6 +25,7 @@ const mapStateToProps = (state: stateType) => {
     isCollapsed: state.sidebar.isCollapsed,
     isNewWarning: state.manager.isNewWarning,
     notes: state.reader.notes,
+    isSidebarShow: state.manager.isSidebarShow,
 
     isSortDisplay: state.manager.isSortDisplay,
   };
@@ -39,8 +41,6 @@ const actionCreator = {
   handleFetchBooks,
   handleFetchNotes,
   handleFetchBookmarks,
+  handleSidebar,
 };
-export default connect(
-  mapStateToProps,
-  actionCreator
-)(withTranslation()(Header as any) as any);
+export default connect(mapStateToProps, actionCreator)(withTranslation()(Header as any) as any);

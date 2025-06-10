@@ -1,12 +1,11 @@
 import React from "react";
-import "./searchBox.css";
 import { SearchBoxProps } from "./interface";
 import StorageUtil from "../../utils/serviceUtils/storageUtil";
 
 class SearchBox extends React.Component<SearchBoxProps> {
   componentDidMount() {
     if (this.props.isNavSearch) {
-      let searchBox: any = document.querySelector(".header-search-box");
+      let searchBox: any = document.querySelector(".search-input");
       searchBox && searchBox.focus();
     }
   }
@@ -28,7 +27,7 @@ class SearchBox extends React.Component<SearchBoxProps> {
     this.props.handleNavSearchState("pending");
     this.props.handleSearchList(
       searchList.map((item: any) => {
-        item.excerpt = item.excerpt.replace(q, `<span class="content-search-text">${q}</span>`);
+        item.excerpt = item.excerpt.replace(q, `<span class="text-blue-500">${q}</span>`);
         return item;
       })
     );
@@ -39,16 +38,16 @@ class SearchBox extends React.Component<SearchBoxProps> {
       this.props.handleSearchList(null);
     }
     this.props.handleSearch(false);
-    (document.querySelector(".header-search-box") as HTMLInputElement).value = "";
+    (document.querySelector(".search-input") as HTMLInputElement).value = "";
   };
 
   render() {
     return (
-      <div style={{ position: "relative" }}>
+      <div className="relative">
         <input
           type="text"
           ref="searchBox"
-          className="header-search-box md:h-10 h-8"
+          className="search-input rounded-xl bg-gray-100 text-black placeholder-black pl-3 text-sm outline-none border-none w-full md:h-10 h-8"
           onKeyDown={(event) => {
             this.handleKey(event);
           }}
@@ -90,7 +89,7 @@ class SearchBox extends React.Component<SearchBoxProps> {
         />
         {this.props.isSearch ? (
           <span
-            className="header-search-text"
+            className="absolute top-0 right-0 text-[15px] w-10 h-full cursor-pointer flex items-center justify-center hover:rounded-full"
             onClick={() => {
               this.handleCancel();
             }}
@@ -99,9 +98,9 @@ class SearchBox extends React.Component<SearchBoxProps> {
             <span className="icon-close"></span>
           </span>
         ) : (
-          <span className="header-search-text">
+          <span className="absolute top-0 right-0 text-[15px] w-10 h-full cursor-pointer flex items-center justify-center">
             <span
-              className="icon-search header-search-icon"
+              className="icon-search text-[22px] inline-block opacity-60 cursor-pointer"
               style={this.props.mode === "nav" ? { right: "5px" } : {}}
               onClick={() => {
                 this.handleMouse();

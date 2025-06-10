@@ -13,7 +13,7 @@ import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { ReactMic } from "react-mic";
 import ReactAudioPlayer from "react-audio-player";
 import { ChatbotWidgetProps } from "./interface";
-import { CircleXIcon, BotIcon } from "lucide-react";
+import { CircleXIcon, BotIcon, Send, Mic, CircleStop } from "lucide-react";
 const md = markdownit({
   html: true,
   linkify: true,
@@ -323,22 +323,7 @@ export default function ChatbotWidget({
         />
 
         <button type="submit" className="message-submit message-send" onClick={handleSubmit}>
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            strokeWidth="1.5"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M22 12L3 20L6.5625 12L3 4L22 12Z"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path d="M6.5 12L22 12" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <Send />
         </button>
 
         <div style={{ display: "flex", gap: 10 }}>
@@ -352,64 +337,11 @@ export default function ChatbotWidget({
           />
           {record ? (
             <button onClick={stopRecording} className="message-submit record-button" type="button">
-              <svg
-                fill="#00ffff"
-                height="24px"
-                width="24px"
-                version="1.1"
-                id="Layer_1"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 512 512"
-                stroke="#ff00ff"
-              >
-                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-                <g id="SVGRepo_iconCarrier">
-                  <g>
-                    <g>
-                      <g>
-                        <path d="M256,0C114.842,0,0.002,114.84,0.002,256.001C0.002,397.159,114.841,512,255.999,512s255.999-114.841,255.999-255.999 C511.999,114.84,397.158,0,256,0z M256,490.665c-129.394,0-234.662-105.271-234.662-234.665 C21.336,126.605,126.606,21.335,256,21.335c129.395,0,234.665,105.271,234.665,234.666S385.394,490.665,256,490.665z"></path>
-                        <path d="M270.394,85.944c5.875,0.513,11.033-3.857,11.531-9.728c0.497-5.87-3.858-11.033-9.729-11.53 C266.826,64.231,261.377,64,256,64C150.13,64,63.999,150.133,63.999,256.005c0,5.889,4.777,10.667,10.667,10.667 c5.892,0,10.667-4.778,10.667-10.667c0-94.107,76.561-170.67,170.666-170.67C260.777,85.335,265.621,85.54,270.394,85.944z"></path>
-                        <path d="M437.332,245.337c-5.892,0-10.667,4.776-10.667,10.667c0,94.105-76.56,170.664-170.664,170.664 c-4.779,0-9.623-0.206-14.396-0.61c-5.879-0.494-11.033,3.858-11.531,9.728c-0.497,5.871,3.858,11.034,9.729,11.53 c5.37,0.457,10.82,0.688,16.198,0.688c105.868,0,191.999-86.131,191.999-191.999 C447.999,250.112,443.223,245.337,437.332,245.337z"></path>
-                        <path d="M299.413,90.951l0.691,0.186c0.946,0.26,1.896,0.384,2.831,0.384c4.684,0,8.98-3.11,10.28-7.845 c1.562-5.68-1.779-11.552-7.459-13.112l-0.859-0.231c-5.69-1.505-11.536,1.873-13.051,7.566 C290.332,83.591,293.719,89.435,299.413,90.951z"></path>
-                        <path d="M212.585,421.055l-0.691-0.186c-5.682-1.565-11.552,1.779-13.111,7.459c-1.562,5.681,1.779,11.553,7.459,13.113 l0.859,0.232c0.918,0.244,1.842,0.361,2.75,0.361c4.716,0,9.031-3.152,10.3-7.928 C221.665,428.413,218.278,422.568,212.585,421.055z"></path>
-                        <path d="M312.844,351.516c21.321,0,38.667-17.347,38.667-38.667V199.157c0-21.322-17.346-38.668-38.667-38.668H199.154 c-21.321,0-38.667,17.345-38.667,38.668v113.691c0,21.32,17.346,38.667,38.667,38.667H312.844z M181.822,312.848V199.157 c0-9.557,7.775-17.332,17.332-17.332h113.689c9.557,0,17.332,7.776,17.332,17.332v113.691c0,9.557-7.776,17.332-17.332,17.332 H199.154C189.597,330.181,181.822,322.405,181.822,312.848z"></path>
-                      </g>
-                    </g>
-                  </g>
-                </g>
-              </svg>
+              <CircleStop />
             </button>
           ) : (
             <button onClick={startRecording} className="message-submit record-button" type="button">
-              <svg
-                className="record-button-icon"
-                version="1.1"
-                id="Capa_1"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24px"
-                height="24px"
-                viewBox="0 0 47.96 47.96"
-                stroke="#ff00ff"
-                strokeWidth="0.00047964000000000004"
-              >
-                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  stroke="#CCCCCC"
-                  strokeWidth="1.6307760000000002"
-                ></g>
-                <g id="SVGRepo_iconCarrier">
-                  <g>
-                    <g>
-                      <path d="M23.982,35.268c5.531,0,10.033-4.635,10.033-10.332V10.333C34.015,4.635,29.513,0,23.982,0 c-5.532,0-10.032,4.635-10.032,10.333v14.604C13.951,30.633,18.451,35.268,23.982,35.268z M29.22,24.938 c0,2.974-2.35,5.395-5.238,5.395s-5.238-2.42-5.238-5.395V10.333c0-2.974,2.35-5.395,5.238-5.395s5.238,2.42,5.238,5.395V24.938z"></path>
-                      <path d="M40.125,29.994c0-1.361-1.222-2.469-2.72-2.469c-1.5,0-2.721,1.107-2.721,2.469c0,4.042-3.621,7.329-8.074,7.329h-5.257 c-4.453,0-8.074-3.287-8.074-7.329c0-1.361-1.221-2.469-2.721-2.469c-1.499,0-2.719,1.107-2.719,2.469 c0,6.736,6.014,12.221,13.424,12.266v0.766h-5.944c-1.499,0-2.72,1.107-2.72,2.47s1.221,2.47,2.72,2.47h17.325 c1.5,0,2.721-1.107,2.721-2.47s-1.221-2.47-2.721-2.47h-5.942V42.26C34.111,42.215,40.125,36.73,40.125,29.994z"></path>
-                    </g>
-                  </g>
-                </g>
-              </svg>
+              <Mic />
             </button>
           )}
         </div>
