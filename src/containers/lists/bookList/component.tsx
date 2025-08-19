@@ -64,7 +64,7 @@ const BookList: React.FC<BookListProps> = (props) => {
 
     try {
       const response = await api.get(
-        `/api/ebooks/list?page=${currentPage}&limit=${pageSize}&keyword=${keyword}&order=${order}&orderBy=${orderBy}&mode=${mode}&user_id=${userId}&lang=${lang}&genres=${genres}`
+        `/api/ebooks/list?page=${currentPage}&limit=${pageSize}&keyword=${keyword}&order=${order}&orderBy=${orderBy}&mode=${mode}&user_id=${userIc}&lang=${lang}&genres=${genres}`
       );
 
       const books = response.data.data.map((book: any) => ({

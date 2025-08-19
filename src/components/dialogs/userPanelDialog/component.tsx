@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Trans } from "react-i18next";
-import { withRouter, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import "./userPanelDialog.css";
 import { useAuthContext } from "../../auth/AuthProvider";
 import { User2Icon, IdCard, Settings } from "lucide-react";

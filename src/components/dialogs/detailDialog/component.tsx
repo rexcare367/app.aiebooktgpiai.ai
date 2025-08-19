@@ -2,8 +2,8 @@ import React from "react";
 import "./updateInfo.css";
 import { DetailDialogProps, DetailDialogState } from "./interface";
 import { Trans } from "react-i18next";
-import Parser from "html-react-parser";
-import * as DOMPurify from 'dompurify';
+// import Parser from "html-react-parser";
+// import * as DOMPurify from 'dompurify';
 import EmptyCover from "../../emptyCover";
 class DetailDialog extends React.Component<
   DetailDialogProps,
@@ -133,9 +133,7 @@ class DetailDialog extends React.Component<
               <Trans>Description</Trans>:
             </p>
             <div className="detail-dialog-book-detail">
-              {this.props.currentBook.description ? (
-                Parser(DOMPurify.sanitize(this.props.currentBook.description))
-              ) : (
+              {this.props.currentBook.description ? this.props.currentBook.description : (
                 <Trans>Empty</Trans>
               )}
             </div>

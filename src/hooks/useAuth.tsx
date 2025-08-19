@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { useHistory } from "react-router-dom";
 import authService, { LoginRequest, SignupRequest, UserData } from "../utils/authService";
 
 export const useAuth = () => {
@@ -7,7 +6,6 @@ export const useAuth = () => {
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<UserData | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const history = useHistory();
 
   useEffect(() => {
     checkAuthState();
@@ -137,7 +135,6 @@ export const useAuth = () => {
       authService.logout();
       setIsAuthenticated(false);
       setUser(null);
-      history.push("/");
     } catch (error) {
       console.error("Sign out error:", error);
       throw error;
