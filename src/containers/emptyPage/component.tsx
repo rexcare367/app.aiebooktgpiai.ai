@@ -2,61 +2,41 @@ import React from "react";
 import "./emptyPage.css";
 import { emptyList } from "../../constants/emptyList";
 import { Trans } from "react-i18next";
-import { EmptyPageProps, EmptyPageState } from "./interface";
+import { EmptyPageProps } from "./interface";
 import StorageUtil from "../../utils/serviceUtils/storageUtil";
 
-class EmptyPage extends React.Component<EmptyPageProps, EmptyPageState> {
-  render() {
-    const renderEmptyList = () => {
-      return emptyList.map((item) => {
-        return (
-          <div
-            className="empty-page-info-container"
-            key={item.mode}
-            style={
-              this.props.mode === item.mode ? {} : { visibility: "hidden" }
-            }
-          >
-            <div className="empty-page-info-main">
-              <Trans>{item.main}</Trans>
-            </div>
-            <div className="empty-page-info-sub">
-              <Trans>{item.sub}</Trans>
-            </div>
-          </div>
-        );
-      });
-    };
-    return (
-      <div
-        className="empty-page-container"
-        style={
-          this.props.isCollapsed
-            ? { width: "calc(100vw - 100px)", left: "100px" }
-            : {}
-        }
-      >
-        <div
-          className="empty-illustration-container"
-          style={{ width: "calc(100% - 50px)" }}
-        >
+const EmptyPage: React.FC<EmptyPageProps> = ({ mode, isCollapsed }) => {
+  const isDarkMode =
+    StorageUtil.getReaderConfig("appSkin") === "night" ||
+    (StorageUtil.getReaderConfig("appSkin") === "system" && StorageUtil.getReaderConfig("isOSNight") === "yes");
+
+  return (
+    <div className="empty-page-container">
+      <div className="empty-content">
+        <div className="empty-illustration">
           <img
-            src={
-              StorageUtil.getReaderConfig("appSkin") === "night" ||
-              (StorageUtil.getReaderConfig("appSkin") === "system" &&
-                StorageUtil.getReaderConfig("isOSNight") === "yes")
-                ? "./assets/empty_light.svg"
-                : "./assets/empty.svg"
-            }
+            src={isDarkMode ? "./assets/empty_light.svg" : "./assets/empty.svg"}
             alt=""
             className="empty-page-illustration"
           />
+          <p className="empty-description">No items to display</p>
         </div>
 
-        {renderEmptyList()}
+        <div className="empty-messages">
+          {emptyList.map((item) => (
+            <div className={`empty-message ${mode === item.mode ? "active" : ""}`} key={item.mode}>
+              <h2 className="empty-title">
+                <Trans>{item.main}</Trans>
+              </h2>
+              <p className="empty-subtitle">
+                <Trans>{item.sub}</Trans>
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default EmptyPage;

@@ -8,11 +8,9 @@ const initState = {
   currentBook: {},
   renderBookFunc: () => {},
   renderNoteFunc: () => {},
+  searchKeyword: "",
 };
-export function book(
-  state = initState,
-  action: { type: string; payload: any }
-) {
+export function book(state = initState, action: { type: string; payload: any }) {
   switch (action.type) {
     case "HANDLE_EDIT_DIALOG":
       return {
@@ -58,6 +56,11 @@ export function book(
       return {
         ...state,
         dragItem: action.payload,
+      };
+    case "SEARCH_BOOKS":
+      return {
+        ...state,
+        searchKeyword: action.payload,
       };
     case "HANDLE_REDIRECT":
       return {

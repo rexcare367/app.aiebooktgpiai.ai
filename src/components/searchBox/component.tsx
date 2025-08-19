@@ -1,116 +1,122 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
 import { SearchBoxProps } from "./interface";
+import { searchBooks } from "../../store/actions/book";
 import StorageUtil from "../../utils/serviceUtils/storageUtil";
+import { useHistory, useLocation } from "react-router-dom";
 
-class SearchBox extends React.Component<SearchBoxProps> {
-  componentDidMount() {
-    if (this.props.isNavSearch) {
-      let searchBox: any = document.querySelector(".search-input");
-      searchBox && searchBox.focus();
+const SearchBox: React.FC<SearchBoxProps> = (props) => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const location = useLocation();
+  const [inputValue, setInputValue] = useState(props.keyword || "");
+  const searchBoxRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setInputValue(props.keyword || "");
+  }, [props.keyword]);
+
+  useEffect(() => {
+    if (props.isNavSearch) {
+      searchBoxRef.current?.focus();
     }
-  }
-  handleMouse = () => {
-    let value = (this.refs.searchBox as any).value;
-    this.props.handleSearchKeyword(value.trim());
+  }, [props.isNavSearch]);
+
+  const handleSearch = (value: string) => {
+    setInputValue(value);
+    // dispatch(searchBooks(value));
+    // props.handleSearchKeyword(value);
+    // props.handleSearch(true);
   };
 
-  handleKey = (event: any) => {
-    if (event.keyCode !== 13) {
-      return;
+  const handleKey = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      const value = searchBoxRef.current?.value || "";
+      const trimmedValue = value.trim();
+      handleSearch(trimmedValue);
+
+      // Update URL with search keyword
+      const searchParams = new URLSearchParams(location.search);
+
+      if (trimmedValue) {
+        searchParams.set("keyword", trimmedValue);
+      } else {
+        searchParams.delete("keyword");
+      }
+
+      const queryString = searchParams.toString();
+      history.replace({
+        pathname: location.pathname,
+        search: queryString ? `?${queryString}` : "",
+        hash: location.hash,
+      });
     }
-    let value = (this.refs.searchBox as any).value;
-    this.props.handleSearchKeyword(value.trim());
-  };
-  search = async (q: string) => {
-    this.props.handleNavSearchState("searching");
-    let searchList = await this.props.htmlBook.rendition.doSearch(q);
-    this.props.handleNavSearchState("pending");
-    this.props.handleSearchList(
-      searchList.map((item: any) => {
-        item.excerpt = item.excerpt.replace(q, `<span class="text-blue-500">${q}</span>`);
-        return item;
-      })
-    );
   };
 
-  handleCancel = () => {
-    if (this.props.isNavSearch) {
-      this.props.handleSearchList(null);
+  const handleCancel = () => {
+    if (props.isNavSearch) {
+      props.handleSearchList(null);
     }
-    this.props.handleSearch(false);
-    (document.querySelector(".search-input") as HTMLInputElement).value = "";
+    props.handleSearch(false);
+    if (searchBoxRef.current) {
+      searchBoxRef.current.value = "";
+    }
+    handleSearch("");
   };
 
-  render() {
-    return (
-      <div className="relative">
-        <input
-          type="text"
-          ref="searchBox"
-          className="search-input rounded-xl bg-gray-100 text-black placeholder-black pl-3 text-sm outline-none border-none w-full md:h-10 h-8"
-          onKeyDown={(event) => {
-            this.handleKey(event);
-          }}
-          onFocus={() => {
-            this.props.mode === "nav" && this.props.handleNavSearchState("focused");
-          }}
-          placeholder={
-            this.props.isNavSearch || this.props.mode === "nav"
-              ? this.props.t("Search")
-              : this.props.tabMode === "note"
-              ? this.props.t("Search")
-              : this.props.tabMode === "digest"
-              ? this.props.t("Search")
-              : this.props.t("Search")
+  return (
+    <div className="relative">
+      <input
+        ref={searchBoxRef}
+        className="search-input rounded-xl bg-gray-100 text-black placeholder-black pl-3 text-sm outline-none border-none w-full md:h-10 h-8"
+        value={inputValue}
+        onChange={(e) => handleSearch(e.target.value)}
+        onKeyDown={handleKey}
+        onFocus={() => {
+          props.mode === "nav" && props.handleNavSearchState("focused");
+        }}
+        placeholder={
+          props.isNavSearch || props.mode === "nav"
+            ? props.t("Search")
+            : props.tabMode === "note"
+            ? props.t("Search")
+            : props.tabMode === "digest"
+            ? props.t("Search")
+            : props.t("Search")
+        }
+        style={
+          props.mode === "nav"
+            ? {
+                width: props.width,
+                height: props.height,
+                paddingRight: "30px",
+              }
+            : {}
+        }
+        onCompositionStart={() => {
+          if (StorageUtil.getReaderConfig("isNavLocked") === "yes") {
+            return;
+          } else {
+            StorageUtil.setReaderConfig("isTempLocked", "yes");
+            StorageUtil.setReaderConfig("isNavLocked", "yes");
           }
-          style={
-            this.props.mode === "nav"
-              ? {
-                  width: this.props.width,
-                  height: this.props.height,
-                  paddingRight: "30px",
-                }
-              : {}
+        }}
+        onCompositionEnd={() => {
+          if (StorageUtil.getReaderConfig("isTempLocked") === "yes") {
+            StorageUtil.setReaderConfig("isNavLocked", "");
+            StorageUtil.setReaderConfig("isTempLocked", "");
           }
-          onCompositionStart={() => {
-            if (StorageUtil.getReaderConfig("isNavLocked") === "yes") {
-              return;
-            } else {
-              StorageUtil.setReaderConfig("isTempLocked", "yes");
-              StorageUtil.setReaderConfig("isNavLocked", "yes");
-            }
-          }}
-          onCompositionEnd={() => {
-            if (StorageUtil.getReaderConfig("isTempLocked") === "yes") {
-              StorageUtil.setReaderConfig("isNavLocked", "");
-              StorageUtil.setReaderConfig("isTempLocked", "");
-            }
-          }}
-        />
-        {this.props.isSearch ? (
-          <span
-            className="absolute top-0 right-0 text-[15px] w-10 h-full cursor-pointer flex items-center justify-center hover:rounded-full"
-            onClick={() => {
-              this.handleCancel();
-            }}
-            style={this.props.mode === "nav" ? { right: "-9px", top: "14px" } : {}}
-          >
-            <span className="icon-close"></span>
-          </span>
-        ) : (
-          <span className="absolute top-0 right-0 text-[15px] w-10 h-full cursor-pointer flex items-center justify-center">
-            <span
-              className="icon-search text-[22px] inline-block opacity-60 cursor-pointer"
-              style={this.props.mode === "nav" ? { right: "5px" } : {}}
-              onClick={() => {
-                this.handleMouse();
-              }}
-            ></span>
-          </span>
-        )}
-      </div>
-    );
-  }
-}
+        }}
+      />
+      <span
+        className="icon-close absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+        onClick={() => {
+          handleCancel();
+        }}
+        style={props.mode === "nav" ? { right: "-9px", top: "14px" } : {}}
+      ></span>
+    </div>
+  );
+};
 
 export default SearchBox;

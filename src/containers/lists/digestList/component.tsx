@@ -6,11 +6,15 @@ import NoteTag from "../../../components/noteTag";
 import NoteModel from "../../../models/Note";
 import Empty from "../../emptyPage";
 import Manager from "../../../pages/manager";
-import { getCurrentUser } from "@aws-amplify/auth";
 import api from "../../../utils/axios";
 import toast from "react-hot-toast";
+import authService, { UserData } from "../../../utils/authService";
 
 const DigestList: React.FC<DigestListProps> = (props) => {
+  const userData: UserData | null = authService.getUserData();
+  const userId = userData?.id;
+  const userIc = userData?.ic_number;
+
   const [tag, setTag] = useState<string[]>([]);
   const [notes, setNotes] = useState<any[]>([]);
 
@@ -20,9 +24,8 @@ const DigestList: React.FC<DigestListProps> = (props) => {
 
   const fetchDigests = async () => {
     try {
-      const { username } = await getCurrentUser();
       const response = await api.get(
-        `/api/highlights/list?user_id=${username}&notes=false&limit=100&orderby=created_at&order=desc`
+        `/api/highlights/list?user_id=${userIc}&notes=false&limit=100&orderby=created_at&order=desc`
       );
       if (response.data && response.data.data) {
         console.log("response.data.data", response.data.data);
@@ -65,7 +68,7 @@ const DigestList: React.FC<DigestListProps> = (props) => {
 
   const digestListContent = (
     <div
-      className="digest-list-container-parent"
+      className="digest-list-container-parent h-[calc(100vh_-_78px)] bg-white rounded-xl"
       style={props.isCollapsed ? { width: "calc(100vw - 70px)", left: "70px" } : {}}
     >
       <div className="note-tags">

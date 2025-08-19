@@ -103,7 +103,7 @@ class Manager extends React.Component<ManagerProps, ManagerState> {
         )}
         <Sidebar />
         <Toaster />
-        <div className="flex flex-col flex-1 w-full relative md:pl-1 bg-gray-main-bg">
+        <div className="flex flex-col flex-1 w-full relative bg-gray-main-bg">
           <Header />
           {this.props.isOpenDeleteDialog && <DeleteDialog />}
           {this.props.isOpenEditDialog && <EditDialog />}
@@ -116,7 +116,7 @@ class Manager extends React.Component<ManagerProps, ManagerState> {
           {this.props.isSettingOpen && <SettingDialog />}
           {this.props.isTipDialog && <TipDialog />}
           {this.props.isDetailDialog && <DetailDialog />}
-          {this.props.children}
+          <div className="p-2 rounded-xl h-[calc(100vh_-_70px)]">{this.props.children}</div>
         </div>
       </div>
     );

@@ -11,11 +11,11 @@ import App from "./app";
 import StyleUtil from "./utils/readUtils/styleUtil";
 // import { dropdownList } from "./constants/dropdownList";
 // import StorageUtil from "./utils/serviceUtils/storageUtil";
-import './index.css';
+import "./index.css";
 import { initSystemFont, initTheme } from "./utils/serviceUtils/launchUtil";
-
 initTheme();
 initSystemFont();
+
 ReactDOM.render(
   <Provider store={store}>
     <App />

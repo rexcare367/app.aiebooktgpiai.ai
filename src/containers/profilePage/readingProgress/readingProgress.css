@@ -1,7 +1,6 @@
 .reading-container {
   width: 100%;
-  margin: 2rem auto 0;
-  padding: 2rem;
+  padding: 1rem;
   background: var(--bg-color-2);
   border-radius: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -35,7 +34,7 @@
 .book-card {
   background: var(--bg-color);
   border-radius: 1rem;
-  padding: 1.75rem;
+  padding: 1rem;
   border: 1px solid var(--border-color);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -46,7 +45,7 @@
 
 .book-card:hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  transform: translateY(-4px);
+  transform: translateX(4px);
   border-color: var(--active-theme-light);
 }
 
@@ -204,6 +203,148 @@
   border-color: var(--active-theme-color);
 }
 
+/* Analytics panel */
+.analytics-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  padding-right: 4.5rem;
+  background: var(--bg-color);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card .stat-title {
+  color: var(--text-color-2);
+  font-size: 0.875rem;
+}
+
+.stat-card .stat-value {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--text-color);
+}
+
+.stat-card.mint {
+  background: rgba(16, 185, 129, 0.08);
+}
+.stat-card.lilac {
+  background: rgba(139, 92, 246, 0.08);
+}
+.stat-card.blue {
+  background: rgba(59, 130, 246, 0.08);
+}
+.stat-card.peach {
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.stat-card .icon-box {
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.5rem;
+  background: var(--bg-color);
+  margin-bottom: 0.5rem;
+}
+
+.stat-card .icon-box svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--text-color);
+}
+
+.stat-card .stat-icon-large {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.stat-card .stat-icon-large svg {
+  width: 3rem;
+  height: 3rem;
+  color: var(--text-color);
+}
+
+/* Badge for small pills */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.8125rem;
+  color: var(--text-color);
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+}
+
+/* Summary donut */
+.summary-section {
+  margin-top: 0.5rem;
+}
+.summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.summary-content {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+.donut {
+  width: 200px;
+  height: 200px;
+}
+
+.legend {
+  display: grid;
+  grid-auto-rows: minmax(0, auto);
+  gap: 0.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background: var(--bg-color);
+}
+
+.legend-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 999px;
+}
+
 @media (max-width: 768px) {
   .reading-progress {
     padding: 1rem;
@@ -219,6 +360,15 @@
 
   .book-meta {
     font-size: 0.8125rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summary-content {
+    grid-template-columns: 1fr;
+    justify-items: center;
   }
 }
 

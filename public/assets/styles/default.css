@@ -72,9 +72,6 @@ body {
 .nav-search-page-item {
   border: 2px solid rgba(1, 121, 202, 1);
 }
-.header-search-box,
-.header-search-box::placeholder,
-.header-search-text,
 .card-list-item-show-more,
 .token-dialog-link-text,
 .token-dialog-token-text {
@@ -114,7 +111,6 @@ body {
   color: rgba(255, 255, 255, 1) !important;
 }
 
-.header-search-box,
 #jumpPage,
 #jumpChapter,
 #newTag {
@@ -306,8 +302,8 @@ body {
 }
 
 .form-input {
-  background-color: rgba(0, 0, 0, 0.1) !important;
-  border: 2px solid rgba(0, 0, 0, 0.3) !important;
+  background-color: rgba(255, 255, 255, 1) !important;
+  border: 1px solid rgba(0, 0, 0, 0.3) !important;
 }
 
 .form-input:focus {

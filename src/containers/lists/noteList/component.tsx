@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
 import "./noteList.css";
-import { NoteListProps, NoteListState } from "./interface";
+import { NoteListProps } from "./interface";
 import CardList from "../cardList";
 import NoteTag from "../../../components/noteTag";
-import NoteModel from "../../../models/Note";
 import Empty from "../../emptyPage";
 import Manager from "../../../pages/manager";
-import { getCurrentUser } from "@aws-amplify/auth";
+
 import api from "../../../utils/axios";
 import toast from "react-hot-toast";
+import authService, { UserData } from "../../../utils/authService";
 
 const NoteList: React.FC<NoteListProps> = (props) => {
+  const userData: UserData | null = authService.getUserData();
+  const userId = userData?.id;
+  const userIc = userData?.ic_number;
+
   const [tag, setTag] = useState<string[]>([]);
   const [notes, setNotes] = useState<any[]>([]);
 
@@ -20,9 +24,8 @@ const NoteList: React.FC<NoteListProps> = (props) => {
 
   const fetchNotes = async () => {
     try {
-      const { username } = await getCurrentUser();
       const response = await api.get(
-        `/api/highlights/list?user_id=${username}&notes=true&limit=100&orderby=created_at&order=desc`
+        `/api/highlights/list?user_id=${userIc}&notes=true&limit=100&orderby=created_at&order=desc`
       );
       if (response.data && response.data.data) {
         console.log("response.data.data", response.data.data);
@@ -39,7 +42,7 @@ const NoteList: React.FC<NoteListProps> = (props) => {
   };
 
   const noteListContent = (
-    <div className="note-list-container-parent  bg-white m-2.5 rounded-xl">
+    <div className="note-list-container-parent h-[calc(100vh_-_78px)] bg-white rounded-xl">
       <div className="note-tags">
         <NoteTag {...{ handleTag: handleTag }} />
       </div>

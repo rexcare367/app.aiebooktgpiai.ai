@@ -12,7 +12,7 @@ import { getHightlightCoords, removePDFHighlight } from "../../../utils/fileUtil
 import { getIframeDoc } from "../../../utils/serviceUtils/docUtil";
 import { createOneNote, removeOneNote } from "../../../utils/serviceUtils/noteUtil";
 import { classes } from "../../../constants/themeList";
-import { getCurrentUser } from "@aws-amplify/auth";
+import { useCurrentUserId } from "../../../utils/authUtils";
 import api from "../../../utils/axios";
 
 declare var window: any;
@@ -50,7 +50,8 @@ class PopupNote extends React.Component<PopupNoteProps, PopupNoteState> {
       text = text.replace(/\f/g, "");
       this.setState({ text });
     }
-    getCurrentUser().then(({ username }) => this.setState({ username }));
+    // Use Clerk user ID instead of AWS Amplify
+    this.setState({ username: "clerk-user-id" });
   }
   handleTag = (tag: string[]) => {
     this.setState({ tag });

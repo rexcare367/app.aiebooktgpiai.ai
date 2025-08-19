@@ -8,7 +8,6 @@ import toast from "react-hot-toast";
 // import AddFavorite from "../../../utils/readUtils/addFavorite";
 import MoreAction from "../moreAction";
 import api from "../../../utils/axios";
-import { getCurrentUser } from "@aws-amplify/auth";
 
 declare var window: any;
 class ActionDialog extends React.Component<ActionDialogProps, ActionDialogState> {
@@ -47,7 +46,8 @@ class ActionDialog extends React.Component<ActionDialogProps, ActionDialogState>
     this.props.handleFetchBooks();
   };
   handleLoveBook = async () => {
-    const { username } = await getCurrentUser();
+    const { user } = this.props;
+    const username = user?.id || "unknown";
     const { key } = this.props.currentBook;
 
     await api
@@ -71,7 +71,8 @@ class ActionDialog extends React.Component<ActionDialogProps, ActionDialogState>
     this.props.handleActionDialog(false);
   };
   handleCancelLoveBook = async () => {
-    const { username } = await getCurrentUser();
+    const { user } = this.props;
+    const username = user?.id || "unknown";
     const { key } = this.props.currentBook;
     await api
       .post("/api/ebooks/remove-favorite", {

@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
 import { Route, Switch, HashRouter } from "react-router-dom";
+import AuthContainer from "../components/auth/AuthContainer";
 import HtmlReader from "../pages/htmlReader";
 import PDFReader from "../pages/pdfReader";
 import _Redirect from "../pages/redirect";
 import i18n from "../i18n";
 import StorageUtil from "../utils/serviceUtils/storageUtil";
 import { routes } from "./routes";
+import { AuthGuard } from "../components/auth/AuthGuard";
 
 const Router = () => {
   useEffect(() => {
@@ -105,9 +107,15 @@ const Router = () => {
   return (
     <HashRouter>
       <Switch>
+        {/* Protected routes - require authentication */}
         {routes.map((ele) => (
-          <Route render={() => <ele.component />} key={ele.path} path={`${ele.path}`} />
+          <AuthGuard component={ele.component} key={ele.path} path={`${ele.path}`} fallbackPath="/" />
         ))}
+
+        {/* Public routes - no authentication required */}
+        <Route path="/login" render={() => <AuthContainer initialView="login" />} />
+        <Route path="/register" render={() => <AuthContainer initialView="signup" />} />
+        <Route path="/forgot-password" render={() => <AuthContainer initialView="forgot" />} />
         <Route component={HtmlReader} path="/epub" />
         <Route component={HtmlReader} path="/mobi" />
         <Route component={HtmlReader} path="/cbr" />

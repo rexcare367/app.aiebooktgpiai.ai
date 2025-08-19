@@ -6,7 +6,7 @@
 }
 
 .book-list-container-parent {
-  @apply relative h-full rounded-xl m-2.5;
+  @apply relative h-full rounded-xl;
 }
 
 .book-list-header {
@@ -335,4 +335,64 @@
   .pagination-body {
     width: 100%;
   }
+}
+
+.filter-dropdowns {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-button {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #495057;
+  min-width: 120px;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dropdown-button:hover {
+  background-color: #e9ecef;
+}
+
+.dropdown-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  min-width: 200px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  z-index: 1000;
+  margin-top: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item input[type="checkbox"] {
+  margin-right: 0.5rem;
 }

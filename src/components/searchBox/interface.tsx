@@ -21,5 +21,6 @@ export interface SearchBoxProps {
   handleSearchKeyword: (keyword: string) => void;
   handleNavSearchState: (state: string) => void;
   handleSearchList: (searchList: any) => void;
-  t: any;
+  t: (text: string) => string;
+  keyword?: string;
 }

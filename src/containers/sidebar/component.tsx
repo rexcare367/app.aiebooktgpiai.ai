@@ -7,7 +7,10 @@ import StorageUtil from "../../utils/serviceUtils/storageUtil";
 import { openExternalUrl } from "../../utils/serviceUtils/urlUtil";
 import ShelfUtil from "../../utils/readUtils/shelfUtil";
 import { Trans } from "react-i18next";
-import { X } from "lucide-react";
+import { X, LogOut, Globe } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
+import i18n from "../../i18n";
+import { langList } from "../../constants/settingList";
 
 class Sidebar extends React.Component<SidebarProps, SidebarState> {
   constructor(props: SidebarProps) {
@@ -84,6 +87,16 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
       this.props.handleMode("shelf");
     });
   };
+
+  handleSignOut = async () => {
+    try {
+      const { signOut } = useAuth();
+      await signOut();
+    } catch (error) {
+      console.log("error signing out: ", error);
+    }
+  };
+
   render() {
     const renderSideMenu = () => {
       return sideMenu.map((item, index) => {
@@ -128,51 +141,7 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
         );
       });
     };
-    const renderSideShelf = (shelfList: any, shelfType: string) => {
-      return shelfList.map((item, index) => {
-        const shelf = `${shelfType}-${item}`;
-        return (
-          <li
-            key={item}
-            className={this.props.shelf === shelf ? "active side-menu-item" : "side-menu-item"}
-            id={`sidebar-${index}`}
-            onClick={() => {
-              this.props.handleShelf(shelf);
-              this.props.handleShelfIndex(index);
-              this.props.handleMode("shelf");
-              this.setState({ index: -1 });
-              this.props.history.push("/manager/shelf");
-            }}
-            onMouseEnter={() => {
-              this.handleShelfHover(shelf);
-            }}
-            onMouseLeave={() => {
-              this.handleShelfHover("");
-            }}
-            style={this.props.isCollapsed ? { width: 40, marginLeft: 15 } : {}}
-          >
-            {this.props.shelf === shelf ? <div className="side-menu-selector-container"></div> : null}
-            {this.state.hoverShelf === shelf ? <div className="side-menu-hover-container"></div> : null}
-            <div className={this.props.shelf === shelf ? "side-menu-selector active-selector" : "side-menu-selector "}>
-              <div className="side-menu-icon" style={this.props.isCollapsed ? {} : { marginLeft: "38px" }}>
-                <span
-                  className={
-                    this.props.shelf === shelf
-                      ? `icon-bookshelf-line  active-icon sidebar-shelf-icon`
-                      : `icon-bookshelf-line sidebar-shelf-icon`
-                  }
-                  style={this.props.isCollapsed ? { position: "relative", marginLeft: "-8px" } : {}}
-                ></span>
-              </div>
 
-              <span style={this.props.isCollapsed ? { display: "none", width: "70%" } : { width: "60%" }}>
-                {this.props.t(item)}
-              </span>
-            </div>
-          </li>
-        );
-      });
-    };
     return (
       <>
         <div
@@ -215,53 +184,40 @@ class Sidebar extends React.Component<SidebarProps, SidebarState> {
             className="side-menu-container-parent w-[210px] h-[calc(100%-100px)] overflow-x-hidden overflow-y-scroll relative top-[30px] "
             style={this.state.isCollapsed ? { width: "70px" } : {}}
           >
-            <ul className="side-menu-container">{renderSideMenu()}</ul>
-            <div
-              className="side-shelf-title-container"
-              style={
-                this.state.isCollapsed ? { display: "none" } : this.state.isCollpaseShelf ? {} : { border: "none" }
-              }
-            >
-              <div className="side-shelf-title">
-                <Trans>Shelf</Trans>
-              </div>
-              <span
-                className="icon-dropdown side-shelf-title-icon"
-                onClick={() => {
-                  this.setState({
-                    isCollpaseShelf: !this.state.isCollpaseShelf,
-                  });
-                }}
-                style={this.state.isCollpaseShelf ? { transform: "rotate(-90deg)" } : {}}
-              ></span>
-            </div>
+            <div className="sidebar-menu">{renderSideMenu()}</div>
 
-            {!this.state.isCollpaseShelf && (
-              <ul className="side-shelf-container">{renderSideShelf(this.shelfList, "genres")}</ul>
-            )}
-            <div
-              className="side-shelf-title-container"
-              style={
-                this.state.isCollapsed ? { display: "none" } : this.state.isCollpaseLanguages ? {} : { border: "none" }
-              }
-            >
-              <div className="side-shelf-title">
-                <Trans>Languages</Trans>
+            {/* Language Selector */}
+            <div className="sidebar-footer">
+              <div className="mb-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Globe className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium text-gray-700">{this.props.t("Language")}</span>
+                </div>
+                <select
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-white"
+                  value={StorageUtil.getReaderConfig("lang")}
+                  onChange={(e) => {
+                    i18n.changeLanguage(e.target.value);
+                    StorageUtil.setReaderConfig("lang", e.target.value);
+                    window.location.reload();
+                  }}
+                >
+                  {langList.map((item) => (
+                    <option key={item.value} value={item.value}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <span
-                className="icon-dropdown side-shelf-title-icon"
-                onClick={() => {
-                  this.setState({
-                    isCollpaseLanguages: !this.state.isCollpaseLanguages,
-                  });
-                }}
-                style={this.state.isCollpaseLanguages ? { transform: "rotate(-90deg)" } : {}}
-              ></span>
-            </div>
 
-            {!this.state.isCollpaseLanguages && (
-              <ul className="side-shelf-container">{renderSideShelf(this.languageList, "lang")}</ul>
-            )}
+              <div
+                className="flex items-center gap-2 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-full font-medium transition-colors duration-200"
+                onClick={this.handleSignOut}
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="text-sm">{this.props.t("Sign Out")}</span>
+              </div>
+            </div>
           </div>
         </div>
       </>

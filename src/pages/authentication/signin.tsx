@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { getCurrentUser, resetPassword, confirmResetPassword } from "@aws-amplify/auth";
 
 export default function AuthPage({ setIsSignin }) {
   const { signIn, completeSignIn, error: authError, isAuthenticated, checkAuthState } = useAuth();
@@ -17,18 +16,11 @@ export default function AuthPage({ setIsSignin }) {
   const [resetError, setResetError] = useState("");
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const currentUser = await getCurrentUser();
-        if (currentUser) {
-          console.log("User is already authenticated");
-        }
-      } catch (error) {
-        console.log("No authenticated user");
-      }
-    };
-
-    checkAuth();
+    // Check if user is already authenticated
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      console.log("User is already authenticated");
+    }
   }, []);
 
   const handleSubmit = async (e) => {
@@ -39,24 +31,12 @@ export default function AuthPage({ setIsSignin }) {
       const result: any = await signIn(email, password);
       console.log("Sign in result:", result);
 
-      if (!result.isSignedIn && result?.nextStep?.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
-        setShowNewPasswordForm(true);
+      if (result.isSignedIn) {
+        console.log("Successfully signed in");
       }
     } catch (error) {
       const err: any = error;
       console.error("Sign in failed:", err);
-      if (err?.name === "UserAlreadyAuthenticatedException") {
-        try {
-          const currentUser = await getCurrentUser();
-          if (currentUser) {
-            await checkAuthState();
-            // navigate('/dashboards/default');
-            return;
-          }
-        } catch (innerError) {
-          console.error("Error checking current user:", innerError);
-        }
-      }
     } finally {
       setLoading(false);
     }
@@ -73,10 +53,7 @@ export default function AuthPage({ setIsSignin }) {
       });
 
       if (result.isSignedIn) {
-        console.log("Successfully changed password and completed sign in");
-        // navigate('/dashboards/default');
-      } else if (result?.nextStep?.signInStep === "COMPLETE_PROFILE") {
-        setShowNewPasswordForm(false);
+        console.log("Successfully completed sign in");
       }
     } catch (err) {
       console.error("Password change failed:", err);
@@ -96,16 +73,10 @@ export default function AuthPage({ setIsSignin }) {
       return;
     }
 
-    try {
-      await resetPassword({ username: email.trim() });
-      setShowForgotPassword(true);
-      setResetError("A reset code has been sent to your registered email address.");
-    } catch (error) {
-      console.error("Failed to initiate password reset:", error);
-      setResetError("Failed to send reset code. Please check your IC number.");
-    } finally {
-      setLoading(false);
-    }
+    // For local auth, we'll just show a message
+    setShowForgotPassword(true);
+    setResetError("Password reset functionality is not available in local mode.");
+    setLoading(false);
   };
 
   const handleResetPassword = async (e) => {
@@ -113,20 +84,10 @@ export default function AuthPage({ setIsSignin }) {
     setLoading(true);
     setResetError("");
 
-    try {
-      await confirmResetPassword({
-        username: email,
-        newPassword: password,
-        confirmationCode: resetCode,
-      });
-      setShowForgotPassword(false);
-      setResetError("Password reset successful. Please sign in with your new password.");
-    } catch (error) {
-      console.error("Failed to reset password:", error);
-      setResetError("Failed to reset password. Please check your code and try again.");
-    } finally {
-      setLoading(false);
-    }
+    // For local auth, we'll just show a message
+    setShowForgotPassword(false);
+    setResetError("Password reset functionality is not available in local mode.");
+    setLoading(false);
   };
 
   // If already authenticated, redirect to dashboard

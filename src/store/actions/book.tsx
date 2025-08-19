@@ -26,3 +26,7 @@ export function handleReadingBook(book: BookModel) {
 export function handleDragItem(key: string) {
   return { type: "HANDLE_DRAG_ITEM", payload: key };
 }
+
+export function searchBooks(keyword: string) {
+  return { type: "SEARCH_BOOKS", payload: keyword };
+}

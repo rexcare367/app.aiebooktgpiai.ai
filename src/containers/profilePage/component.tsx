@@ -13,13 +13,23 @@ class ProfilePage extends React.Component<ProfilePageProps, ProfilePageState> {
   }
 
   render() {
-    const profilePageContent = (
-      <div className="profile-page-container">
-        <ProfileInformationSection />
-        <ReadingProgressSection />
-      </div>
+    return (
+      <Manager>
+        <div className="profile-page-container">
+          <div className="profile-banner">
+            <img src="/assets/banner.jpg" alt="Profile banner" />
+          </div>
+          <div className="profile-split-container">
+            <div className="left-column">
+              <ProfileInformationSection />
+            </div>
+            <div className="right-column">
+              <ReadingProgressSection />
+            </div>
+          </div>
+        </div>
+      </Manager>
     );
-    return <Manager>{profilePageContent}</Manager>;
   }
 }
 

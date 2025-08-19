@@ -1,13 +1,10 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import axios, { AxiosError } from "axios";
 import api from "../../../utils/axios";
 
 import { toast } from "react-hot-toast";
-import { BookOpen, Calendar, Clock, Book } from "lucide-react";
+import { BookOpen, Calendar, Book, Clock } from "lucide-react";
 import "./readingProgress.css";
-import { getCurrentUser } from "aws-amplify/auth";
-import Pagination from "rc-pagination";
-import "rc-pagination/assets/index.css";
 import BookUtil from "../../../utils/fileUtils/bookUtil";
 import StorageUtil from "../../../utils/serviceUtils/storageUtil";
 import { useHistory } from "react-router-dom";
@@ -15,6 +12,7 @@ import { useHistory } from "react-router-dom";
 import { fetchMD5 } from "../../../utils/fileUtils/md5Util";
 import RecordRecent from "../../../utils/readUtils/recordRecent";
 import BookModel from "../../../models/Book";
+import authService from "../../../utils/authService";
 
 declare global {
   interface Window {
@@ -26,16 +24,6 @@ declare global {
 }
 
 // Define interfaces for our data types
-interface BookHistory {
-  score: number;
-  book_id: string;
-  book_title: string;
-  duration: number;
-  percentage: string;
-  started_at: string;
-  created_at: string;
-}
-
 interface iBook {
   id: string;
   thumbnail: string;
@@ -47,10 +35,21 @@ interface iBook {
   file_key: string;
   title: string;
   status: string;
+  created_at?: string;
+}
+
+interface ReadingStatistics {
+  total_read_books_count: number;
+  malay_read_books_count?: number;
+  english_read_books_count?: number;
+  mandarin_read_books_count?: number;
+  total_reading_duration: number;
+  read_books_list: iBook[];
+  last_book_read_timestamp: string | null;
+  language_breakdown: Record<string, number>;
 }
 
 interface ReadingProgressData {
-  history: BookHistory[];
   books: iBook[];
   total: number;
 }
@@ -58,23 +57,17 @@ interface ReadingProgressData {
 const ReadingProgressSection = () => {
   const history = useHistory();
   const [readingProgress, setReadingProgress] = useState<ReadingProgressData>({
-    history: [],
     books: [],
     total: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [pageSize, setPageSize] = useState(10);
-  const [consolidatedBooks, setConsolidatedBooks] = useState<
-    Array<{
-      latestHistory: BookHistory;
-      readCount: number;
-      totalDuration: number;
-      firstRead: string;
-      lastRead: string;
-    }>
-  >([]);
+  const [pageSize, setPageSize] = useState(5);
+  const [search, setSearch] = useState("");
+  const [orderBy, setOrderBy] = useState<"title">("title");
+  const [orderDir, setOrderDir] = useState<"asc" | "desc">("asc");
+  const [stats, setStats] = useState<ReadingStatistics | null>(null);
 
   // Add new loading state
   const [isLoadingBook, setIsLoadingBook] = useState(false);
@@ -98,131 +91,100 @@ const ReadingProgressSection = () => {
     });
   }
 
-  const consolidateBookHistory = (history: BookHistory[]) => {
-    const bookMap = new Map<
-      string,
-      {
-        latestHistory: BookHistory;
-        readCount: number;
-        totalDuration: number;
-        firstRead: string;
-        lastRead: string;
-      }
-    >();
-
-    history.forEach((item) => {
-      const bookKey = item.book_id;
-      const existing = bookMap.get(bookKey);
-
-      if (existing) {
-        if (new Date(item.started_at) > new Date(existing.latestHistory.started_at)) {
-          existing.latestHistory = item;
-        }
-        existing.readCount += 1;
-        existing.totalDuration += item.duration;
-        existing.firstRead =
-          new Date(item.started_at) < new Date(existing.firstRead) ? item.started_at : existing.firstRead;
-        existing.lastRead =
-          new Date(item.started_at) > new Date(existing.lastRead) ? item.started_at : existing.lastRead;
-      } else {
-        bookMap.set(bookKey, {
-          latestHistory: item,
-          readCount: 1,
-          totalDuration: item.duration,
-          firstRead: item.started_at,
-          lastRead: item.started_at,
-        });
-      }
-    });
-
-    return Array.from(bookMap.values());
-  };
+  // Consolidation no longer needed with new statistics endpoint
 
   const handleGetReadingProgress = useCallback(async () => {
     try {
-      const { username } = await getCurrentUser();
+      const userId = authService.getUserData()?.id || "";
+
       setIsLoading(true);
 
-      // Fetch all reading history first (using a large limit)
-      const response = await api.get(`/api/ebooks/reading_progress/${username}?page=1&limit=1000`);
+      const response = await api.get(`/api/users/${userId}/statistics`);
 
-      console.log("API Response:", response.data); // Debug log
-
-      if (response.data.data) {
+      if (response.data?.data?.reading_statistics) {
+        const readingStats: ReadingStatistics = response.data.data.reading_statistics;
         // Ensure books have source_url
-        const processedData = {
-          ...response.data.data,
-          books: response.data.data.books.map((book) => ({
-            ...book,
-            source_url: book.url, // Use url as source_url if source_url is missing
-          })),
-        };
+        const books: iBook[] = (readingStats.read_books_list || []).map((book: any) => ({
+          ...book,
+          source_url: book.url,
+        }));
 
-        setReadingProgress(processedData);
-        // Consolidate the full history
-        const consolidated = consolidateBookHistory(response.data.data.history);
-        setConsolidatedBooks(consolidated);
+        setStats({
+          ...readingStats,
+          read_books_list: books,
+        });
+
+        setReadingProgress({
+          books,
+          total: readingStats.total_read_books_count || books.length,
+        });
       }
     } catch (error) {
       const err = error as AxiosError;
-      console.error("Error fetching reading progress:", err); // Debug log
-      toast.error(err.message || "An error occurred while fetching reading progress");
+      console.error("Error fetching user statistics:", err);
+      toast.error(err.message || "An error occurred while fetching statistics");
     } finally {
       setIsLoading(false);
     }
   }, []); // Empty dependency array since it doesn't use any props or state
 
-  // Get paginated books for current view
-  const getPaginatedBooks = () => {
+  // Filter/sort/paginate
+  const filteredSortedBooks = useMemo(() => {
+    let list = [...readingProgress.books];
+    if (search.trim()) {
+      const s = search.toLowerCase();
+      list = list.filter((b) => b.title.toLowerCase().includes(s));
+    }
+    list.sort((a, b) => {
+      const av = a.title.toLowerCase();
+      const bv = b.title.toLowerCase();
+      if (av < bv) return orderDir === "asc" ? -1 : 1;
+      if (av > bv) return orderDir === "asc" ? 1 : -1;
+      return 0;
+    });
+    return list;
+  }, [readingProgress.books, search, orderDir]);
+
+  const totalCount = filteredSortedBooks.length;
+  const paginatedBooks = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    return consolidatedBooks.slice(startIndex, endIndex);
-  };
+    return filteredSortedBooks.slice(startIndex, endIndex);
+  }, [filteredSortedBooks, currentPage, pageSize]);
 
-  const handleContinueReading = async (historyItem: BookHistory) => {
-    // Find the matching book in the books array
-    const book = readingProgress.books.find((b) => b.id === historyItem.book_id);
-    if (!book) {
+  const handleContinueReadingByBook = async (book: iBook) => {
+    if (!book || !book.url) {
       toast.error("Book information not found");
-      return;
-    }
-
-    if (!book.url) {
-      toast.error("Book source URL not found");
       return;
     }
 
     setIsLoadingBook(true);
     try {
-      // Replace underscores with plus signs in source URL
-      const sourceUrl = book.source_url.replace(/_/g, "+");
+      const sourceUrl = (book.source_url || book.url).replace(/_/g, "+");
 
-      // Fetch book content
       const response = await axios.get<ArrayBuffer>(sourceUrl, { responseType: "arraybuffer" });
       const arrayBuffer = response.data;
       const { type, format } = getFileFormat(book.title);
       const blob = new Blob([new Uint8Array(arrayBuffer)], { type });
       const file = new File([blob], `${book.title}`, { type });
 
-      // Calculate MD5 and process the book
       const md5 = await fetchMD5(file);
       if (!md5) {
         throw new Error("Failed to calculate MD5");
       }
 
-      // Generate book model
       const key = book.id;
       const result = await BookUtil.generateBook(
         book.title,
-        format, // Assuming PDF format, adjust if needed
+        format,
         md5,
         file.size,
-        "", // Empty string for path since we're using source_url
+        "",
         arrayBuffer,
         book.file_key,
         book?.thumbnail,
         book.thumb_url,
-        sourceUrl, // Use the processed URL
+        sourceUrl,
         key
       );
 
@@ -230,17 +192,14 @@ const ReadingProgressSection = () => {
         throw new Error("Failed to get book metadata");
       }
 
-      // Add book to storage
       if (StorageUtil.getReaderConfig("isImportPath") !== "yes") {
         await BookUtil.addBook(key, arrayBuffer);
       }
 
-      // Update local storage and recent books
       const bookModel = result as BookModel;
       bookModel.key = key;
       RecordRecent.setRecent(bookModel.key);
 
-      // Save to localforage
       const existingBooks = (await window.localforage.getItem<BookModel[]>("books")) || [];
       const bookIndex = existingBooks.findIndex((b) => b.file_key === book.file_key);
       if (bookIndex !== -1) {
@@ -250,7 +209,6 @@ const ReadingProgressSection = () => {
       }
       await window.localforage.setItem("books", existingBooks);
 
-      // Redirect to the book reader
       BookUtil.RedirectBook(bookModel, (key) => key, history);
     } catch (error) {
       console.error("Error loading book:", error);
@@ -268,9 +226,7 @@ const ReadingProgressSection = () => {
     return { format, type };
   };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+  // Removed unused handlePageChange
 
   useEffect(() => {
     handleGetReadingProgress();
@@ -285,7 +241,7 @@ const ReadingProgressSection = () => {
     );
   }
 
-  if (!consolidatedBooks.length) {
+  if (!readingProgress.books.length) {
     return (
       <div className="empty-state">
         <BookOpen className="empty-icon" />
@@ -295,74 +251,187 @@ const ReadingProgressSection = () => {
     );
   }
 
-  const paginatedBooks = getPaginatedBooks();
-
   return (
     <div className="reading-container">
-      <h1 className="text-2xl font-bold">My Reading Adventures! 📚</h1>
+      {stats && (
+        <div className="analytics-panel">
+          <div className="stats-grid">
+            <div className="stat-card mint">
+              <div className="icon-box">
+                <BookOpen />
+              </div>
+              <div className="stat-title">Total Books Read</div>
+              <div className="stat-value">{stats.total_read_books_count}</div>
+              <div className="stat-icon-large">
+                <BookOpen />
+              </div>
+            </div>
+            <div className="stat-card lilac">
+              <div className="icon-box">
+                <Clock />
+              </div>
+              <div className="stat-title">Total Reading Time</div>
+              <div className="stat-value">{formatDuration(stats.total_reading_duration)}</div>
+              <div className="stat-icon-large">
+                <Clock />
+              </div>
+            </div>
+            <div className="stat-card blue">
+              <div className="icon-box">
+                <Calendar />
+              </div>
+              <div className="stat-title">Last Book Read</div>
+              <div className="stat-value">
+                {stats.last_book_read_timestamp ? formatDate(stats.last_book_read_timestamp) : "-"}
+              </div>
+              <div className="stat-icon-large">
+                <Calendar />
+              </div>
+            </div>
+          </div>
+
+          {/* <div className="summary-section">
+            <div className="summary-content">
+              <div className="legend">
+                {Object.entries(stats.language_breakdown || {}).map(([lang, count], idx) => {
+                  const colors = ["#8b5cf6", "#10b981", "#60a5fa", "#f59e0b", "#ef4444", "#14b8a6", "#f472b6"];
+                  return (
+                    <div key={lang} className="legend-item">
+                      <div className="legend-left">
+                        <span className="legend-dot" style={{ background: colors[idx % colors.length] }}></span>
+                        <span>{lang}</span>
+                      </div>
+                      <div style={{ color: "var(--text-color)" }}>{count}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div> */}
+        </div>
+      )}
+      <div
+        className="reading-controls mt-4"
+        style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}
+      >
+        <input
+          placeholder="Search by title"
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="form-input"
+          style={{ flex: "1 1 220px" }}
+        />
+        <select
+          value={orderBy}
+          onChange={(e) => setOrderBy(e.target.value as any)}
+          className="form-input"
+          style={{ width: 200 }}
+        >
+          <option value="title">Order by Title</option>
+        </select>
+        <select
+          value={orderDir}
+          onChange={(e) => setOrderDir(e.target.value as any)}
+          className="form-input"
+          style={{ width: 134 }}
+        >
+          <option value="desc">Desc</option>
+          <option value="asc">Asc</option>
+        </select>
+      </div>
       {isLoadingBook && (
         <div className="loading-overlay">
           <div className="loading-spinner">Loading book...</div>
         </div>
       )}
-      <div className="flex flex-col gap-4 mt-6">
-        {paginatedBooks.map((item, index) => (
+      <div className="flex flex-col gap-2 mt-4">
+        {paginatedBooks.map((book, index) => (
           <div
             key={index}
             className="book-card"
-            onClick={() => handleContinueReading(item.latestHistory)}
+            onClick={() => handleContinueReadingByBook(book)}
             style={{ cursor: "pointer" }}
           >
             <div className="card-content">
               <div className="flex flex-col gap-2">
-                <h2 className="font-bold text-lg">{formatBookTitle(item.latestHistory.book_title)}</h2>
+                <h2 className="font-bold text-lg">{formatBookTitle(book.title)}</h2>
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <Book />
-                    <span>
-                      Read {item.readCount} time{item.readCount > 1 ? "s" : ""}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock />
-                    <span>{formatDuration(item.totalDuration)}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Calendar />
-                    <span>
-                      {item.readCount > 1
-                        ? `${formatDate(item.firstRead)} - ${formatDate(item.lastRead)}`
-                        : formatDate(item.lastRead)}
-                    </span>
-                  </div>
-                </div>
-                <div className="progress-section">
-                  <div className="flex items-center gap-2">
-                    <span>{Math.round(parseFloat(item.latestHistory.percentage) * 100)}%</span>
-                    <div
-                      className="progress-fill w-full h-2"
-                      style={{
-                        width: `${parseFloat(item.latestHistory.percentage) * 100}%`,
-                      }}
-                    />
-                  </div>
+                  {book.language && (
+                    <div className="flex items-center gap-1">
+                      <Book />
+                      <span>{book.language}</span>
+                    </div>
+                  )}
+                  {book.created_at && (
+                    <div className="flex items-center gap-1">
+                      <Calendar />
+                      <span>{formatDate(book.created_at)}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         ))}
       </div>
-      <div className="pagination-container">
-        <span>
-          Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, consolidatedBooks.length)} of{" "}
-          {consolidatedBooks.length} books
-        </span>
-        <Pagination
-          current={currentPage}
-          total={consolidatedBooks.length}
-          pageSize={pageSize}
-          onChange={handlePageChange}
-        />
+      <div
+        className="pagination-container"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "0.75rem",
+          marginTop: "1rem",
+        }}
+      >
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <span>Total:</span>
+          <strong>{totalCount}</strong>
+          <span>Page size:</span>
+          <select
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+            className="form-input"
+            style={{ width: 90 }}
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+          </select>
+        </div>
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <button
+            className="page-button"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
+            Prev
+          </button>
+          <span>Page</span>
+          <input
+            className="form-input"
+            style={{ width: 70, textAlign: "center" }}
+            value={currentPage}
+            onChange={(e) => {
+              const v = Math.max(1, Math.min(Math.ceil(totalCount / pageSize) || 1, Number(e.target.value) || 1));
+              setCurrentPage(v);
+            }}
+          />
+          <span>of {Math.max(1, Math.ceil(totalCount / pageSize) || 1)}</span>
+          <button
+            className="page-button"
+            onClick={() => setCurrentPage((p) => Math.min(Math.ceil(totalCount / pageSize) || 1, p + 1))}
+            disabled={currentPage >= (Math.ceil(totalCount / pageSize) || 1)}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );

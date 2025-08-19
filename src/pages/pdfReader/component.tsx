@@ -20,7 +20,7 @@ import { Star } from "lucide-react";
 import "./book-quiz-modal.css";
 import Loading from "../../components/loading/component";
 import api from "../../utils/axios";
-import { getCurrentUser } from "aws-amplify/auth";
+import { useCurrentUserId } from "../../utils/authUtils";
 import EbookChatbotWidget from "../../components/dialogs/ebookChatbotDialog/ebookChatbotWidget";
 
 function RenderQuizModal({ showModal, handleQuizModal, book, handleScore }) {
@@ -28,9 +28,10 @@ function RenderQuizModal({ showModal, handleQuizModal, book, handleScore }) {
   const [loading, setLoading] = useState(false);
   const [score, setScore] = useState("0");
   const [step, setStep] = useState<"question" | "result">("question");
+  const userId = useCurrentUserId();
 
   const generateQuiz = useCallback(async () => {
-    const { username } = await getCurrentUser();
+    const username = userId;
     await api
       .post(`/api/ebooks/generate-quiz`, {
         book_id: book.key,
@@ -310,7 +311,8 @@ class Viewer extends React.Component<ViewerProps, ViewerState> {
       ) {
         let percentage = RecordLocation.getPDFLocation(book.md5.split("-")[0]).page / book.page + "";
 
-        const { username } = await getCurrentUser();
+        // Get user ID from Clerk - this will need to be passed down from parent component
+        const username = this.props.userId || "unknown";
 
         api.post(`/api/ebooks/reading_progress/add`, {
           user_ic: username,

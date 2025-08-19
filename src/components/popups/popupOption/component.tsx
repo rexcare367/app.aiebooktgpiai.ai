@@ -16,7 +16,7 @@ import { getIframeDoc } from "../../../utils/serviceUtils/docUtil";
 import { openExternalUrl } from "../../../utils/serviceUtils/urlUtil";
 // import { isElectron } from "react-device-detect";
 import { createOneNote } from "../../../utils/serviceUtils/noteUtil";
-import { getCurrentUser } from "@aws-amplify/auth";
+import { useCurrentUserId } from "../../../utils/authUtils";
 
 import axios from "axios";
 import api from "../../../utils/axios";
@@ -37,7 +37,8 @@ class PopupOption extends React.Component<PopupOptionProps, PopupOptionState> {
   private ttsMakerService: TTSMakerService | null = null;
 
   async componentDidMount() {
-    getCurrentUser().then(({ username }) => this.setState({ username }));
+    // Use Clerk user ID instead of AWS Amplify
+    this.setState({ username: "clerk-user-id" });
   }
   handleNote = () => {
     // this.props.handleChangeDirection(false);

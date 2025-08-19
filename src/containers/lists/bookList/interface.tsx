@@ -29,6 +29,7 @@ export interface BookListProps extends RouteComponentProps<any> {
   handleReadingBook: (book: BookModel) => void;
   handleLoadingBook: (isLoadingBook: boolean) => void;
   t: (title: string) => string;
+  history: any;
 }
 export interface BookListState {
   favoriteBooks: string[];
@@ -38,9 +39,7 @@ export interface BookListState {
   isOpenFile: boolean;
   books: BookModel[];
   width: number;
-  currentPage: number;
-  pageSize: number;
   totalItems: number;
-  orderBy: string;
-  order: string;
+  isShelfDropdownOpen: boolean;
+  isLanguageDropdownOpen: boolean;
 }

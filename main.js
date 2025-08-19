@@ -1,13 +1,4 @@
-const {
-  app,
-  BrowserWindow,
-  BrowserView,
-  Menu,
-  ipcMain,
-  dialog,
-  powerSaveBlocker,
-  nativeTheme,
-} = require("electron");
+const { app, BrowserWindow, BrowserView, Menu, ipcMain, dialog, powerSaveBlocker, nativeTheme } = require("electron");
 const path = require("path");
 const isDev = require("electron-is-dev");
 const Store = require("electron-store");
@@ -17,7 +8,7 @@ const configDir = app.getPath("userData");
 const dirPath = path.join(configDir, "uploads");
 let mainWin;
 let readerWindow;
-let mainView
+let mainView;
 const singleInstance = app.requestSingleInstanceLock();
 var filePath = null;
 if (process.platform != "darwin" && process.argv.length >= 2) {
@@ -26,7 +17,7 @@ if (process.platform != "darwin" && process.argv.length >= 2) {
 let options = {
   width: 1050,
   height: 660,
-  backgroundColor: '#fff',
+  backgroundColor: "#fff",
   webPreferences: {
     webSecurity: false,
     nodeIntegration: true,
@@ -37,9 +28,9 @@ let options = {
     enableRemoteModule: true,
   },
 };
-const os = require('os');
+const os = require("os");
 
-if (os.platform() === 'linux') {
+if (os.platform() === "linux") {
   options = Object.assign({}, options, {
     icon: path.join(__dirname, "./build/assets/icon.png"),
   });
@@ -48,11 +39,7 @@ if (os.platform() === 'linux') {
 if (!singleInstance) {
   app.quit();
   if (filePath) {
-    fs.writeFileSync(
-      path.join(dirPath, "log.json"),
-      JSON.stringify({ filePath }),
-      "utf-8"
-    );
+    fs.writeFileSync(path.join(dirPath, "log.json"), JSON.stringify({ filePath }), "utf-8");
   }
 } else {
   app.on("second-instance", (event, argv, workingDir) => {
@@ -68,9 +55,7 @@ const createMainWin = () => {
   if (!isDev) {
     Menu.setApplicationMenu(null);
   }
-  const urlLocation = isDev
-    ? "http://localhost:3000"
-    : `file://${path.join(__dirname, "./build/index.html")}`;
+  const urlLocation = isDev ? "http://localhost:3000" : `file://${path.join(__dirname, "./build/index.html")}`;
   mainWin.loadURL(urlLocation);
 
   mainWin.on("close", () => {
@@ -78,20 +63,20 @@ const createMainWin = () => {
   });
   mainWin.on("resize", () => {
     if (mainView) {
-      let [width, height] = mainWin.getSize()
-      mainView.setBounds({ x: 0, y: 0, width: width, height: height })
+      let [width, height] = mainWin.getSize();
+      mainView.setBounds({ x: 0, y: 0, width: width, height: height });
     }
   });
   mainWin.on("maximize", () => {
     if (mainView) {
-      let [width, height] = mainWin.getSize()
-      mainView.setBounds({ x: 0, y: 0, width: width, height: height })
+      let [width, height] = mainWin.getSize();
+      mainView.setBounds({ x: 0, y: 0, width: width, height: height });
     }
   });
   mainWin.on("unmaximize", () => {
     if (mainView) {
-      let [width, height] = mainWin.getSize()
-      mainView.setBounds({ x: 0, y: 0, width: width, height: height })
+      let [width, height] = mainWin.getSize();
+      mainView.setBounds({ x: 0, y: 0, width: width, height: height });
     }
   });
 
@@ -99,7 +84,7 @@ const createMainWin = () => {
     let { url, isMergeWord, isAutoFullscreen, isPreventSleep } = config;
     options.webPreferences.nodeIntegrationInSubFrames = true;
     if (isMergeWord) {
-      delete options.backgroundColor
+      delete options.backgroundColor;
     }
     store.set({
       url,
@@ -148,16 +133,14 @@ const createMainWin = () => {
       // readerWindow = null;
     });
 
-
     event.returnValue = "success";
   });
   ipcMain.handle("generate-tts", async (event, voiceConfig) => {
     let { text, speed, plugin, config } = voiceConfig;
-    let voiceFunc = plugin.script
+    let voiceFunc = plugin.script;
     // eslint-disable-next-line no-eval
     eval(voiceFunc);
     return global.getAudioPath(text, speed, dirPath, config);
-
   });
   ipcMain.handle("ftp-upload", async (event, config) => {
     let { url, username, password, fileName, dir, ssl } = config;
@@ -166,15 +149,11 @@ const createMainWin = () => {
     async function uploadFile() {
       return new Promise((resolve, reject) => {
         c.on("ready", function () {
-          c.put(
-            path.join(dirPath, fileName),
-            dir + "/" + fileName,
-            function (err) {
-              if (err) reject(err);
-              c.end();
-              resolve(true);
-            }
-          );
+          c.put(path.join(dirPath, fileName), dir + "/" + fileName, function (err) {
+            if (err) reject(err);
+            c.end();
+            resolve(true);
+          });
         });
         c.connect({
           host: url,
@@ -352,95 +331,7 @@ const createMainWin = () => {
       return false;
     }
   });
-  ipcMain.handle("s3-upload", async (event, config) => {
-    const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
-    let {
-      endpoint,
-      region,
-      bucketName,
-      accessKeyId,
-      secretAccessKey,
-      fileName,
-    } = config;
-    const s3 = new S3Client({
-      endpoint,
-      region,
-      credentials: {
-        accessKeyId,
-        secretAccessKey,
-      },
-    });
-    try {
-      await s3.send(
-        new PutObjectCommand({
-          Bucket: bucketName,
-          Key: fileName,
-          Body: fs.createReadStream(path.join(dirPath, fileName)),
-        })
-      );
-      return true;
-    } catch (err) {
-      console.log("Error: ", err);
-      return false;
-    }
-  });
-  ipcMain.handle("s3-download", async (event, config) => {
-    let {
-      endpoint,
-      region,
-      bucketName,
-      accessKeyId,
-      secretAccessKey,
-      fileName,
-    } = config;
-    const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
-    function getObject(s3, bucket, key, writable) {
-      return new Promise(async (resolve, reject) => {
-        const getObjectCommandOutput = await s3.send(
-          new GetObjectCommand({
-            Bucket: bucket,
-            Key: key,
-          })
-        );
-        if (getObjectCommandOutput.Body) {
-          getObjectCommandOutput.Body.pipe(writable);
-          writable.on("finish", (err) => {
-            if (err) reject(false);
-            resolve(true);
-          });
-        } else {
-          reject(false);
-        }
-      });
-    }
-    async function downloadFile() {
-      return new Promise((resolve, reject) => {
-        const s3 = new S3Client({
-          region,
-          endpoint,
-          credentials: {
-            accessKeyId,
-            secretAccessKey,
-          },
-        });
-        let writeStream = fs.createWriteStream(path.join(dirPath, fileName));
-        getObject(s3, bucketName, fileName, writeStream)
-          .then((data) => {
-            resolve(true);
-          })
-          .catch((err) => {
-            console.error(err);
-            resolve(false);
-          });
-      });
-    }
-    try {
-      return await downloadFile();
-    } catch (err) {
-      console.error(err);
-      return false;
-    }
-  });
+
   ipcMain.handle("clear-tts", async (event, config) => {
     if (!fs.existsSync(path.join(dirPath, "tts"))) {
       return "pong";
@@ -507,28 +398,28 @@ const createMainWin = () => {
   });
   ipcMain.handle("new-tab", (event, config) => {
     if (mainWin) {
-      mainView = new BrowserView(options)
-      mainWin.setBrowserView(mainView)
-      let [width, height] = mainWin.getSize()
-      mainView.setBounds({ x: 0, y: 0, width: width, height: height })
+      mainView = new BrowserView(options);
+      mainWin.setBrowserView(mainView);
+      let [width, height] = mainWin.getSize();
+      mainView.setBounds({ x: 0, y: 0, width: width, height: height });
       console.log(config.url);
-      mainView.webContents.loadURL(config.url)
+      mainView.webContents.loadURL(config.url);
     }
   });
   ipcMain.handle("reload-tab", (event, config) => {
     if (mainWin && mainView) {
-      mainView.webContents.reload()
+      mainView.webContents.reload();
     }
   });
   ipcMain.handle("adjust-tab-size", (event, config) => {
     if (mainWin && mainView) {
-      let [width, height] = mainWin.getSize()
-      mainView.setBounds({ x: 0, y: 0, width: width, height: height })
+      let [width, height] = mainWin.getSize();
+      mainView.setBounds({ x: 0, y: 0, width: width, height: height });
     }
   });
   ipcMain.handle("exit-tab", (event, message) => {
     if (mainWin && mainView) {
-      mainWin.setBrowserView(null)
+      mainWin.setBrowserView(null);
     }
   });
   ipcMain.handle("enter-tab-fullscreen", () => {
@@ -564,7 +455,7 @@ const createMainWin = () => {
     if (readerWindow) {
       readerWindow.close();
       if (store.get("isMergeWord") === "yes") {
-        delete options.backgroundColor
+        delete options.backgroundColor;
       }
       Object.assign(options, {
         width: parseInt(store.get("windowWidth") || 1050),
@@ -577,10 +468,7 @@ const createMainWin = () => {
       });
       options.webPreferences.nodeIntegrationInSubFrames = true;
 
-      store.set(
-        "isMergeWord",
-        store.get("isMergeWord") !== "yes" ? "yes" : "no"
-      );
+      store.set("isMergeWord", store.get("isMergeWord") !== "yes" ? "yes" : "no");
       readerWindow = new BrowserWindow(options);
       readerWindow.loadURL(store.get("url"));
       readerWindow.on("close", (event) => {
@@ -613,9 +501,7 @@ const createMainWin = () => {
   });
   ipcMain.on("get-file-data", function (event) {
     if (fs.existsSync(path.join(dirPath, "log.json"))) {
-      const _data = JSON.parse(
-        fs.readFileSync(path.join(dirPath, "log.json"), "utf-8") || "{}"
-      );
+      const _data = JSON.parse(fs.readFileSync(path.join(dirPath, "log.json"), "utf-8") || "{}");
       if (_data && _data.filePath) {
         filePath = _data.filePath;
         fs.writeFileSync(path.join(dirPath, "log.json"), "", "utf-8");

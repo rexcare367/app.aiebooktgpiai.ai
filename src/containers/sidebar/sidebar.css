@@ -154,3 +154,46 @@
     display: none;
   }
 }
+
+/* Sidebar Footer */
+.sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-color);
+}
+
+/* Sign Out Button */
+.sign-out-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--error-color);
+  font-size: 14px;
+}
+
+.sign-out-button:hover {
+  background: var(--error-bg-color);
+}
+
+.sign-out-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Collapsed State */
+.sidebar.collapsed .sign-out-button span {
+  display: none;
+}
+
+.sidebar.collapsed .sign-out-button {
+  padding: 8px;
+  justify-content: center;
+}

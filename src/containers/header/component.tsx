@@ -4,15 +4,11 @@ import SearchBox from "../../components/searchBox";
 import ChatbotDialog from "../../components/dialogs/chatbotDialog";
 import { HeaderProps, HeaderState } from "./interface";
 import StorageUtil from "../../utils/serviceUtils/storageUtil";
-// import UpdateInfo from "../../components/dialogs/updateDialog";
 import UserPanelDialog from "../../components/dialogs/userPanelDialog";
 import { restore } from "../../utils/syncUtils/restoreUtil";
 import { backup } from "../../utils/syncUtils/backupUtil";
 import { syncData } from "../../utils/syncUtils/common";
-import toast from "react-hot-toast";
-// import { checkStableUpdate } from "../../utils/commonUtil";
-// import packageInfo from "../../../package.json";
-import { langList } from "../../constants/settingList";
+import { toast } from "react-hot-toast";
 import i18n from "../../i18n";
 import { openExternalUrl } from "../../utils/serviceUtils/urlUtil";
 import { AlignJustify } from "lucide-react";
@@ -157,42 +153,14 @@ class Header extends React.Component<HeaderProps, HeaderState> {
               <AlignJustify className="w-4" />
             </div>
           )}
-          <div className="relative min-w-[120px] md:min-w-[200px] max-w-[400px]  flex">
+          <div className="relative min-w-[120px] md:min-w-[200px] max-w-[400px] flex">
             <SearchBox />
           </div>
         </div>
 
-        <div className="header-controls flex md:flex-row flex-col-reverse items-end">
-          <div className="right-controls">
-            <div className="language-selector rounded-md">
-              <span className="current-language">
-                {this.state.language === "en" && "English"}
-                {this.state.language === "myML" && "Malay"}
-                {this.state.language === "myMN" && "中文"}
-                {this.state.language === "myTM" && "தமிழ்"}
-              </span>
-              <div className="language-menu">
-                {langList.map((item) => (
-                  <div
-                    key={item.value}
-                    className={`language-option ${this.state.language === item.value ? "active" : ""}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      this.changeLanguage(item.value);
-                    }}
-                  >
-                    {item.value === "en" && "English"}
-                    {item.value === "myML" && "Malay"}
-                    {item.value === "myMN" && "中文"}
-                    {item.value === "myTM" && "தமிழ்"}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <UserPanelDialog />
-          </div>
+        <div className="right-controls">
+          <UserPanelDialog />
         </div>
-        {/* <UpdateInfo /> */}
         <ChatbotDialog />
       </div>
     );

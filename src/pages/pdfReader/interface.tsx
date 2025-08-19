@@ -8,6 +8,7 @@ export interface ViewerProps {
   isOpenMenu: boolean;
   menuMode: string;
   notes: Note[];
+  userId?: string;
   handleReadingState: (isReading: boolean) => void;
   handleReadingBook: (book: BookModel) => void;
   t: (title: string) => string;
@@ -32,5 +33,5 @@ export interface ViewerState {
   duration: number;
   showModal: boolean;
   score: string;
-  isChatCollapsed: boolean; 
+  isChatCollapsed: boolean;
 }

@@ -2,35 +2,33 @@ import React, { useState } from "react";
 import { Trans } from "react-i18next";
 import { withRouter, useHistory } from "react-router-dom";
 import "./userPanelDialog.css";
-import { useAuth } from "../../../hooks/useAuth";
-import { User2Icon, IdCard, LogOutIcon, Settings } from "lucide-react";
+import { useAuthContext } from "../../auth/AuthProvider";
+import { User2Icon, IdCard, Settings } from "lucide-react";
 
 const UserPanelDialog = ({ handleSetting, isNewWarning }) => {
   const [isShow, setIsShow] = useState(false);
 
-  const { signOut, user } = useAuth();
+  const { user, logout } = useAuthContext();
   const history = useHistory();
 
   const handleShow = () => {
     setIsShow((prevState) => !prevState);
-  };
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-    } catch (error) {
-      console.log("error signing out: ", error);
-    }
   };
 
   const handleJumpToProfile = () => {
     history.push(`/manager/profile`);
   };
 
+  const handleLogout = () => {
+    logout();
+    setIsShow(false);
+  };
+
   return (
     <div className="user-panel-container">
       <div className="user-panel-header" onClick={() => handleShow()}>
         <User2Icon className="md:w-6 w-4" />
-        <span>{user?.username}</span>
+        <span>{user?.name || user?.email || "User"}</span>
       </div>
 
       {isShow && (
@@ -60,9 +58,9 @@ const UserPanelDialog = ({ handleSetting, isNewWarning }) => {
               <Settings style={isNewWarning ? { color: "rgb(35, 170, 242)" } : {}} />
               <Trans>Settings</Trans>
             </li>
-            <li className="user-panel-item" onClick={() => handleSignOut()}>
-              <LogOutIcon />
-              <Trans>Sign out</Trans>
+            <li className="user-panel-item" onClick={handleLogout} style={{ cursor: "pointer" }}>
+              <User2Icon className="w-4 h-4" />
+              <Trans>Logout</Trans>
             </li>
           </ul>
         </div>
@@ -71,4 +69,4 @@ const UserPanelDialog = ({ handleSetting, isNewWarning }) => {
   );
 };
 
-export default withRouter(UserPanelDialog as any);
+export default UserPanelDialog;

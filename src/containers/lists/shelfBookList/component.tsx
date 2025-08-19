@@ -24,7 +24,7 @@ import api from "../../../utils/axios";
 import Pagination from "rc-pagination";
 import "rc-pagination/assets/index.css";
 import { ChevronDown } from "lucide-react";
-import { getCurrentUser } from "@aws-amplify/auth";
+import { getCurrentUser } from "../../../utils/authUtils";
 import Manager from "../../../pages/manager";
 
 declare var window: any;

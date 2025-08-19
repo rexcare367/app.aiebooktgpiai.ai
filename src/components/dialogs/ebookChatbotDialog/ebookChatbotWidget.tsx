@@ -9,7 +9,6 @@ import { ReactMic } from "react-mic";
 import ReactAudioPlayer from "react-audio-player";
 import { ebookChatbotWidgetProps, MessageContent } from "./interface";
 import OpenAI from "openai";
-import { DynamoDB } from "aws-sdk";
 
 const md = markdownit({
   html: true,
@@ -21,15 +20,6 @@ const md = markdownit({
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_READER_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
-});
-
-// Initialize DynamoDB client
-const dynamoDB = new DynamoDB.DocumentClient({
-  region: "ap-southeast-2",
-  credentials: {
-    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY!,
-  },
 });
 
 type IMessage = {
@@ -64,52 +54,44 @@ export default function EbookChatbotWidget({
 
   // Fetch assistant ID from DynamoDB when component mounts
   useEffect(() => {
-    const fetchAssistantId = async () => {
-      if (!currentTitle) {
-        console.error("No currentTitle provided");
-        return;
-      }
-
-      try {
-        // Replace underscores with spaces in the file key
-        const normalizedTitle = currentTitle.replace(/_/g, " ");
-        const compressedFileKey = `compressed/${normalizedTitle}`;
-        console.log("Fetching assistant ID for:", compressedFileKey);
-
-        const idTagParams = {
-          TableName: "id_and_tag",
-          KeyConditionExpression: "file_key = :fileKey",
-          ExpressionAttributeValues: {
-            ":fileKey": compressedFileKey,
-          },
-        };
-
-        const idTagResult = await dynamoDB.query(idTagParams).promise();
-
-        if (idTagResult.Items && idTagResult.Items.length > 0) {
-          const assistantId = idTagResult.Items[0].assistant_id;
-          console.log("Found assistant ID:", assistantId);
-
-          if (!assistantId) {
-            console.error("Assistant ID is null or undefined for:", compressedFileKey);
-            return;
-          }
-
-          setAssistantId(assistantId);
-
-          // Create a new thread for this chat session
-          const thread = await openai.beta.threads.create();
-          console.log("Created new thread:", thread.id);
-          setThreadId(thread.id);
-        } else {
-          console.error("No assistant ID found in id_and_tag for:", compressedFileKey);
-        }
-      } catch (error) {
-        console.error("Error fetching assistant ID:", error);
-      }
-    };
-
-    fetchAssistantId();
+    // const fetchAssistantId = async () => {
+    //   if (!currentTitle) {
+    //     console.error("No currentTitle provided");
+    //     return;
+    //   }
+    //   try {
+    //     // Replace underscores with spaces in the file key
+    //     const normalizedTitle = currentTitle.replace(/_/g, " ");
+    //     const compressedFileKey = `compressed/${normalizedTitle}`;
+    //     console.log("Fetching assistant ID for:", compressedFileKey);
+    //     const idTagParams = {
+    //       TableName: "id_and_tag",
+    //       KeyConditionExpression: "file_key = :fileKey",
+    //       ExpressionAttributeValues: {
+    //         ":fileKey": compressedFileKey,
+    //       },
+    //     };
+    //     // const idTagResult = await api.get(`/api/ebooks/get-assistant-id/${compressedFileKey}`);
+    //     if (idTagResult.Items && idTagResult.Items.length > 0) {
+    //       const assistantId = idTagResult.Items[0].assistant_id;
+    //       console.log("Found assistant ID:", assistantId);
+    //       if (!assistantId) {
+    //         console.error("Assistant ID is null or undefined for:", compressedFileKey);
+    //         return;
+    //       }
+    //       setAssistantId(assistantId);
+    //       // Create a new thread for this chat session
+    //       const thread = await openai.beta.threads.create();
+    //       console.log("Created new thread:", thread.id);
+    //       setThreadId(thread.id);
+    //     } else {
+    //       console.error("No assistant ID found in id_and_tag for:", compressedFileKey);
+    //     }
+    //   } catch (error) {
+    //     console.error("Error fetching assistant ID:", error);
+    //   }
+    // };
+    // fetchAssistantId();
   }, [currentTitle]);
 
   const sendQuestion = async () => {
@@ -274,8 +256,18 @@ export default function EbookChatbotWidget({
               {msg.type !== "user" ? (
                 <img src="assets/bot_round.png" alt="Bot Avatar" className="bot-avatar" />
               ) : (
-                <svg id="user_avatar_face" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 5C13.66 5 15 6.34 15 8C15 9.66 13.66 11 12 11C10.34 11 9 9.66 9 8C9 6.34 10.34 5 12 5ZM12 19.2C9.5 19.2 7.29 17.92 6 15.98C6.03 13.99 10 12.9 12 12.9C13.99 12.9 17.97 13.99 18 15.98C16.71 17.92 14.5 19.2 12 19.2Z" style={{ fill: 'var(--active-theme-color)' }}/>
+                <svg
+                  id="user_avatar_face"
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 5C13.66 5 15 6.34 15 8C15 9.66 13.66 11 12 11C10.34 11 9 9.66 9 8C9 6.34 10.34 5 12 5ZM12 19.2C9.5 19.2 7.29 17.92 6 15.98C6.03 13.99 10 12.9 12 12.9C13.99 12.9 17.97 13.99 18 15.98C16.71 17.92 14.5 19.2 12 19.2Z"
+                    style={{ fill: "var(--active-theme-color)" }}
+                  />
                 </svg>
               )}
             </figure>

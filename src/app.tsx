@@ -1,44 +1,34 @@
 import React from "react";
-
 import Router from "./router/index";
-import Auth from "./pages/authentication/auth";
 import Loading from "./components/loading/component";
+import { AuthProvider, useAuthContext } from "./components/auth/AuthProvider";
+import AuthContainer from "./components/auth/AuthContainer";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+const AppContent: React.FC = () => {
+  const { isAuthenticated, loading } = useAuthContext();
 
-import { useAuth } from "./hooks/useAuth";
+  if (loading) {
+    return (
+      <div className="h-full flex justify-center">
+        <Loading />
+      </div>
+    );
+  }
 
-import { Amplify } from "aws-amplify";
-import "@aws-amplify/ui-react/styles.css";
+  if (!isAuthenticated) {
+    return <AuthContainer />;
+  }
 
-const adminConfig: any = {
-  Auth: {
-    Cognito: {
-      region: process.env.REACT_APP_AWS_COGNITO_REGION,
-      userPoolId: process.env.REACT_APP_AWS_USER_POOLS_ID,
-      userPoolClientId: process.env.REACT_APP_AWS_USER_POOLS_WEB_CLIENT_ID,
-    },
-    region: process.env.REACT_APP_AWS_COGNITO_REGION,
-    userPoolId: process.env.REACT_APP_AWS_USER_POOLS_ID,
-    userPoolWebClientId: process.env.REACT_APP_AWS_USER_POOLS_WEB_CLIENT_ID,
-  },
+  return <Router />;
 };
 
-Amplify.configure(adminConfig);
-
 const App: React.FC = () => {
-  const { isAuthenticated, loading } = useAuth();
-
   return (
-    <>
-      {loading ? (
-        <div className="h-full flex justify-center">
-          <Loading />
-        </div>
-      ) : !isAuthenticated ? (
-        <Auth />
-      ) : (
-        <Router />
-      )}
-    </>
+    <GoogleOAuthProvider clientId="648244696329-6crqrla61rj2jvf1fs2d1kovnmmtu52q.apps.googleusercontent.com">
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </GoogleOAuthProvider>
   );
 };
 

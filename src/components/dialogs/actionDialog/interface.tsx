@@ -1,6 +1,7 @@
 import { RouteComponentProps } from "react-router";
 import BookModel from "../../../models/Book";
 import NoteModel from "../../../models/Note";
+import { UserData } from "../../../utils/authService";
 
 export interface ActionDialogProps extends RouteComponentProps<any> {
   book: BookModel;
@@ -13,6 +14,7 @@ export interface ActionDialogProps extends RouteComponentProps<any> {
   top: number;
   mode: string;
   isSelectBook: boolean;
+  user?: UserData;
   loadBookList: () => void;
   loadFavoriteBooks: () => void;
 

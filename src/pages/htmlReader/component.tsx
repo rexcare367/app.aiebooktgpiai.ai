@@ -17,7 +17,7 @@ import { Star } from "lucide-react";
 import EbookChatbotWidget from "../../components/dialogs/ebookChatbotDialog/ebookChatbotWidget";
 import Loading from "../../components/loading/component";
 import api from "../../utils/axios";
-import { getCurrentUser } from "aws-amplify/auth";
+import { useCurrentUserId } from "../../utils/authUtils";
 
 function RenderQuizModal({ showModal, handleQuizModal, book, handleScore }) {
   const [quizzes, setQuizzes] = useState([{ question: "", answer: [], id: "" }]);
@@ -25,8 +25,10 @@ function RenderQuizModal({ showModal, handleQuizModal, book, handleScore }) {
   const [score, setScore] = useState("0");
   const [step, setStep] = useState<"question" | "result">("question");
 
+  const userId = useCurrentUserId();
+
   const generateQuiz = useCallback(async () => {
-    const { username } = await getCurrentUser();
+    const username = userId;
     await api
       .post(`/api/ebooks/generate-quiz`, {
         book_id: book.key,
@@ -227,7 +229,8 @@ class Reader extends React.Component<ReaderProps, ReaderState> {
       const book = this.props.currentBook;
       if (RecordLocation.getHtmlLocation(book.key) && RecordLocation.getHtmlLocation(book.key).percentage) {
         let percentage = RecordLocation.getHtmlLocation(book.key).percentage;
-        const { username } = await getCurrentUser();
+        // Get user ID from Clerk - this will need to be passed down from parent component
+        const username = "this.props.userId";
 
         api.post(`/api/ebooks/reading_progress/add`, {
           user_ic: username,

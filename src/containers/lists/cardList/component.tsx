@@ -190,7 +190,7 @@ class CardList extends React.Component<CardListProps, CardListStates> {
       );
     };
     return (
-      <div className="w-full overflow-y-scroll content-start select-text h-full mt-10 grid 2xl:grid-cols-5 xl:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-2">
+      <div className="w-full overflow-y-scroll content-start select-text h-full grid 2xl:grid-cols-5 xl:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-2">
         {cards.map((card) => renderCardListItem(card))}
       </div>
     );
