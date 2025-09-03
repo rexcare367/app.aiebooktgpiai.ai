@@ -28,13 +28,4 @@ export interface HeaderProps {
   handleSidebar: (isSidebarShow: boolean) => void;
 }
 
-export interface HeaderState {
-  isOnlyLocal: boolean;
-  language: string;
-  width: number;
-  isNewVersion: boolean;
-  isdataChange: boolean;
-  isDeveloperVer: boolean;
-  user: string;
-  isMobile: boolean;
-}
+

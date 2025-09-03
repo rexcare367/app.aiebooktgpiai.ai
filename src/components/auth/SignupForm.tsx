@@ -54,7 +54,6 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
     <div className="w-full">
       <div className="bg-white rounded-2xl border border-gray-100 p-8 sm:p-10">
         <div className="text-center mb-6">
-          <img src="/assets/1bot_round.png" alt="logo" className="h-10 w-10 mx-auto" />
           <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-gray-900">Create account</h2>
           <p className="mt-1 text-sm text-gray-600">Register account as a Student</p>
         </div>
@@ -114,22 +113,6 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
             </div>
 
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                Phone Number *
-              </label>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                required
-                value={formData.phone}
-                onChange={handleChange}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Enter your phone number"
-              />
-            </div>
-
-            <div>
               <label htmlFor="birthday" className="block text-sm font-medium text-gray-700">
                 Birthday
               </label>
@@ -140,6 +123,19 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
                 value={birthday}
                 onChange={(e) => setBirthday(e.target.value)}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Address</label>
+              <input
+                id="address"
+                name="address"
+                type="text"
+                value={formData.address}
+                onChange={handleChange}
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Enter address"
               />
             </div>
 
@@ -159,10 +155,18 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Address</label>
-              <AddressAutocomplete
-                value={formData.address}
-                onChange={(value) => setFormData((p) => ({ ...p, address: value }))}
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                Phone Number *
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                required
+                value={formData.phone}
+                onChange={handleChange}
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                placeholder="Enter your phone number"
               />
             </div>
           </div>

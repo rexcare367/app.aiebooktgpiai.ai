@@ -1,0 +1,256 @@
+/* Leaderboard Card Styles */
+.leaderboard-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-color);
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.25rem;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+}
+
+.leaderboard-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border-color: var(--active-theme-light);
+}
+
+.card-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.medal {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.leaderboard-card:hover .medal {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.medal.gold {
+  background: linear-gradient(135deg, #ffd700, #ffa500);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+}
+
+.medal.silver {
+  background: linear-gradient(135deg, #C0C0C0, #A9A9A9);
+  box-shadow: 0 4px 12px rgba(192, 192, 192, 0.4);
+}
+
+.medal.bronze {
+  background: linear-gradient(135deg, #CD7F32, #8B4513);
+  box-shadow: 0 4px 12px rgba(205, 127, 50, 0.4);
+}
+
+.rank {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-color-2);
+  min-width: 2.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.leaderboard-card:hover .rank {
+  color: var(--active-theme-color);
+  transform: scale(1.1);
+}
+
+.rank.top-3 {
+  color: var(--active-theme-color);
+  text-shadow: 0 2px 4px rgba(var(--primary-color-rgb), 0.2);
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: var(--text-color);
+  margin-bottom: 0.25rem;
+  transition: all 0.3s ease;
+}
+
+.leaderboard-card:hover .user-name {
+  color: var(--active-theme-color);
+}
+
+.user-school {
+  font-size: 0.875rem;
+  color: var(--text-color-2);
+  font-style: italic;
+  transition: all 0.3s ease;
+}
+
+.leaderboard-card:hover .user-school {
+  color: var(--text-color);
+}
+
+.user-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #ffeaa7;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.stat-icon {
+  font-size: 1.5em;
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  font-weight: bold;
+  color: #6c5ce7;
+}
+
+.stat-label {
+  font-size: 0.8em;
+  color: #636e72;
+}
+
+.favorite-book {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 0.9em;
+  color: #636e72;
+}
+
+.book-icon {
+  margin-right: 5px;
+}
+
+.book-title {
+  font-style: italic;
+  color: #00b894;
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.stat {
+  font-size: 0.875rem;
+  color: var(--text-color-2);
+}
+
+.stat-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--active-theme-color);
+  margin-bottom: 0.25rem;
+  transition: all 0.3s ease;
+}
+
+.leaderboard-card:hover .stat-value {
+  transform: scale(1.05);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-color-2);
+  text-align: center;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .leaderboard-card {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  .card-left {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .card-right {
+    width: 100%;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+
+  .stat-item {
+    min-width: 80px;
+  }
+
+  .medal {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1rem;
+  }
+
+  .user-name {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaderboard-card {
+    padding: 1rem;
+  }
+
+  .card-right {
+    gap: 1rem;
+  }
+
+  .stat-item {
+    min-width: 70px;
+  }
+
+  .stat-value {
+    font-size: 1rem;
+  }
+
+  .stat-label {
+    font-size: 0.675rem;
+  }
+
+  .medal {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.875rem;
+  }
+
+  .rank {
+    font-size: 1.25rem;
+    min-width: 2rem;
+  }
+}

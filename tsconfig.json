@@ -21,6 +21,7 @@
   "include": ["src", "public/lib/MathJax/MathJax.js"],
   "exclude": ["utils"],
   "paths": {
+    "@/*": ["./src/*"],
     "*": ["./node_modules/@types", "./types"]
   }
 }

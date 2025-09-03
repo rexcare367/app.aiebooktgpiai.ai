@@ -9,13 +9,13 @@ interface ProfileData {
   address: string;
 }
 
-interface UpdateLogoModalProps {
+interface UpdateAvatarModalProps {
   profile: ProfileData;
   onSave: (updatedProfile: ProfileData) => void;
   onClose: () => void;
 }
 
-export function UpdateLogoModal({ profile, onSave, onClose }: UpdateLogoModalProps) {
+export function UpdateAvatarModal({ profile, onSave, onClose }: UpdateAvatarModalProps) {
   const [editedProfile, setEditedProfile] = useState(profile);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,14 +29,12 @@ export function UpdateLogoModal({ profile, onSave, onClose }: UpdateLogoModalPro
   };
 
   return (
-    <div className="profile-infomation-modal-overlay fixed top-0 left-0 right-0 flex justify-center items-center
-  ">
-      <div className="profile-infomation-modal p-8 bg-white max-w-[500px] w-[90%] rounded-xl">
-        <h2 className="text-2xl font-bold mb-4">Edit Profile Picture</h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          
+    <div className="modal-overlay">
+      <div className="modal-container">
+        <h2 className="modal-title">Edit Profile Picture</h2>
+        <form onSubmit={handleSubmit} className="modal-form">
           <div className="modal-actions">
-            <button type="submit" className="save-btn bg-primary hover:bg-primary-dark text-white">
+            <button type="submit" className="save-btn">
               Save
             </button>
             <button type="button" onClick={onClose} className="cancel-btn">
@@ -48,3 +46,4 @@ export function UpdateLogoModal({ profile, onSave, onClose }: UpdateLogoModalPro
     </div>
   );
 }
+

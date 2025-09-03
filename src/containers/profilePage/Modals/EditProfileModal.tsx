@@ -29,12 +29,11 @@ export function EditProfileModal({ profile, onSave, onClose }: EditProfileModalP
   };
 
   return (
-    <div className="profile-infomation-modal-overlay fixed top-0 left-0 right-0 flex justify-center items-center
-  ">
-      <div className="profile-infomation-modal p-8 bg-white max-w-[500px] w-[90%] rounded-xl">
-        <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="form-group flex flex-col gap-4">
+    <div className="modal-overlay">
+      <div className="modal-container">
+        <h2 className="modal-title">Edit Profile</h2>
+        <form onSubmit={handleSubmit} className="modal-form">
+          <div className="form-group">
             <label htmlFor="icNumber">IC Number:</label>
             <input
               type="text"
@@ -94,7 +93,7 @@ export function EditProfileModal({ profile, onSave, onClose }: EditProfileModalP
             />
           </div>
           <div className="modal-actions">
-            <button type="submit" className="save-btn bg-primary hover:bg-primary-dark text-white">
+            <button type="submit" className="save-btn">
               Save
             </button>
             <button type="button" onClick={onClose} className="cancel-btn">
@@ -106,3 +105,4 @@ export function EditProfileModal({ profile, onSave, onClose }: EditProfileModalP
     </div>
   );
 }
+

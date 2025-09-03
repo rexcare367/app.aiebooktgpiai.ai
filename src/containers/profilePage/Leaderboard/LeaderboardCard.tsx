@@ -1,7 +1,7 @@
 import React from "react";
-import "./UserCard.css";
+import "./LeaderboardCard.css";
 
-interface UserCardProps {
+interface LeaderboardCardProps {
   user: {
     user_ic: string;
     name: string;
@@ -14,7 +14,7 @@ interface UserCardProps {
   type: "books" | "time" | "quiz";
 }
 
-const UserCard: React.FC<UserCardProps> = ({ user, rank, type }) => {
+const LeaderboardCard: React.FC<LeaderboardCardProps> = ({ user, rank, type }) => {
   const getMedalIcon = (rank: number) => {
     switch (rank) {
       case 1:
@@ -75,4 +75,4 @@ const UserCard: React.FC<UserCardProps> = ({ user, rank, type }) => {
   );
 };
 
-export default UserCard;
+export default LeaderboardCard;

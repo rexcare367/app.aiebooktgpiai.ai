@@ -2,8 +2,8 @@ import React from "react";
 import "./profilePage.css";
 // import { Trans } from "react-i18next";
 import { ProfilePageProps, ProfilePageState } from "./interface";
-import ReadingProgressSection from "./readingProgress/readingProgress";
-import ProfileInformationSection from "./profileInformation/profileInformation";
+import ReadingStatsSection from "./ReadingStats/ReadingStatsSection";
+import ProfileInfoSection from "./ProfileInfo/ProfileInfoSection";
 import Manager from "../../pages/manager";
 
 class ProfilePage extends React.Component<ProfilePageProps, ProfilePageState> {
@@ -21,10 +21,10 @@ class ProfilePage extends React.Component<ProfilePageProps, ProfilePageState> {
           </div>
           <div className="profile-split-container">
             <div className="left-column">
-              <ProfileInformationSection />
+              <ProfileInfoSection />
             </div>
             <div className="right-column">
-              <ReadingProgressSection />
+              <ReadingStatsSection />
             </div>
           </div>
         </div>

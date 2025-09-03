@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
+import { useHistory, useLocation } from "react-router-dom";
 import { SearchBoxProps } from "./interface";
 import { searchBooks } from "../../store/actions/book";
 import StorageUtil from "../../utils/serviceUtils/storageUtil";
-import { useHistory, useLocation } from "react-router-dom";
 
 const SearchBox: React.FC<SearchBoxProps> = (props) => {
   const dispatch = useDispatch();
@@ -68,13 +68,21 @@ const SearchBox: React.FC<SearchBoxProps> = (props) => {
     <div className="relative">
       <input
         ref={searchBoxRef}
-        className="search-input rounded-xl bg-gray-100 text-black placeholder-black pl-3 text-sm outline-none border-none w-full md:h-10 h-8"
+        className="search-input rounded-xl pl-3 text-sm outline-none border-none w-full md:h-10 h-8"
+        style={
+          props.mode === "nav"
+            ? {
+                width: props.width,
+                height: props.height,
+                paddingRight: "30px",
+              }
+            : {backgroundColor: 'var(--bg-color-2)',
+              color: 'var(--text-color)',
+              border: '1px solid var(--border-color)'}
+          }
         value={inputValue}
         onChange={(e) => handleSearch(e.target.value)}
         onKeyDown={handleKey}
-        onFocus={() => {
-          props.mode === "nav" && props.handleNavSearchState("focused");
-        }}
         placeholder={
           props.isNavSearch || props.mode === "nav"
             ? props.t("Search")
@@ -84,15 +92,15 @@ const SearchBox: React.FC<SearchBoxProps> = (props) => {
             ? props.t("Search")
             : props.t("Search")
         }
-        style={
-          props.mode === "nav"
-            ? {
-                width: props.width,
-                height: props.height,
-                paddingRight: "30px",
-              }
-            : {}
-        }
+        onFocus={(e) => {
+          e.target.style.borderColor = 'var(--active-theme-color)';
+          e.target.style.boxShadow = '0 0 0 2px var(--active-theme-light)';
+          props.mode === "nav" && props.handleNavSearchState("focused");
+        }}
+        onBlur={(e) => {
+          e.target.style.borderColor = 'var(--border-color)';
+          e.target.style.boxShadow = 'none';
+        }}
         onCompositionStart={() => {
           if (StorageUtil.getReaderConfig("isNavLocked") === "yes") {
             return;
@@ -110,10 +118,13 @@ const SearchBox: React.FC<SearchBoxProps> = (props) => {
       />
       <span
         className="icon-close absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+        style={{
+          ...(props.mode === "nav" ? { right: "-9px", top: "14px" } : {}),
+          color: 'var(--text-color-2)'
+        }}
         onClick={() => {
           handleCancel();
         }}
-        style={props.mode === "nav" ? { right: "-9px", top: "14px" } : {}}
       ></span>
     </div>
   );

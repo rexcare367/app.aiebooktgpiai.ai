@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import UserCard from "./UserCard";
-import "./leaderboard.css";
+import LeaderboardCard from "./LeaderboardCard";
+import "./LeaderboardSection.css";
 import axios from "axios";
 import api from "../../../utils/axios";
 import toast from "react-hot-toast";
@@ -36,7 +36,7 @@ const defaultLeaderboardData: LeaderboardData = {
   top_quiz_scores: [],
 };
 
-const Leaderboard: React.FC = () => {
+const LeaderboardSection: React.FC = () => {
   const [leaderboard, setLeaderboard] = useState<LeaderboardData>(defaultLeaderboardData);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -97,8 +97,8 @@ const Leaderboard: React.FC = () => {
 
   return (
     <div className="leaderboard-container">
-      <div className="flex items-center gap-2 mb-5">
-        <h1 className="text-2xl font-bold">Super Readers Leaderboard</h1>
+      <div className="leaderboard-header">
+        <h1 className="leaderboard-title">Super Readers Leaderboard</h1>
         <Trophy size={32} color="#ffd700" />
       </div>
 
@@ -110,7 +110,7 @@ const Leaderboard: React.FC = () => {
           </div>
           <div className="user-cards">
             {(leaderboard?.top_readers || []).map((user, index) => (
-              <UserCard key={`${user.user_ic}-reader`} user={user} rank={index + 1} type="books" />
+              <LeaderboardCard key={`${user.user_ic}-reader`} user={user} rank={index + 1} type="books" />
             ))}
           </div>
         </section>
@@ -122,7 +122,7 @@ const Leaderboard: React.FC = () => {
           </div>
           <div className="user-cards">
             {(leaderboard?.top_reading_time || []).map((user, index) => (
-              <UserCard key={`${user.user_ic}-time`} user={user} rank={index + 1} type="time" />
+              <LeaderboardCard key={`${user.user_ic}-time`} user={user} rank={index + 1} type="time" />
             ))}
           </div>
         </section>
@@ -134,7 +134,7 @@ const Leaderboard: React.FC = () => {
           </div>
           <div className="user-cards">
             {(leaderboard?.top_quiz_scores || []).map((user, index) => (
-              <UserCard
+              <LeaderboardCard
                 key={`${user.user_ic}-quiz`}
                 user={{
                   ...user,
@@ -153,4 +153,4 @@ const Leaderboard: React.FC = () => {
   );
 };
 
-export default Leaderboard;
+export default LeaderboardSection;

@@ -33,7 +33,7 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  background-color: rgba(75, 75, 75, 1);
+  background-color: var(--active-theme-color);
   border-radius: 50px;
   padding: 0 0.8rem 0 0.8rem;
   gap: 0.4rem;
@@ -41,7 +41,8 @@
 }
 
 .user-panel-content {
-  background-color: rgba(75, 75, 75, 1);
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
   z-index: 100;
 }
 
@@ -50,11 +51,12 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: white;
+  color: var(--text-color);
 }
 
 .user-panel-item:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--active-theme-light);
+  color: var(--active-theme-color);
   border-radius: 10px;
 }
 
@@ -65,7 +67,7 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    background-color: rgba(75, 75, 75, 1);
+    background-color: var(--active-theme-color);
     border-radius: 50px;
     padding: 0 0.6rem;
     gap: 0.2rem;

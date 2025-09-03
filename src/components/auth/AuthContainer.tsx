@@ -10,7 +10,6 @@ interface AuthContainerProps {
 
 const AuthContainer: React.FC<AuthContainerProps> = ({ initialView = "login" }) => {
   const [view, setView] = useState<"login" | "signup" | "forgot">(initialView);
-  const { loading } = useAuthContext();
   useEffect(() => {
     setView(initialView);
   }, [initialView]);
@@ -18,17 +17,6 @@ const AuthContainer: React.FC<AuthContainerProps> = ({ initialView = "login" }) 
   const switchToSignup = () => setView("signup");
   const switchToLogin = () => setView("login");
   const switchToForgot = () => setView("forgot");
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen w-full h-full p-6 bg-gray-50 flex items-center justify-center">

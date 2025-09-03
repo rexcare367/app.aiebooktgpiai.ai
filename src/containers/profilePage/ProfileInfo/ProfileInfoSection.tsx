@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import toast from "react-hot-toast";
-import "./profileInformation.css";
+import "./ProfileInfoSection.css";
 import { User, Mail, Phone, MapPin, Shield, Pencil, Loader2, School } from "lucide-react";
 import api from "../../../utils/axios";
 
-const ProfileInformationSection = () => {
+const ProfileInfoSection = () => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
@@ -241,4 +241,4 @@ const ProfileInformationSection = () => {
   );
 };
 
-export default ProfileInformationSection;
+export default ProfileInfoSection;

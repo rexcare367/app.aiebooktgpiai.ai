@@ -54,7 +54,7 @@ export const RewardPage = () => {
 
   return (
     <Manager>
-      <div className="w-full p-4 rounded-2xl bg-white overflow-auto h-[calc(100vh_-_88px)]">
+      <div className="w-full p-4 rounded-2xl bg-transparent/20 overflow-auto h-[calc(100vh_-_88px)]">
         <h1 className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-100 mb-8 flex items-center gap-3">
           <Trophy className="h-8 w-8 text-amber-400" />
           Rewards
@@ -68,7 +68,7 @@ export const RewardPage = () => {
               {rewards?.map((reward, index) => (
                 <div
                   key={`${index}-${reward.rewardId}`}
-                  className=" max-w-72 bg-white dark:bg-slate-800 rounded-xl border-2 border-solid border-slate-200 dark:border-slate-700 p-6 transition-all duration-200 flex flex-col min-h-[400px]"
+                  className=" max-w-72 bg-transparent/20 dark:bg-slate-800 rounded-xl border-2 border-solid border-slate-200 dark:border-slate-700 p-6 transition-all duration-200 flex flex-col min-h-[400px]"
                 >
                   <div className="flex flex-col items-center text-center gap-4 mb-6">
                     <img src={reward.badge} alt="reward badge" className="w-24 h-24 rounded-full" />

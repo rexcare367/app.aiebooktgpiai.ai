@@ -4,7 +4,7 @@ import api from "../../../utils/axios";
 
 import { toast } from "react-hot-toast";
 import { BookOpen, Calendar, Book, Clock } from "lucide-react";
-import "./readingProgress.css";
+import "./ReadingStatsSection.css";
 import BookUtil from "../../../utils/fileUtils/bookUtil";
 import StorageUtil from "../../../utils/serviceUtils/storageUtil";
 import { useHistory } from "react-router-dom";
@@ -54,7 +54,7 @@ interface ReadingProgressData {
   total: number;
 }
 
-const ReadingProgressSection = () => {
+const ReadingStatsSection = () => {
   const history = useHistory();
   const [readingProgress, setReadingProgress] = useState<ReadingProgressData>({
     books: [],
@@ -234,25 +234,29 @@ const ReadingProgressSection = () => {
 
   if (isLoading) {
     return (
-      <div className="empty-state">
-        <BookOpen className="empty-icon" />
-        <h2 className="empty-title">Loading...</h2>
+      <div className="reading-stats-container">
+        <div className="empty-state">
+          <BookOpen className="empty-icon" />
+          <h2 className="empty-title">Loading...</h2>
+        </div>
       </div>
     );
   }
 
   if (!readingProgress.books.length) {
     return (
-      <div className="empty-state">
-        <BookOpen className="empty-icon" />
-        <h2 className="empty-title">You haven't read any books yet!</h2>
-        <p className="empty-subtitle">Your reading adventures will appear here</p>
+      <div className="reading-stats-container">
+        <div className="empty-state">
+          <BookOpen className="empty-icon" />
+          <h2 className="empty-title">You haven't read any books yet!</h2>
+          <p className="empty-subtitle">Your reading adventures will appear here</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="reading-container">
+    <div className="reading-stats-container">
       {stats && (
         <div className="analytics-panel">
           <div className="stats-grid">
@@ -289,31 +293,9 @@ const ReadingProgressSection = () => {
               </div>
             </div>
           </div>
-
-          {/* <div className="summary-section">
-            <div className="summary-content">
-              <div className="legend">
-                {Object.entries(stats.language_breakdown || {}).map(([lang, count], idx) => {
-                  const colors = ["#8b5cf6", "#10b981", "#60a5fa", "#f59e0b", "#ef4444", "#14b8a6", "#f472b6"];
-                  return (
-                    <div key={lang} className="legend-item">
-                      <div className="legend-left">
-                        <span className="legend-dot" style={{ background: colors[idx % colors.length] }}></span>
-                        <span>{lang}</span>
-                      </div>
-                      <div style={{ color: "var(--text-color)" }}>{count}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div> */}
         </div>
       )}
-      <div
-        className="reading-controls mt-4"
-        style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}
-      >
+      <div className="reading-controls">
         <input
           placeholder="Search by title"
           value={search}
@@ -322,13 +304,11 @@ const ReadingProgressSection = () => {
             setCurrentPage(1);
           }}
           className="form-input"
-          style={{ flex: "1 1 220px" }}
         />
         <select
           value={orderBy}
           onChange={(e) => setOrderBy(e.target.value as any)}
           className="form-input"
-          style={{ width: 200 }}
         >
           <option value="title">Order by Title</option>
         </select>
@@ -336,7 +316,6 @@ const ReadingProgressSection = () => {
           value={orderDir}
           onChange={(e) => setOrderDir(e.target.value as any)}
           className="form-input"
-          style={{ width: 134 }}
         >
           <option value="desc">Desc</option>
           <option value="asc">Asc</option>
@@ -347,26 +326,25 @@ const ReadingProgressSection = () => {
           <div className="loading-spinner">Loading book...</div>
         </div>
       )}
-      <div className="flex flex-col gap-2 mt-4">
+      <div className="books-list">
         {paginatedBooks.map((book, index) => (
           <div
             key={index}
             className="book-card"
             onClick={() => handleContinueReadingByBook(book)}
-            style={{ cursor: "pointer" }}
           >
             <div className="card-content">
-              <div className="flex flex-col gap-2">
-                <h2 className="font-bold text-lg">{formatBookTitle(book.title)}</h2>
-                <div className="flex items-center gap-2">
+              <div className="book-info">
+                <h2 className="book-title">{formatBookTitle(book.title)}</h2>
+                <div className="book-meta">
                   {book.language && (
-                    <div className="flex items-center gap-1">
+                    <div className="meta-item">
                       <Book />
                       <span>{book.language}</span>
                     </div>
                   )}
                   {book.created_at && (
-                    <div className="flex items-center gap-1">
+                    <div className="meta-item">
                       <Calendar />
                       <span>{formatDate(book.created_at)}</span>
                     </div>
@@ -377,17 +355,8 @@ const ReadingProgressSection = () => {
           </div>
         ))}
       </div>
-      <div
-        className="pagination-container"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "0.75rem",
-          marginTop: "1rem",
-        }}
-      >
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+      <div className="pagination-container">
+        <div className="pagination-info">
           <span>Total:</span>
           <strong>{totalCount}</strong>
           <span>Page size:</span>
@@ -398,14 +367,13 @@ const ReadingProgressSection = () => {
               setCurrentPage(1);
             }}
             className="form-input"
-            style={{ width: 90 }}
           >
             <option value={5}>5</option>
             <option value={10}>10</option>
             <option value={20}>20</option>
           </select>
         </div>
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+        <div className="pagination-controls">
           <button
             className="page-button"
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
@@ -416,7 +384,6 @@ const ReadingProgressSection = () => {
           <span>Page</span>
           <input
             className="form-input"
-            style={{ width: 70, textAlign: "center" }}
             value={currentPage}
             onChange={(e) => {
               const v = Math.max(1, Math.min(Math.ceil(totalCount / pageSize) || 1, Number(e.target.value) || 1));
@@ -437,4 +404,5 @@ const ReadingProgressSection = () => {
   );
 };
 
-export default ReadingProgressSection;
+export default ReadingStatsSection;
+

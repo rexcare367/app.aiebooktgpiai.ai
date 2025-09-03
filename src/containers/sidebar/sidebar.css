@@ -1,4 +1,6 @@
 .side-menu-container-parent {
+  /* Container for sidebar menu items */
+  position: relative;
 }
 .side-menu-container-parent:hover::-webkit-scrollbar-thumb,
 .side-menu-container-parent:active::-webkit-scrollbar-thumb,
@@ -166,6 +168,16 @@
   background: var(--bg-color);
 }
 
+/* Sidebar Menu Item Hover Effects */
+.side-menu-item:hover {
+  background-color: var(--active-theme-light) !important;
+  color: var(--active-theme-color) !important;
+}
+
+.side-menu-item:hover .side-menu-selector {
+  background-color: var(--active-theme-light) !important;
+}
+
 /* Sign Out Button */
 .sign-out-button {
   display: flex;
@@ -196,4 +208,21 @@
 .sidebar.collapsed .sign-out-button {
   padding: 8px;
   justify-content: center;
+}
+
+/* Language Selector Styling */
+.sidebar-footer select {
+  background-color: var(--bg-color) !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+.sidebar-footer select:focus {
+  border-color: var(--active-theme-color) !important;
+  box-shadow: 0 0 0 2px var(--active-theme-light) !important;
+}
+
+.sidebar-footer select option {
+  background-color: var(--bg-color) !important;
+  color: var(--text-color) !important;
 }

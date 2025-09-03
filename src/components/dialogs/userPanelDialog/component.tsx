@@ -3,7 +3,7 @@ import { Trans } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import "./userPanelDialog.css";
 import { useAuthContext } from "../../auth/AuthProvider";
-import { User2Icon, IdCard, Settings } from "lucide-react";
+import { User2Icon, LogOut, IdCard, Settings } from "lucide-react";
 
 const UserPanelDialog = ({ handleSetting, isNewWarning }) => {
   const [isShow, setIsShow] = useState(false);
@@ -21,7 +21,8 @@ const UserPanelDialog = ({ handleSetting, isNewWarning }) => {
 
   const handleLogout = () => {
     logout();
-    setIsShow(false);
+    window.location.href = "/";
+
   };
 
   return (
@@ -59,7 +60,7 @@ const UserPanelDialog = ({ handleSetting, isNewWarning }) => {
               <Trans>Settings</Trans>
             </li>
             <li className="user-panel-item" onClick={handleLogout} style={{ cursor: "pointer" }}>
-              <User2Icon className="w-4 h-4" />
+              <LogOut className="w-4 h-4" />
               <Trans>Logout</Trans>
             </li>
           </ul>

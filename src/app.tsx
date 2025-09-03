@@ -1,19 +1,10 @@
-import React from "react";
+import React, {FC} from "react";
 import Router from "./router/index";
-import Loading from "./components/loading/component";
 import { AuthProvider, useAuthContext } from "./components/auth/AuthProvider";
 import AuthContainer from "./components/auth/AuthContainer";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-const AppContent: React.FC = () => {
-  const { isAuthenticated, loading } = useAuthContext();
-
-  if (loading) {
-    return (
-      <div className="h-full flex justify-center">
-        <Loading />
-      </div>
-    );
-  }
+const AppContent: FC = () => {
+  const { isAuthenticated } = useAuthContext();
 
   if (!isAuthenticated) {
     return <AuthContainer />;
@@ -22,7 +13,7 @@ const AppContent: React.FC = () => {
   return <Router />;
 };
 
-const App: React.FC = () => {
+const App: FC = () => {
   return (
     <GoogleOAuthProvider clientId="648244696329-6crqrla61rj2jvf1fs2d1kovnmmtu52q.apps.googleusercontent.com">
       <AuthProvider>

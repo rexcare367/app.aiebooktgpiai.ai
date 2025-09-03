@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuthContext } from "./AuthProvider";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
+import Loading from "../loading/component";
 
 interface LoginFormProps {
   onSwitchToSignup: () => void;
@@ -12,41 +13,38 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup, onSwitchToForgo
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const { google_login, login, error } = useAuthContext();
+  const { google_login, login, error, loading } = useAuthContext();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLoginWithEmail = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
     try {
       await login(identifier, password);
     } catch (error) {
       console.error("Login error:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    } 
   };
 
   const handleGoogleLogin = async (credential: string) => {
     const decoded: any = jwtDecode(credential);
     const { email } = decoded;
-    setIsLoading(true);
 
     try {
       await google_login(email);
     } catch (error) {
       console.error("Login error:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    } 
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
+      {loading && (
+        <div className="absolute inset-0 bg-white bg-opacity-70 rounded-2xl z-10 flex items-center justify-center">
+          <Loading />
+        </div>
+      )}
       <div className="bg-white rounded-2xl border border-gray-100 p-8 sm:p-10">
         <div className="text-center mb-6">
-          <img src="/assets/1bot_round.png" alt="logo" className="h-10 w-10 mx-auto" />
           <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-gray-900">Sign in</h2>
           <p className="mt-1 text-sm text-gray-600">Welcome back! Please sign in to continue.</p>
         </div>
@@ -63,11 +61,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup, onSwitchToForgo
 
         <div className="my-6 flex items-center">
           <div className="flex-1 h-px bg-gray-200" />
-          <span className="px-4 text-gray-500 text-sm">Or continue with email</span>
+          <span className="px-4 text-gray-500 text-sm">Continue with Email</span>
           <div className="flex-1 h-px bg-gray-200" />
         </div>
 
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-6" onSubmit={handleLoginWithEmail}>
           {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">{error}</div>}
 
           <div className="space-y-4">
@@ -117,16 +115,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup, onSwitchToForgo
               Remember me
             </label>
             <button type="button" onClick={onSwitchToForgot} className="text-sm text-indigo-600 hover:text-indigo-500">
-              Forgot Password? Click here
+              Forgot Password?
             </button>
           </div>
 
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={loading}
             className="group relative w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? "Signing in..." : "Sign In"}
+            {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 

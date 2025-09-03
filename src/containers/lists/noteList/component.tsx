@@ -42,7 +42,7 @@ const NoteList: React.FC<NoteListProps> = (props) => {
   };
 
   const noteListContent = (
-    <div className="note-list-container-parent h-[calc(100vh_-_78px)] bg-white rounded-xl">
+    <div className="note-list-container-parent h-[calc(100vh_-_78px)] bg-transparent/20 rounded-xl">
       <div className="note-tags">
         <NoteTag {...{ handleTag: handleTag }} />
       </div>

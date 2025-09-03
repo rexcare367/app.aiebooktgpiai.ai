@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-// import {useHistory} from "react-router-dom"
+
 import "./booklist.css";
 import BookCardItem from "../../../components/bookCardItem";
 import BookListItem from "../../../components/bookListItem";
@@ -39,7 +39,6 @@ const BookList: React.FC<BookListProps> = (props) => {
   const history = useHistory();
   const location = useLocation();
   const [favoriteBooks, setFavoriteBooks] = useState<string[]>([]);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isOpenFile, setIsOpenFile] = useState(false);
   const [books, setBooks] = useState<any[]>([]);
   const [totalItems, setTotalItems] = useState(0);
@@ -463,11 +462,11 @@ const BookList: React.FC<BookListProps> = (props) => {
   } else {
     bookListContent = (
       <>
-        <div className="book-list-container-parent bg-white">
+        <div className="book-list-container-parent" style={{ backgroundColor: 'var(--bg-color)' }}>
           <div className="book-list-container">
-            <div className="flex md:flex-row flex-col p-4 gap-2 bg-white rounded-lg shadow-sm w-full justify-between">
+            <div className="flex md:flex-row flex-col p-4 gap-2 rounded-lg shadow-sm w-full justify-between" style={{ backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
               <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
-                <span className="text-gray-600 text-sm">
+                <span className="text-sm" style={{ color: 'var(--text-color)' }}>
                   Showing <span className="font-medium">{Math.min((currentPage - 1) * pageSize + 1, totalItems)}</span>{" "}
                   - <span className="font-medium">{Math.min(currentPage * pageSize, totalItems)}</span> of{" "}
                   <span className="font-medium">{totalItems}</span> books
@@ -482,7 +481,22 @@ const BookList: React.FC<BookListProps> = (props) => {
                       }
                     }}
                     disabled={currentPage === 1}
-                    className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-600 hover:text-indigo-700 transition-all duration-200 disabled:opacity-40 disabled:hover:bg-white disabled:hover:border-gray-200 disabled:hover:text-gray-600 disabled:cursor-not-allowed shadow-sm"
+                    className="w-9 h-9 flex items-center justify-center rounded-lg border transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+                    style={{
+                      borderColor: 'var(--border-color)',
+                      color: 'var(--text-color)',
+                      backgroundColor: 'var(--bg-color)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--active-theme-color)';
+                      e.currentTarget.style.backgroundColor = 'var(--active-theme-light)';
+                      e.currentTarget.style.color = 'var(--active-theme-color)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--border-color)';
+                      e.currentTarget.style.backgroundColor = 'var(--bg-color)';
+                      e.currentTarget.style.color = 'var(--text-color)';
+                    }}
                     aria-label="Previous page"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -494,9 +508,9 @@ const BookList: React.FC<BookListProps> = (props) => {
                     </svg>
                   </button>
                   <div className="flex items-center gap-1">
-                    <span className="text-gray-700 font-medium">{currentPage}</span>
-                    <span className="text-gray-400">/</span>
-                    <span className="text-gray-500">{Math.ceil(totalItems / pageSize)}</span>
+                    <span className="font-medium" style={{ color: 'var(--text-color)' }}>{currentPage}</span>
+                    <span style={{ color: 'var(--text-color-2)' }}>/</span>
+                    <span style={{ color: 'var(--text-color-2)' }}>{Math.ceil(totalItems / pageSize)}</span>
                   </div>
                   <button
                     onClick={() => {
@@ -506,7 +520,22 @@ const BookList: React.FC<BookListProps> = (props) => {
                       }
                     }}
                     disabled={currentPage >= Math.ceil(totalItems / pageSize)}
-                    className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-600 hover:text-indigo-700 transition-all duration-200 disabled:opacity-40 disabled:hover:bg-white disabled:hover:border-gray-200 disabled:hover:text-gray-600 disabled:cursor-not-allowed shadow-sm"
+                    className="w-9 h-9 flex items-center justify-center rounded-lg border transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
+                    style={{
+                      borderColor: 'var(--border-color)',
+                      color: 'var(--text-color)',
+                      backgroundColor: 'var(--bg-color)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--active-theme-color)';
+                      e.currentTarget.style.backgroundColor = 'var(--active-theme-light)';
+                      e.currentTarget.style.color = 'var(--active-theme-color)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--border-color)';
+                      e.currentTarget.style.backgroundColor = 'var(--bg-color)';
+                      e.currentTarget.style.color = 'var(--text-color)';
+                    }}
                     aria-label="Next page"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -524,7 +553,20 @@ const BookList: React.FC<BookListProps> = (props) => {
                     const [newOrderBy, newOrder] = e.target.value.split("-");
                     updateUrl(selectedShelves, selectedLanguages, currentPage, pageSize, newOrder, newOrderBy);
                   }}
-                  className="px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent"
+                  style={{
+                    backgroundColor: 'var(--bg-color)',
+                    borderColor: 'var(--border-color)',
+                    color: 'var(--text-color)'
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--active-theme-color)';
+                    e.currentTarget.style.boxShadow = `0 0 0 2px var(--active-theme-light)`;
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--border-color)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
                 >
                   <option value="title-asc">Title (A-Z)</option>
                   <option value="title-desc">Title (Z-A)</option>
@@ -533,18 +575,30 @@ const BookList: React.FC<BookListProps> = (props) => {
               <div className="flex flex-row gap-2">
                 <div className="relative">
                   <button
-                    className="flex items-center gap-2 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-full font-medium transition-colors duration-200"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-colors duration-200"
+                    style={{
+                      backgroundColor: 'var(--active-theme-light)',
+                      color: 'var(--active-theme-color)'
+                    }}
                     onClick={() => setIsShelfDropdownOpen((prev) => !prev)}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--active-theme-color)';
+                      e.currentTarget.style.color = 'white';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--active-theme-light)';
+                      e.currentTarget.style.color = 'var(--active-theme-color)';
+                    }}
                   >
                     <span>Shelves</span>
-                    <span className="bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded-full text-sm">
+                    <span className="px-2 py-0.5 rounded-full text-sm" style={{ backgroundColor: 'var(--active-theme-color)', color: 'white' }}>
                       {selectedShelves.length}
                     </span>
                   </button>
                   {isShelfDropdownOpen && (
-                    <div className="absolute z-10 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-100 py-2">
+                    <div className="absolute z-10 mt-2 w-56 rounded-lg shadow-lg border py-2" style={{ backgroundColor: 'var(--bg-color)', borderColor: 'var(--border-color)' }}>
                       {shelfList.map((shelf) => (
-                        <label key={shelf} className="flex items-center px-4 py-2 hover:bg-indigo-50 cursor-pointer">
+                        <label key={shelf} className="flex items-center px-4 py-2 cursor-pointer" style={{ color: 'var(--text-color)' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--active-theme-light)'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}>
                           <input
                             type="checkbox"
                             checked={selectedShelves.includes(shelf)}
@@ -565,18 +619,30 @@ const BookList: React.FC<BookListProps> = (props) => {
 
                 <div className="relative">
                   <button
-                    className="flex items-center gap-2 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-full font-medium transition-colors duration-200"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-colors duration-200"
+                    style={{
+                      backgroundColor: 'var(--active-theme-light)',
+                      color: 'var(--active-theme-color)'
+                    }}
                     onClick={() => setIsLanguageDropdownOpen((prev) => !prev)}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--active-theme-color)';
+                      e.currentTarget.style.color = 'white';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--active-theme-light)';
+                      e.currentTarget.style.color = 'var(--active-theme-color)';
+                    }}
                   >
                     <span>Languages</span>
-                    <span className="bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded-full text-sm">
+                    <span className="px-2 py-0.5 rounded-full text-sm" style={{ backgroundColor: 'var(--active-theme-color)', color: 'white' }}>
                       {selectedLanguages.length}
                     </span>
                   </button>
                   {isLanguageDropdownOpen && (
-                    <div className="absolute z-10 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-100 py-2">
+                    <div className="absolute z-10 mt-2 w-56 rounded-lg shadow-lg border py-2" style={{ backgroundColor: 'var(--bg-color)', borderColor: 'var(--border-color)' }}>
                       {languageList.map((language) => (
-                        <label key={language} className="flex items-center px-4 py-2 hover:bg-indigo-50 cursor-pointer">
+                        <label key={language} className="flex items-center px-4 py-2 cursor-pointer" style={{ color: 'var(--text-color)' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--active-theme-light)'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}>
                           <input
                             type="checkbox"
                             checked={selectedLanguages.includes(language)}
@@ -608,7 +674,7 @@ const BookList: React.FC<BookListProps> = (props) => {
                 lazyLoad();
               }}
             >
-              {!isRefreshing && renderBookList()}
+              {renderBookList()}
             </ul>
           </div>
         </div>

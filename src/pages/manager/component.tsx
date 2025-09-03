@@ -116,7 +116,10 @@ class Manager extends React.Component<ManagerProps, ManagerState> {
           {this.props.isSettingOpen && <SettingDialog />}
           {this.props.isTipDialog && <TipDialog />}
           {this.props.isDetailDialog && <DetailDialog />}
-          <div className="p-2 rounded-xl h-[calc(100vh_-_70px)]">{this.props.children}</div>
+          <div className="h-[calc(100vh_-_70px)]" style={{backgroundColor: 'var(--bg-color-2)'}}>
+          <div className="p-2 rounded-xl h-full">
+            {this.props.children}</div>
+            </div>
         </div>
       </div>
     );
