@@ -1,32 +1,87 @@
 //src/components/bookCardItem/component.tsx
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import RecentBooks from "../../utils/readUtils/recordRecent";
 import "./bookCardItem.css";
-import { BookCardProps, BookCardState } from "./interface";
-import AddFavorite from "../../utils/readUtils/addFavorite";
-import ActionDialog from "../dialogs/actionDialog";
+import { BookCardProps } from "./interface";
 import StorageUtil from "../../utils/serviceUtils/storageUtil";
 import { withRouter } from "react-router-dom";
-// import RecordLocation from "../../utils/readUtils/recordLocation";
 import { isElectron } from "react-device-detect";
-// import EmptyCover from "../emptyCover";
 import BookUtil from "../../utils/fileUtils/bookUtil";
 
 declare var window: any;
 
-class BookCardItem extends React.Component<BookCardProps, BookCardState> {
-  constructor(props: BookCardProps) {
-    super(props);
-    this.state = {
-      isFavorite: AddFavorite.getAllFavorite().indexOf(this.props.book.file_key) > -1,
-      left: 0,
-      top: 0,
-      direction: "horizontal",
-      isHover: false,
-    };
-  }
+interface FavoriteConfirmModalProps {
+  isOpen: boolean;
+  isFavorite: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
 
-  componentDidMount() {
+const FavoriteConfirmModal: React.FC<FavoriteConfirmModalProps> = ({
+  isOpen,
+  isFavorite,
+  onConfirm,
+  onCancel,
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl">
+        <div className="text-center">
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+            <svg
+              className="h-6 w-6 text-red-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            {isFavorite ? "Remove from Favorites?" : "Add to Favorites?"}
+          </h3>
+          <p className="text-sm text-gray-500 mb-6">
+            {isFavorite
+              ? "This book will be removed from your favorites list."
+              : "This book will be added to your favorites list."}
+          </p>
+          <div className="flex space-x-3">
+            <button
+              onClick={onCancel}
+              className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-400 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirm}
+              className={`flex-1 px-4 py-2 rounded-md text-sm font-medium text-white transition-colors ${
+                isFavorite
+                  ? "bg-red-600 hover:bg-red-700"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
+            >
+              {isFavorite ? "Remove" : "Add"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const BookCardItem: React.FC<BookCardProps> = (props) => {
+  const [direction, setDirection] = useState("horizontal");
+  const [isHover, setIsHover] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  useEffect(() => {
     let filePath = "";
     //open book when app start
     if (isElectron) {
@@ -36,211 +91,135 @@ class BookCardItem extends React.Component<BookCardProps, BookCardState> {
 
     if (
       StorageUtil.getReaderConfig("isOpenBook") === "yes" &&
-      RecentBooks.getAllRecent()[0] === this.props.book.file_key &&
-      !this.props.currentBook.file_key &&
+      RecentBooks.getAllRecent()[0] === props.book.file_key &&
+      (!props.currentBook || !props.currentBook.file_key) &&
       !filePath
     ) {
-      this.props.handleReadingBook(this.props.book);
+      props.handleReadingBook(props.book);
+      BookUtil.RedirectBook(props.book, props.t, props.history);
+    }
+  }, [props.book.file_key, props.currentBook?.file_key, props.t, props.history, props.handleReadingBook]);
 
-      BookUtil.RedirectBook(this.props.book, this.props.t, this.props.history);
-    }
-  }
-  UNSAFE_componentWillReceiveProps(nextProps: BookCardProps) {
-    if (nextProps.book.file_key !== this.props.book.file_key) {
-      this.setState({
-        isFavorite: AddFavorite.getAllFavorite().indexOf(nextProps.book.file_key) > -1,
-      });
-    }
-  }
 
-  handleMoreAction = (event: any) => {
-    event.preventDefault();
-    const e = event || window.event;
-    let x = e.clientX;
-    if (x > document.body.clientWidth - 300) {
-      x = x - 190;
-    } else {
-      x = x - 10;
-    }
-    this.setState(
-      {
-        left: x,
-        top: document.body.clientHeight - e.clientY > 250 ? e.clientY - 10 : e.clientY - 220,
-      },
-      () => {
-        this.props.handleActionDialog(true);
-        this.props.handleReadingBook(this.props.book);
-      }
-    );
-  };
-
-  handleJump = async () => {
-    if (this.props.isSelectBook) {
-      this.props.handleSelectedBooks(
-        this.props.isSelected
-          ? this.props.selectedBooks.filter((item) => item !== this.props.book.file_key)
-          : [...this.props.selectedBooks, this.props.book.file_key]
-      );
-      return;
-    }
+  const handleJump = useCallback(async () => {
     console.log("start load");
-    await this.props.loadContentBook({
-      ...this.props.book,
-      source_url: this.props.book.url,
-      name: this.props.book.title,
+    await props.loadContentBook({
+      ...props.book,
+      source_url: props.book.url,
+      name: props.book.title,
     });
     console.log("end load");
 
-    await RecentBooks.setRecent(this.props.book.file_key);
-    this.props.handleReadingBook(this.props.book);
-    BookUtil.RedirectBook(this.props.book, this.props.t, this.props.history);
-  };
+    await RecentBooks.setRecent(props.book.file_key);
+    props.handleReadingBook(props.book);
+    BookUtil.RedirectBook(props.book, props.t, props.history);
+  }, [props.book, props.loadContentBook, props.handleReadingBook, props.t, props.history]);
 
-  render() {
-    let percentage = "0";
-    // if (this.props.book.format === "PDF") {
-    //   if (
-    //     RecordLocation.getPDFLocation(this.props.book.md5.split("-")[0]) &&
-    //     RecordLocation.getPDFLocation(this.props.book.md5.split("-")[0]).page &&
-    //     this.props.book.page
-    //   ) {
-    //     percentage =
-    //       RecordLocation.getPDFLocation(this.props.book.md5.split("-")[0])
-    //         .page /
-    //         this.props.book.page +
-    //       "";
-    //   }
-    // } else {
-    //   if (
-    //     RecordLocation.getHtmlLocation(this.props.book.file_key) &&
-    //     RecordLocation.getHtmlLocation(this.props.book.file_key).percentage
-    //   ) {
-    //     percentage = RecordLocation.getHtmlLocation(
-    //       this.props.book.file_key
-    //     ).percentage;
-    //   }
-    // }
-    // let percentage = 0;
-    const actionProps = {
-      left: this.state.left,
-      top: this.state.top,
-      isFavorite: this.props.isFavorite,
-      loadFavoriteBooks: this.props.loadFavoriteBooks,
-    };
-    return (
-      <>
+  const handleFavoriteClick = useCallback((event: React.MouseEvent) => {
+    event.stopPropagation();
+    setShowConfirmModal(true);
+  }, []);
+
+  const handleConfirmFavorite = useCallback(() => {
+    props.onToggleFavorite(props.book);
+    setShowConfirmModal(false);
+  }, [props.onToggleFavorite, props.book]);
+
+  const handleCancelFavorite = useCallback(() => {
+    setShowConfirmModal(false);
+  }, []);
+
+  const handleImageLoad = useCallback((res: any) => {
+    if (res.target.naturalHeight / res.target.naturalWidth > 137 / 105) {
+      setDirection("horizontal");
+    } else {
+      setDirection("vertical");
+    }
+  }, []);
+
+  return (
+    <>
+      <div className="book-list-item w-52 h-fit m-2 float-left relative col-span-1">
         <div
-          className="book-list-item w-52 h-fit m-2 float-left relative col-span-1"
-          onContextMenu={(event) => {
-            this.handleMoreAction(event);
-          }}
+          className="book-item-cover w-full p-5 opacity-100 cursor-pointer flex justify-center relative"
+          onClick={handleJump}
+          onMouseEnter={() => setIsHover(true)}
+          onMouseLeave={() => setIsHover(false)}
+          style={
+            StorageUtil.getReaderConfig("isDisableCrop") === "yes"
+              ? {
+                  height: "308px",
+                  alignItems: "flex-end",
+                  background: "rgba(255, 255,255, 0)",
+                  boxShadow: "0px 0px 5px rgba(0, 0, 0, 0)",
+                }
+              : {
+                  height: "278px",
+                  alignItems: "center",
+                  overflow: "hidden",
+                }
+          }
         >
-          <div
-            className="book-item-cover w-full p-5 opacity-100 cursor-pointer flex justify-center"
-            onClick={() => {
-              this.handleJump();
-            }}
-            onMouseEnter={() => {
-              this.setState({ isHover: true });
-            }}
-            onMouseLeave={() => {
-              this.setState({ isHover: false });
-            }}
+          <img
+            data-src={props.book.thumbnail}
+            alt=""
+            className="lazy-image book-item-image"
             style={
-              StorageUtil.getReaderConfig("isDisableCrop") === "yes"
-                ? {
-                    height: "308px",
-                    alignItems: "flex-end",
-                    background: "rgba(255, 255,255, 0)",
-                    boxShadow: "0px 0px 5px rgba(0, 0, 0, 0)",
-                  }
-                : {
-                    height: "278px",
-                    alignItems: "center",
-                    overflow: "hidden",
-                  }
+              direction === "horizontal" || StorageUtil.getReaderConfig("isDisableCrop") === "yes"
+                ? { width: "100%" }
+                : { height: "100%" }
             }
+            onLoad={handleImageLoad}
+          />
+          
+          {/* Heart Icon */}
+          <div
+            className="absolute top-2 right-2 z-10"
+            onClick={handleFavoriteClick}
           >
-            <img
-              data-src={this.props.book.thumbnail}
-              alt=""
-              className="lazy-image book-item-image"
-              style={
-                this.state.direction === "horizontal" || StorageUtil.getReaderConfig("isDisableCrop") === "yes"
-                  ? { width: "100%" }
-                  : { height: "100%" }
-              }
-              onLoad={(res: any) => {
-                if (res.target.naturalHeight / res.target.naturalWidth > 137 / 105) {
-                  this.setState({ direction: "horizontal" });
-                } else {
-                  this.setState({ direction: "vertical" });
-                }
-              }}
-            ></img>
-          </div>
-          {this.props.isSelectBook || this.state.isHover ? (
-            <span
-              className="icon-message book-selected-icon"
-              onMouseEnter={() => {
-                this.setState({ isHover: true });
-              }}
-              onClick={(event) => {
-                if (this.props.isSelectBook) {
-                  this.props.handleSelectedBooks(
-                    this.props.isSelected
-                      ? this.props.selectedBooks.filter((item) => item !== this.props.book.file_key)
-                      : [...this.props.selectedBooks, this.props.book.file_key]
-                  );
-                } else {
-                  this.props.handleSelectBook(true);
-                  this.props.handleSelectedBooks([this.props.book.file_key]);
-                }
-                this.setState({ isHover: false });
-                event?.stopPropagation();
-              }}
-              style={
-                this.props.isSelected
-                  ? { opacity: 1 }
-                  : {
-                      color: "#eee",
-                    }
-              }
-            ></span>
-          ) : null}
-
-          <p className="book-item-title">{this.props.book.name}</p>
-          <div className="reading-progress-icon">
-            <div style={{ position: "relative", left: "4px" }}>
-              {percentage && !isNaN(parseFloat(percentage))
-                ? Math.floor(parseFloat(percentage) * 100) === 0
-                  ? "New"
-                  : Math.floor(parseFloat(percentage) * 100) < 10
-                  ? Math.floor(parseFloat(percentage) * 100)
-                  : Math.floor(parseFloat(percentage) * 100) === 100
-                  ? "Done"
-                  : Math.floor(parseFloat(percentage) * 100)
-                : "0"}
-              {Math.floor(parseFloat(percentage) * 100) > 0 && Math.floor(parseFloat(percentage) * 100) < 100 && (
-                <span>%</span>
+            <div className="heart-container">
+              {props.isFavorite ? (
+                <svg
+                  className="w-6 h-6 text-red-500 hover:text-red-600 transition-colors cursor-pointer"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-6 h-6 text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
+                </svg>
               )}
             </div>
           </div>
-          <span
-            className="icon-more book-more-action"
-            onClick={(event) => {
-              this.handleMoreAction(event);
-            }}
-          ></span>
         </div>
 
-        {this.props.isOpenActionDialog && this.props.book.file_key === this.props.currentBook.file_key ? (
-          <div className="action-dialog-parent">
-            <ActionDialog {...actionProps} />
-          </div>
-        ) : null}
-      </>
-    );
-  }
-}
+        <p className="book-item-title">{props.book.name}</p>
+      </div>
+
+      <FavoriteConfirmModal
+        isOpen={showConfirmModal}
+        isFavorite={props.isFavorite}
+        onConfirm={handleConfirmFavorite}
+        onCancel={handleCancelFavorite}
+      />
+    </>
+  );
+};
+
 export default withRouter(BookCardItem as any);

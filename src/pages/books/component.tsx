@@ -33,7 +33,7 @@ const languageList = ["Malay", "English", "Mandarin"];
 
 const BookList: React.FC<BookListProps> = (props) => {
   const userData: UserData | null = authService.getUserData();
-  const userId = userData?.id;
+  const user_id = userData?.id;
   const userIc = userData?.ic_number;
 
   const history = useHistory();
@@ -105,7 +105,7 @@ const BookList: React.FC<BookListProps> = (props) => {
 
   const loadFavoriteBooks = async () => {
     try {
-      const response = await api.get(`/api/ebooks/favorites/${userId}`);
+      const response = await api.get(`/api/users/favorites/${user_id}`);
       const favoriteBooks = response.data.data;
       setFavoriteBooks(favoriteBooks);
     } catch (error) {
@@ -164,6 +164,33 @@ const BookList: React.FC<BookListProps> = (props) => {
   const handleJump = (book: BookModel) => {
     localStorage.setItem("tempBook", JSON.stringify(book));
     BookUtil.RedirectBook(book, props.t, history);
+  };
+
+  const handleToggleFavorite = async (book: any) => {
+    try {
+      const isCurrentlyFavorite = favoriteBooks.includes(book.key);
+      
+      if (isCurrentlyFavorite) {
+        // Remove from favorites
+        await api.post(`/api/users/remove-favorite`, {
+          user_id: user_id,
+          book_id: book.key
+        });
+        setFavoriteBooks(prev => prev.filter(key => key !== book.key));
+        toast.success("Removed from favorites");
+      } else {
+        // Add to favorites
+        await api.post(`/api/users/add-favorite`, {
+          user_id: user_id,
+          book_id: book.key
+        });
+        setFavoriteBooks(prev => [...prev, book.key]);
+        toast.success("Added to favorites");
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      toast.error("Failed to update favorites");
+    }
   };
 
   const handleAddBook = async (book: BookModel, buffer: ArrayBuffer) => {
@@ -403,15 +430,13 @@ const BookList: React.FC<BookListProps> = (props) => {
               />
             ) : props.viewMode === "card" ? (
               <BookCardItem
-                {...{
-                  key: index,
-                  book: item,
-                  loadContentBook,
-                  loadBookList,
-                  loadFavoriteBooks,
-                  isSelected: props.selectedBooks.indexOf(item.key) > -1,
-                  isFavorite,
-                }}
+                key={index}
+                book={item}
+                isFavorite={isFavorite}
+                t={props.t}
+                handleReadingBook={props.handleReadingBook}
+                loadContentBook={loadContentBook}
+                onToggleFavorite={handleToggleFavorite}
               />
             ) : (
               <BookCoverItem
@@ -449,6 +474,10 @@ const BookList: React.FC<BookListProps> = (props) => {
 
   useEffect(() => {
     loadHighlights();
+  }, []);
+
+  useEffect(() => {
+    loadFavoriteBooks();
   }, []);
 
   useEffect(() => {
@@ -780,7 +809,7 @@ const BookList: React.FC<BookListProps> = (props) => {
               </div>
             )}
             <ul
-              className="book-list-item-box h-[calc(100vh_-_180px)] overflow-auto grid 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-2 justify-items-center"
+              className="book-list-item-box w-full h-[calc(100vh_-_180px)] overflow-auto grid 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-2 justify-items-center"
               onScroll={() => {
                 lazyLoad();
               }}
@@ -789,12 +818,12 @@ const BookList: React.FC<BookListProps> = (props) => {
             </ul>
           </div>
         </div>
-        <div className="book-list-header">
+        {/* <div className="book-list-header">
           <SelectBook />
           <div style={props.isSelectBook ? { display: "none" } : {}}>
             <ViewMode />
           </div>
-        </div>
+        </div> */}
       </>
     );
   }
