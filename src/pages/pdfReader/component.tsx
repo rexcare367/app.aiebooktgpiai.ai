@@ -23,6 +23,7 @@ import Loading from "../../components/loading/component";
 import api from "../../utils/axios";
 import EbookChatbotWidget from "../../components/dialogs/ebookChatbotDialog/ebookChatbotWidget";
 import authService, { UserData } from "../../utils/authService";
+import { formatDuration } from "../../utils/commonUtil";
 
 function RenderQuizModal({ showModal, handleQuizModal, book, handleScore }) {
   const [quizzes, setQuizzes] = useState([{ question: "", answer: [], id: "" }]);
@@ -256,18 +257,6 @@ const Viewer: React.FC<ViewerProps> = (props) => {
     setIsChatCollapsed(prev => !prev);
   }, []);
 
-  // Format duration to HH:MM:SS
-  const formatDuration = useCallback((seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    
-    if (hours > 0) {
-      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    } else {
-      return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-  }, []);
 
   // Effects
   useEffect(() => {

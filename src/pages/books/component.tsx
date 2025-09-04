@@ -5,18 +5,18 @@ import BookCardItem from "../../components/bookCardItem";
 import BookListItem from "../../components/bookListItem";
 import BookCoverItem from "../../components/bookCoverItem";
 import LoadingSkeleton from "../../features/books/BookSkeleton";
+import DownloadingLoader from "../../components/loading/DownloadingLoader";
 import EmptyPage from "../../pages/emptyPage/component";
 import ShelfUtil from "../../utils/readUtils/shelfUtil";
 import BookModel from "../../models/Book";
+import { useDownloadingState } from "../../hooks/useDownloadingState";
 
 import { BookListProps } from "./interface";
 import StorageUtil from "../../utils/serviceUtils/storageUtil";
 import { fetchMD5 } from "../../utils/fileUtils/md5Util";
 import { useHistory, useLocation } from "react-router-dom";
-import ViewMode from "../../components/viewMode";
 import BookUtil from "../../utils/fileUtils/bookUtil";
 import RecordRecent from "../../utils/readUtils/recordRecent";
-import SelectBook from "../../components/selectBook";
 
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -46,6 +46,9 @@ const BookList: React.FC<BookListProps> = (props) => {
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const shelfDropdownRef = useRef<HTMLDivElement>(null);
   const languageDropdownRef = useRef<HTMLDivElement>(null);
+  
+  // Downloading state management
+  const { downloadingState, startDownloading, updateProgress, finishDownloading, cancelDownloading } = useDownloadingState();
 
   const queryParams = new URLSearchParams(location.search);
   const selectedShelves = queryParams.get("genres")?.split(",") || shelfList;
@@ -142,22 +145,48 @@ const BookList: React.FC<BookListProps> = (props) => {
   };
 
   const loadContentBook = async (book: BookModel) => {
-    props.handleLoadingBook(true);
-    await new Promise((resolve) => {
-      book.source_url = book.source_url.replace(/_/g, "+");
+    // Start downloading state
+    startDownloading(book.name || 'Unknown Book', book.key);
+    updateProgress(10);
+    
+    
+    try {
+      await new Promise<void>((resolve, reject) => {
+        book.source_url = book.source_url.replace(/_/g, "+");
+        updateProgress(20);
 
-      axios.get<ArrayBuffer>(book.source_url, { responseType: "arraybuffer" }).then(async (res) => {
-        const arrayBuffer = res.data;
-        const { type, format } = getFileFormat(book.file_key);
-        const blob = new Blob([new Uint8Array(arrayBuffer)], { type });
-        const file = new File([blob], `${book.name}.${format}`, { type });
+        axios.get<ArrayBuffer>(book.source_url, { 
+          responseType: "arraybuffer",
+          onDownloadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+              updateProgress(Math.min(90, 20 + (progress * 0.7))); // Scale to 20-90%
+            }
+          }
+        }).then(async (res) => {
+          updateProgress(90);
+          const arrayBuffer = res.data;
+          const { type, format } = getFileFormat(book.file_key);
+          const blob = new Blob([new Uint8Array(arrayBuffer)], { type });
+          const file = new File([blob], `${book.name}.${format}`, { type });
 
-        await getMd5WithBrowser(file, book.file_key, book.thumbnail, book.thumb_url, book.source_url, book.key);
+          await getMd5WithBrowser(file, book.file_key, book.thumbnail, book.thumb_url, book.source_url, book.key);
+          updateProgress(100);
 
-        resolve(book.key);
-        props.handleLoadingBook(false);
+          resolve();
+          finishDownloading();
+        }).catch((error) => {
+          console.error('Error downloading book:', error);
+          cancelDownloading();
+          reject(error);
+        });
       });
-    });
+    } catch (error) {
+      console.error('Error in loadContentBook:', error);
+      cancelDownloading();
+      throw error;
+    }
+    
     return book.key;
   };
 
@@ -830,7 +859,17 @@ const BookList: React.FC<BookListProps> = (props) => {
 
   StorageUtil.setReaderConfig("totalBooks", props.books?.length?.toString());
 
-  return <Manager>{bookListContent}</Manager>;
+  return (
+    <Manager>
+      {bookListContent}
+      <DownloadingLoader
+        isVisible={downloadingState.isDownloading}
+        bookTitle={downloadingState.bookTitle}
+        progress={downloadingState.progress}
+        onCancel={cancelDownloading}
+      />
+    </Manager>
+  );
 };
 
 export default BookList;

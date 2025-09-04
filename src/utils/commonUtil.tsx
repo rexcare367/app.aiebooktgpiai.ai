@@ -132,3 +132,20 @@ export const getStrSHA256 = (str: string) => {
   hash.update(str);
   return hash.digest("hex");
 };
+
+/**
+ * Formats duration in seconds to HH:MM:SS or MM:SS format
+ * @param seconds - Duration in seconds
+ * @returns Formatted duration string
+ */
+export const formatDuration = (seconds: number): string => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  
+  if (hours > 0) {
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  } else {
+    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+};

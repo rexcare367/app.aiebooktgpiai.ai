@@ -47,6 +47,11 @@ export interface ViewerState {
   chapterDocIndex: number;
   cfiRange: any;
   contents: any;
-  rect: any;
+  rect: DOMRect | null;
   rendition: any;
+  startedTime: string;
+  duration: number;
+  showModal: boolean;
+  score: string;
+  isChatCollapsed: boolean;
 }
