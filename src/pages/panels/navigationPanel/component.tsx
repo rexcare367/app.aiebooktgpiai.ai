@@ -4,7 +4,7 @@ import ContentList from "../../lists/contentList";
 import BookNavList from "../../lists/navList";
 import { Trans } from "react-i18next";
 import { NavigationPanelProps, NavigationPanelState } from "./interface";
-import SearchBox from "../../../components/searchBox";
+import SearchBox from "../../../features/header/searchBox";
 // import Parser from "html-react-parser";
 // import * as DOMPurify from 'dompurify';
 import EmptyCover from "../../../components/emptyCover";

@@ -1,9 +1,9 @@
 import React from "react";
 import "./header.css";
-import SearchBox from "../searchBox";
+import SearchBox from "../../features/header/searchBox";
 import ChatbotDialog from "../dialogs/chatbotDialog";
 import { HeaderProps } from "./interface";
-import UserPanelDialog from "../dialogs/userPanelDialog";
+import { UserPanelDialog } from "../../features/header/userPanel";
 
 const Header: React.FC<HeaderProps> = (props) => {
 
@@ -16,7 +16,10 @@ const Header: React.FC<HeaderProps> = (props) => {
       </div>
 
       <div className="right-controls">
-        <UserPanelDialog />
+        <UserPanelDialog 
+          handleSetting={props.handleSetting}
+          isNewWarning={props.isNewWarning}
+        />
       </div>
       <ChatbotDialog />
     </div>

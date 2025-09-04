@@ -1,9 +1,9 @@
-//src/components/searchBox/index.tsx
 import { connect } from "react-redux";
-import { handleSearchResults, handleSearch, handleSearchKeyword } from "../../store/actions";
-import { stateType } from "../../store";
 import { withTranslation } from "react-i18next";
-import SearchBox from "./component";
+import { handleSearchResults, handleSearch, handleSearchKeyword } from "../../../store/actions";
+import { stateType } from "../../../store";
+import SearchBox from "./SearchBox";
+
 const mapStateToProps = (state: stateType) => {
   return {
     books: state.manager.books,
@@ -18,12 +18,17 @@ const mapStateToProps = (state: stateType) => {
     keyword: state.manager.keyword
   };
 };
+
 const actionCreator = {
   handleSearchResults,
   handleSearch,
   handleSearchKeyword
 };
+
 export default connect(
   mapStateToProps,
   actionCreator
 )(withTranslation()(SearchBox as any) as any);
+
+export { default as SearchBox } from "./SearchBox";
+export type { SearchBoxProps } from "./types";
