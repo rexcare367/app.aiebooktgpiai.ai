@@ -15,8 +15,3 @@ export interface PopupNoteProps {
   handleFetchNotes: () => void;
   t: (title: string) => string;
 }
-export interface PopupNoteState {
-  tag: string[];
-  text: string;
-  username: string;
-}

@@ -1,9 +1,9 @@
-import BookList from "../containers/lists/bookList";
-import NoteList from "../containers/lists/noteList";
-import DigestList from "../containers/lists/digestList";
-import ProfilePage from "../containers/profilePage";
-import { AchievementPage } from "../containers/achievementPage/components";
-import { RewardPage } from "../containers/rewardPage/components";
+import BookList from "../pages/books";
+import NoteList from "../pages/notes";
+import DigestList from "../pages/digests";
+import ProfilePage from "../pages/profile";
+import { AchievementPage } from "../pages/achievements/components";
+import { RewardPage } from "../pages/rewards/components";
 
 export const routes = [
   { path: "/manager/note", component: NoteList },

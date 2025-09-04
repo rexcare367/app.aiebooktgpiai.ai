@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import Router from "./router/index";
-import { AuthProvider, useAuthContext } from "./components/auth/AuthProvider";
-import AuthContainer from "./components/auth/AuthContainer";
+import { AuthProvider, useAuthContext } from "./pages/auth/AuthProvider";
+import AuthContainer from "./pages/auth/AuthContainer";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 const AppContent: FC = () => {
   const { isAuthenticated } = useAuthContext();

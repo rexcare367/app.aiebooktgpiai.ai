@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./popupNote.css";
 import Note from "../../../models/Note";
 
-import { PopupNoteProps, PopupNoteState } from "./interface";
+import { PopupNoteProps } from "./interface";
 import RecordLocation from "../../../utils/readUtils/recordLocation";
 import NoteTag from "../../noteTag";
 import NoteModel from "../../../models/Note";
@@ -14,26 +14,27 @@ import { createOneNote, removeOneNote } from "../../../utils/serviceUtils/noteUt
 import { classes } from "../../../constants/themeList";
 import { useCurrentUserId } from "../../../utils/authUtils";
 import api from "../../../utils/axios";
+import authService, { UserData } from "../../../utils/authService";
 
 declare var window: any;
 
-class PopupNote extends React.Component<PopupNoteProps, PopupNoteState> {
-  constructor(props: PopupNoteProps) {
-    super(props);
-    this.state = { tag: [], text: "", username: "" };
-  }
+const PopupNote: React.FC<PopupNoteProps> = (props) => {
+  const [tag, setTag] = useState<string[]>([]);
+  const [text, setText] = useState<string>("");
+  
+  const userData: UserData | null = authService.getUserData();
+  // const userId = userData?.id;
+  const user_ic = userData?.ic_number;
 
-  componentDidMount() {
+  useEffect(() => {
     let textArea: any = document.querySelector(".editor-box");
     textArea && textArea.focus();
-    if (this.props.noteKey) {
-      let noteIndex = window._.findLastIndex(this.props.notes, {
-        key: this.props.noteKey,
+    if (props.noteKey) {
+      let noteIndex = window._.findLastIndex(props.notes, {
+        key: props.noteKey,
       });
-      this.setState({
-        text: this.props.notes[noteIndex].text,
-      });
-      textArea.value = this.props.notes[noteIndex].notes;
+      setText(props.notes[noteIndex].text);
+      textArea.value = props.notes[noteIndex].notes;
     } else {
       let doc = getIframeDoc();
       if (!doc) {
@@ -48,58 +49,57 @@ class PopupNote extends React.Component<PopupNoteProps, PopupNoteState> {
       text = text.replace(/\n/g, "");
       text = text.replace(/\t/g, "");
       text = text.replace(/\f/g, "");
-      this.setState({ text });
+      setText(text);
     }
-    // Use Clerk user ID instead of AWS Amplify
-    this.setState({ username: "clerk-user-id" });
-  }
-  handleTag = (tag: string[]) => {
-    this.setState({ tag });
-  };
+  }, [props.noteKey, props.notes]);
 
-  handleNoteClick = (event: Event) => {
-    this.props.handleNoteKey((event.target as any).dataset.key);
-    this.props.handleMenuMode("note");
-    this.props.handleOpenMenu(true);
-  };
-  createNote() {
-    const { username } = this.state;
-    let { file_key } = this.props.currentBook;
+  const handleTag = useCallback((tag: string[]) => {
+    setTag(tag);
+  }, []);
+
+  const handleNoteClick = useCallback((event: Event) => {
+    props.handleNoteKey((event.target as any).dataset.key);
+    props.handleMenuMode("note");
+    props.handleOpenMenu(true);
+  }, [props]);
+
+  const createNote = useCallback(() => {
+    let { file_key } = props.currentBook;
     let notes = (document.querySelector(".editor-box") as HTMLInputElement).value;
     let cfi = "";
-    if (this.props.currentBook.format === "PDF") {
-      cfi = JSON.stringify(RecordLocation.getPDFLocation(this.props.currentBook.md5.split("-")[0]));
+    if (props.currentBook.format === "PDF") {
+      cfi = JSON.stringify(RecordLocation.getPDFLocation(props.currentBook.md5.split("-")[0]));
     } else {
-      cfi = JSON.stringify(RecordLocation.getHtmlLocation(this.props.currentBook.key));
+      cfi = JSON.stringify(RecordLocation.getHtmlLocation(props.currentBook.key));
     }
-    if (this.props.noteKey) {
+    if (props.noteKey) {
       let _item;
-      this.props.notes.forEach((item) => {
-        if (item.key === this.props.noteKey) {
+      props.notes.forEach((item) => {
+        if (item.key === props.noteKey) {
           item.notes = notes;
-          item.tag = this.state.tag;
+          item.tag = tag;
           item.cfi = cfi;
           _item = item;
         }
       });
 
       api
-        .put(`/api/highlights/${this.props.noteKey}`, {
+        .put(`/api/highlights/${props.noteKey}`, {
           ..._item,
-          user_ic: username,
+          user_ic: user_ic,
           file_key,
         })
         .then(
-          window.localforage.setItem("notes", this.props.notes).then(() => {
-            this.props.handleOpenMenu(false);
-            toast.success(this.props.t("Addition successful"));
-            this.props.handleFetchNotes();
-            this.props.handleMenuMode("");
-            this.props.handleNoteKey("");
+          window.localforage.setItem("notes", props.notes).then(() => {
+            props.handleOpenMenu(false);
+            toast.success(props.t("Addition successful"));
+            props.handleFetchNotes();
+            props.handleMenuMode("");
+            props.handleNoteKey("");
           })
         );
     } else {
-      let { key: bookKey, file_key } = this.props.currentBook;
+      let { key: bookKey, file_key } = props.currentBook;
 
       let pageArea = document.getElementById("page-area");
       if (!pageArea) return;
@@ -110,24 +110,23 @@ class PopupNote extends React.Component<PopupNoteProps, PopupNoteState> {
         return;
       }
       let charRange;
-      if (this.props.currentBook.format !== "PDF") {
+      if (props.currentBook.format !== "PDF") {
         charRange = window.rangy.getSelection(iframe).saveCharacterRanges(doc.body)[0];
       }
 
       let range =
-        this.props.currentBook.format === "PDF" ? JSON.stringify(getHightlightCoords()) : JSON.stringify(charRange);
+        props.currentBook.format === "PDF" ? JSON.stringify(getHightlightCoords()) : JSON.stringify(charRange);
 
       let percentage = 0;
 
-      let color = this.props.color || 0;
-      let tag = this.state.tag;
+      let color = props.color || 0;
 
       let note = new Note(
         bookKey,
         file_key,
-        this.props.chapter,
-        this.props.chapterDocIndex,
-        this.state.text,
+        props.chapter,
+        props.chapterDocIndex,
+        text,
         cfi,
         range,
         notes,
@@ -136,107 +135,107 @@ class PopupNote extends React.Component<PopupNoteProps, PopupNoteState> {
         tag
       );
 
-      let noteArr = this.props.notes;
+      let noteArr = props.notes;
       noteArr.push(note);
       api
         .post(`/api/highlights/add`, {
           ...note,
-          user_ic: username,
+          user_ic: user_ic,
           book_id: bookKey,
         })
         .then(
           window.localforage.setItem("notes", noteArr).then(() => {
-            this.props.handleOpenMenu(false);
-            toast.success(this.props.t("Addition successful"));
-            this.props.handleFetchNotes();
-            this.props.handleMenuMode("");
-            createOneNote(note, this.props.currentBook.format, this.handleNoteClick);
+            props.handleOpenMenu(false);
+            toast.success(props.t("Addition successful"));
+            props.handleFetchNotes();
+            props.handleMenuMode("");
+            createOneNote(note, props.currentBook.format, handleNoteClick);
           })
         );
     }
-  }
-  handleClose = () => {
+  }, [props, tag, text, handleNoteClick]);
+
+  const handleClose = useCallback(() => {
     let noteIndex = -1;
     let note: NoteModel;
-    if (this.props.noteKey) {
-      this.props.notes.forEach((item, index) => {
-        if (item.key === this.props.noteKey) {
+    if (props.noteKey) {
+      props.notes.forEach((item, index) => {
+        if (item.key === props.noteKey) {
           noteIndex = index;
           note = item;
         }
       });
       if (noteIndex > -1) {
-        this.props.notes.splice(noteIndex, 1);
-        api.delete(`/api/highlights/${this.props.noteKey}`).then(
-          window.localforage.setItem("notes", this.props.notes).then(() => {
-            if (this.props.currentBook.format === "PDF") {
+        props.notes.splice(noteIndex, 1);
+        api.delete(`/api/highlights/${props.noteKey}`).then(
+          window.localforage.setItem("notes", props.notes).then(() => {
+            if (props.currentBook.format === "PDF") {
               removePDFHighlight(JSON.parse(note.range), classes[note.color], note.key);
             }
 
-            toast.success(this.props.t("Deletion successful"));
-            this.props.handleMenuMode("");
-            this.props.handleFetchNotes();
-            this.props.handleNoteKey("");
-            removeOneNote(note.key, this.props.currentBook.format);
-            this.props.handleOpenMenu(false);
+            toast.success(props.t("Deletion successful"));
+            props.handleMenuMode("");
+            props.handleFetchNotes();
+            props.handleNoteKey("");
+            removeOneNote(note.key, props.currentBook.format);
+            props.handleOpenMenu(false);
           })
         );
       }
     } else {
-      this.props.handleOpenMenu(false);
-      this.props.handleMenuMode("");
-      this.props.handleNoteKey("");
+      props.handleOpenMenu(false);
+      props.handleMenuMode("");
+      props.handleNoteKey("");
     }
-  };
+  }, [props]);
 
-  render() {
-    let note: NoteModel;
-    if (this.props.noteKey) {
-      this.props.notes.forEach((item) => {
-        if (item.key === this.props.noteKey) {
-          note = item;
-        }
-      });
-    }
-
-    const renderNoteEditor = () => {
-      return (
-        <div className="note-editor">
-          <div className="note-original-text">{this.state.text}</div>
-          <div className="editor-box-parent">
-            <textarea className="editor-box" />
-          </div>
-          <div className="note-tags" style={{ position: "absolute", bottom: "0px", height: "40px" }}>
-            <NoteTag
-              {...{
-                handleTag: this.handleTag,
-                tag: this.props.noteKey && note ? note.tag : [],
-              }}
-            />
-          </div>
-
-          <div className="note-button-container">
-            <span
-              className="book-manage-title"
-              onClick={() => {
-                this.handleClose();
-              }}
-            >
-              {this.props.noteKey ? <Trans>Delete</Trans> : <Trans>Cancel</Trans>}
-            </span>
-            <span
-              className="book-manage-title"
-              onClick={() => {
-                this.createNote();
-              }}
-            >
-              <Trans>Create Note</Trans>
-            </span>
-          </div>
-        </div>
-      );
-    };
-    return renderNoteEditor();
+  let note: NoteModel;
+  if (props.noteKey) {
+    props.notes.forEach((item) => {
+      if (item.key === props.noteKey) {
+        note = item;
+      }
+    });
   }
-}
+
+  const renderNoteEditor = () => {
+    return (
+      <div className="note-editor">
+        <div className="note-original-text">{text}</div>
+        <div className="editor-box-parent">
+          <textarea className="editor-box" />
+        </div>
+        <div className="note-tags" style={{ position: "absolute", bottom: "0px", height: "40px" }}>
+          <NoteTag
+            {...{
+              handleTag: handleTag,
+              tag: props.noteKey && note ? note.tag : [],
+            }}
+          />
+        </div>
+
+        <div className="note-button-container">
+          <span
+            className="book-manage-title"
+            onClick={() => {
+              handleClose();
+            }}
+          >
+            {props.noteKey ? <Trans>Delete</Trans> : <Trans>Cancel</Trans>}
+          </span>
+          <span
+            className="book-manage-title"
+            onClick={() => {
+              createNote();
+            }}
+          >
+            <Trans>Create Note</Trans>
+          </span>
+        </div>
+      </div>
+    );
+  };
+  return renderNoteEditor();
+};
+
 export default PopupNote;

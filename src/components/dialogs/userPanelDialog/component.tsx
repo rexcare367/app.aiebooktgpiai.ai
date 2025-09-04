@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Trans } from "react-i18next";
 import { useHistory } from "react-router-dom";
 import "./userPanelDialog.css";
-import { useAuthContext } from "../../auth/AuthProvider";
+import { useAuthContext } from "../../../pages/auth/AuthProvider";
 import { User2Icon, LogOut, IdCard, Settings } from "lucide-react";
 
 const UserPanelDialog = ({ handleSetting, isNewWarning }) => {

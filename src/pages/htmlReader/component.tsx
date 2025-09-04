@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
-import SettingPanel from "../../containers/panels/settingPanel";
-import NavigationPanel from "../../containers/panels/navigationPanel";
-// import OperationPanel from "../../containers/panels/operationPanel";
+import SettingPanel from "../../pages/panels/settingPanel";
+import NavigationPanel from "../../pages/panels/navigationPanel";
+// import OperationPanel from "../../pages/panels/operationPanel";
 import { Toaster } from "react-hot-toast";
-import ProgressPanel from "../../containers/panels/progressPanel";
+import ProgressPanel from "../../pages/panels/progressPanel";
 import { ReaderProps, ReaderState } from "./interface";
 import StorageUtil from "../../utils/serviceUtils/storageUtil";
 import ReadingTime from "../../utils/readUtils/readingTime";
-import Viewer from "../../containers/htmlViewer";
+import Viewer from "../../pages/htmlViewer";
 import { Tooltip } from "react-tooltip";
 import RecordLocation from "../../utils/readUtils/recordLocation";
 import toast from "react-hot-toast";

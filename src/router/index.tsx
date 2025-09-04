@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { Route, Switch, HashRouter } from "react-router-dom";
-import AuthContainer from "../components/auth/AuthContainer";
+import AuthContainer from "../pages/auth/AuthContainer";
 import HtmlReader from "../pages/htmlReader";
 import PDFReader from "../pages/pdfReader";
 import _Redirect from "../pages/redirect";
 import i18n from "../i18n";
 import StorageUtil from "../utils/serviceUtils/storageUtil";
 import { routes } from "./routes";
-import { AuthGuard } from "../components/auth/AuthGuard";
+import { AuthGuard } from "../pages/auth/AuthGuard";
 
 const Router = () => {
   useEffect(() => {

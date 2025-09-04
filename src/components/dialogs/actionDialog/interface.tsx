@@ -14,7 +14,6 @@ export interface ActionDialogProps extends RouteComponentProps<any> {
   top: number;
   mode: string;
   isSelectBook: boolean;
-  user?: UserData;
   loadBookList: () => void;
   loadFavoriteBooks: () => void;
 
@@ -30,9 +29,4 @@ export interface ActionDialogProps extends RouteComponentProps<any> {
   handleDetailDialog: (isShow: boolean) => void;
   handleSelectBook: (isSelectBook: boolean) => void;
   handleSelectedBooks: (selectedBooks: string[]) => void;
-}
-export interface ActionDialogState {
-  isShowExport: boolean;
-  isShowDetail: boolean;
-  isExceed: boolean;
 }
