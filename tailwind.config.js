@@ -46,6 +46,14 @@ module.exports = {
         gray: {
           "main-bg": "#E0E0E0",
         },
+        // Project theme colors
+        primary: {
+          50: "rgba(1, 121, 202, 0.1)",
+          100: "rgba(1, 121, 202, 0.2)",
+          500: "rgba(1, 121, 202, 1)",
+          600: "rgba(0, 107, 182, 1)",
+          700: "rgba(0, 93, 162, 1)",
+        },
       },
       margin: {
         2.5: "10px",
@@ -55,8 +63,42 @@ module.exports = {
         sidebar: 20,
         modal: 30,
         loading: 40,
+        chatbot: 9998,
+        'chatbot-button': 9999,
+      },
+      backdropBlur: {
+        xs: '2px',
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function({ addUtilities }) {
+      const newUtilities = {
+        '.scrollbar-thin': {
+          'scrollbar-width': 'thin',
+        },
+        '.scrollbar-thumb-gray-300': {
+          '&::-webkit-scrollbar-thumb': {
+            'background-color': 'rgb(209 213 219)',
+            'border-radius': '0.375rem',
+          },
+        },
+        '.scrollbar-thumb-gray-600': {
+          '&::-webkit-scrollbar-thumb': {
+            'background-color': 'rgb(75 85 99)',
+            'border-radius': '0.375rem',
+          },
+        },
+        '.scrollbar-track-transparent': {
+          '&::-webkit-scrollbar-track': {
+            'background': 'transparent',
+          },
+        },
+        '.scrollbar-thin::-webkit-scrollbar': {
+          'width': '6px',
+        },
+      }
+      addUtilities(newUtilities)
+    }
+  ],
 };
