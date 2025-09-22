@@ -16,181 +16,13 @@ import { getPDFIframeDoc } from "../../utils/serviceUtils/docUtil";
 import Note from "../../models/Note";
 import RecordLocation from "../../utils/readUtils/recordLocation";
 import ReadingTime from "../../utils/readUtils/readingTime";
-import toast from "react-hot-toast";
-import { Star } from "lucide-react";
-import "./book-quiz-modal.css";
-import Loading from "../../components/loading/component";
 import api from "../../utils/axios";
 import EbookChatbotWidget from "../../components/dialogs/ebookChatbotDialog/ebookChatbotWidget";
 import authService, { UserData } from "../../utils/authService";
 import { formatDuration } from "../../utils/commonUtil";
+import QuizModal from "../../components/dialogs/quizModal/QuizModal";
 
-function RenderQuizModal({ showModal, handleQuizModal, book, handleScore }) {
-  const [quizzes, setQuizzes] = useState([{ question: "", answer: [], id: "" }]);
-  const [loading, setLoading] = useState(false);
-  const [score, setScore] = useState("0");
-  const [step, setStep] = useState<"question" | "result">("question");
-  // const userId = useCurrentUserId();
-  const userData: UserData | null = authService.getUserData();
-  // const userId = userData?.id;
-  const user_ic = userData?.ic_number;
-
-  const generateQuiz = useCallback(async () => {
-    await api
-      .post(`/api/ebooks/generate-quiz`, {
-        book_id: book.key,
-        user_ic: user_ic,
-      })
-      .then((res) => {
-        const _quizzes = res.data.quizzes;
-        setQuizzes(_quizzes);
-      });
-  }, [book.key]);
-
-  useEffect(() => {
-    if (book.file_key && showModal) {
-      setLoading(true);
-      generateQuiz().then((response) => {
-        console.log("response", response);
-
-        setLoading(false);
-      });
-    }
-  }, [showModal, book, generateQuiz]);
-
-  const submitAnswer = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setLoading(true);
-
-    const formData = new FormData(event.currentTarget);
-    const selectedAnswers = quizzes.map((_, i) => {
-      return { quizId: _.id, answer: formData.get(`quiz-${i}`) };
-    });
-
-    try {
-      const attributes = await api
-        .post(`/api/ebooks/submit-answer`, {
-          answers: selectedAnswers,
-        })
-        .then((res) => {
-          setScore(res.data.score);
-          handleScore(res.data.score);
-          setStep("result");
-          toast.success("Update successful");
-        })
-        .catch((error) => {
-          toast.error(error.message);
-        });
-      console.log("===== updated attributes", attributes);
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  return (
-    showModal && (
-      <div className="modal-overlay">
-        <div className="modal-content">
-          <div className="star-background">
-            {[...Array(20)].map((_, i) => (
-              <Star
-                key={i}
-                className="star"
-                style={{
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 100}%`,
-                  fontSize: `${Math.random() * 20 + 10}px`,
-                  animationDelay: `${Math.random() * 5}s`,
-                }}
-              />
-            ))}
-          </div>
-
-          {step === "result" ? (
-            <>
-              <h2 className="modal-title">Quiz Result</h2>
-              <div className="modal-body result">
-                {parseFloat(score) > 2 ? (
-                  <>
-                    <div className="result-icon correct">✓</div>
-                    <p className="result-text correct">Awesome Job!</p>
-                    <p className="result-subtext">
-                      Your score is <span className="score"> {score} </span>
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <div className="result-icon incorrect">✗</div>
-                    <p className="result-text incorrect">Nice Try!</p>
-                    <p className="result-subtext">You answered {score} questions correctly</p>
-                  </>
-                )}
-              </div>
-              <div className="modal-footer">
-                <button className="button primary" onClick={() => handleQuizModal()}>
-                  Continue Adventure!
-                </button>
-              </div>
-            </>
-          ) : (
-            <form onSubmit={submitAnswer}>
-              <h2 className="modal-title">Congratulations, Star Reader!</h2>
-              <div className="modal-body">
-                <p className="subtitle">You've finished the book! Ready for a fun challenge?</p>
-                {loading ? (
-                  <Loading width="[100vw]" height="[100vh]" />
-                ) : (
-                  <fieldset>
-                    {quizzes.map((quiz, i) => {
-                      return (
-                        <div key={i}>
-                          <p className="question">
-                            {i + 1}. {quiz.question}
-                          </p>
-                          <div className="options">
-                            {quiz.answer.map((answer, j) => {
-                              return (
-                                <label key={j} className="option">
-                                  <input
-                                    className="w-4 min-w-4"
-                                    type="radio"
-                                    name={`quiz-${i}`}
-                                    value={`${j}`}
-                                    id={`answer-${j}`}
-                                  />
-                                  <span className="option-text">{answer}</span>
-                                </label>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </fieldset>
-                )}
-              </div>
-              <div className="modal-footer">
-                <button
-                  className="button secondary"
-                  onClick={() => {
-                    handleQuizModal();
-                    setStep("question");
-                  }}
-                >
-                  Maybe Later
-                </button>
-                <button className="text-white button primary" type="submit" disabled={loading}>
-                  Let's Go!
-                </button>
-              </div>
-            </form>
-          )}
-        </div>
-      </div>
-    )
-  );
-}
+// (Inline quiz modal removed; using external QuizModal component.)
 
 declare var window: any;
 
@@ -513,11 +345,11 @@ const Viewer: React.FC<ViewerProps> = (props) => {
         )}
       </div>
 
-      <RenderQuizModal
-        showModal={showModal}
-        handleQuizModal={handleQuizModal}
+      <QuizModal
+        show={showModal}
+        onClose={handleQuizModal}
         book={props.currentBook}
-        handleScore={handleScore}
+        onScore={handleScore}
       />
 
       <Tooltip id="my-tooltip" style={{ zIndex: 25 }} />
