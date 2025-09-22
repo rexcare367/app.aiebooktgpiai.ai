@@ -53,22 +53,7 @@ const DigestList: React.FC<DigestListProps> = (props) => {
     setTag(newTag);
   };
 
-  const filterTag = (digests: NoteModel[]) => {
-    let temp: NoteModel[] = [];
-    for (let i = 0; i < digests.length; i++) {
-      let flag = false;
-      for (let j = 0; j < tag.length; j++) {
-        if (digests[i].tag && digests[i].tag.indexOf(tag[j]) > -1) {
-          flag = true;
-          break;
-        }
-      }
-      if (flag) {
-        temp.push(digests[i]);
-      }
-    }
-    return temp;
-  };
+  console.log('notes', notes)
 
   return <Manager><div
   className="digest-list-container-parent h-[calc(100vh_-_78px)] rounded-xl"
@@ -80,18 +65,7 @@ const DigestList: React.FC<DigestListProps> = (props) => {
   {isLoading ? (
     <DigestSkeleton />
   ) : notes.length === 0 ? (
-    <div
-      style={{
-        position: "fixed",
-        left: 0,
-        top: 0,
-        width: "100%",
-        height: "100%",
-        zIndex: -1,
-      }}
-    >
-      {tag.length === 0 && <Empty />}
-    </div>
+    <Empty />
   ) : (
     <CardList {...{ cards: notes }} />
   )}

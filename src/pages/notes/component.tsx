@@ -53,20 +53,9 @@ const NoteList: React.FC<NoteListProps> = (props) => {
       </div>
       {isLoading ? (
         <NoteSkeleton />
-      ) : notes.length === 0 ? (
-        <div
-          style={{
-            position: "fixed",
-            left: 0,
-            top: 0,
-            width: "100%",
-            height: "100%",
-            zIndex: -1,
-          }}
-        >
-          {tag.length === 0 && <Empty />}
-        </div>
-      ) : (
+      ) : notes.length === 0 ? 
+        <Empty />
+       : (
         <CardList {...{ cards: notes, mode: "note" }} />
       )}
     </div>

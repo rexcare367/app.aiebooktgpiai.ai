@@ -121,7 +121,7 @@ export const SchoolLeaderboardSection = () => {
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-100 dark:border-slate-800 overflow-hidden">
+      <div className="rounded-xl border border-slate-100 dark:border-slate-800 overflow-auto h-[calc(100vh-330px)]">
         <div className="grid grid-cols-12 bg-slate-50 dark:bg-slate-900 px-4 py-2 text-xs font-medium text-slate-500 dark:text-slate-400">
           <div className="col-span-2">Rank</div>
           <div className="col-span-6">Student</div>
