@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 
-import "./booklist.css";
 import BookCardItem from "../../components/bookCardItem";
 import BookListItem from "../../components/bookListItem";
 import BookCoverItem from "../../components/bookCoverItem";
@@ -519,14 +518,13 @@ const BookList: React.FC<BookListProps> = (props) => {
   } else {
     bookListContent = (
       <>
-        <div className="book-list-container-parent" style={{ backgroundColor: 'var(--bg-color)' }}>
-          <div className="book-list-container">
-            <div className="flex md:flex-row flex-col p-4 gap-2 rounded-lg shadow-sm w-full justify-between" style={{ backgroundColor: 'var(--bg-color)', border: '1px solid var(--border-color)' }}>
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
-                <span className="text-sm" style={{ color: 'var(--text-color)' }}>
-                  Showing <span className="font-medium">{Math.min((currentPage - 1) * pageSize + 1, totalItems)}</span>{" "}
-                  - <span className="font-medium">{Math.min(currentPage * pageSize, totalItems)}</span> of{" "}
-                  <span className="font-medium">{totalItems}</span> books
+        <div className="relative h-full rounded-xl p-4 ">
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm mb-6 flex justify-between">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
+                <span className="text-sm text-gray-700 dark:text-gray-300">
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{Math.min((currentPage - 1) * pageSize + 1, totalItems)}</span>{" "}
+                  - <span className="font-medium text-gray-900 dark:text-gray-100">{Math.min(currentPage * pageSize, totalItems)}</span> of{" "}
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{totalItems}</span>
                 </span>
 
                 <div className="flex items-center gap-3">
@@ -538,22 +536,7 @@ const BookList: React.FC<BookListProps> = (props) => {
                       }
                     }}
                     disabled={currentPage === 1}
-                    className="w-9 h-9 flex items-center justify-center rounded-lg border transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
-                    style={{
-                      borderColor: 'var(--border-color)',
-                      color: 'var(--text-color)',
-                      backgroundColor: 'var(--bg-color)'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = 'var(--active-theme-color)';
-                      e.currentTarget.style.backgroundColor = 'var(--active-theme-light)';
-                      e.currentTarget.style.color = 'var(--active-theme-color)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = 'var(--border-color)';
-                      e.currentTarget.style.backgroundColor = 'var(--bg-color)';
-                      e.currentTarget.style.color = 'var(--text-color)';
-                    }}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 dark:hover:border-blue-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:hover:bg-white dark:disabled:hover:border-gray-600 dark:disabled:hover:bg-gray-700 shadow-sm"
                     aria-label="Previous page"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -565,9 +548,9 @@ const BookList: React.FC<BookListProps> = (props) => {
                     </svg>
                   </button>
                   <div className="flex items-center gap-1">
-                    <span className="font-medium" style={{ color: 'var(--text-color)' }}>{currentPage}</span>
-                    <span style={{ color: 'var(--text-color-2)' }}>/</span>
-                    <span style={{ color: 'var(--text-color-2)' }}>{Math.ceil(totalItems / pageSize)}</span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">{currentPage}</span>
+                    <span className="text-gray-500 dark:text-gray-400">/</span>
+                    <span className="text-gray-500 dark:text-gray-400">{Math.ceil(totalItems / pageSize)}</span>
                   </div>
                   <button
                     onClick={() => {
@@ -577,22 +560,7 @@ const BookList: React.FC<BookListProps> = (props) => {
                       }
                     }}
                     disabled={currentPage >= Math.ceil(totalItems / pageSize)}
-                    className="w-9 h-9 flex items-center justify-center rounded-lg border transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
-                    style={{
-                      borderColor: 'var(--border-color)',
-                      color: 'var(--text-color)',
-                      backgroundColor: 'var(--bg-color)'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = 'var(--active-theme-color)';
-                      e.currentTarget.style.backgroundColor = 'var(--active-theme-light)';
-                      e.currentTarget.style.color = 'var(--active-theme-color)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = 'var(--border-color)';
-                      e.currentTarget.style.backgroundColor = 'var(--bg-color)';
-                      e.currentTarget.style.color = 'var(--text-color)';
-                    }}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600 dark:hover:border-blue-400 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:hover:bg-white dark:disabled:hover:border-gray-600 dark:disabled:hover:bg-gray-700 shadow-sm"
                     aria-label="Next page"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -610,242 +578,168 @@ const BookList: React.FC<BookListProps> = (props) => {
                     const [newOrderBy, newOrder] = e.target.value.split("-");
                     updateUrl(selectedShelves, selectedLanguages, currentPage, pageSize, newOrder, newOrderBy);
                   }}
-                  className="px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent"
-                  style={{
-                    backgroundColor: 'var(--bg-color)',
-                    borderColor: 'var(--border-color)',
-                    color: 'var(--text-color)'
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = 'var(--active-theme-color)';
-                    e.currentTarget.style.boxShadow = `0 0 0 2px var(--active-theme-light)`;
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = 'var(--border-color)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
+                  className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400"
                 >
                   <option value="title-asc">Title (A-Z)</option>
                   <option value="title-desc">Title (Z-A)</option>
                 </select>
+            </div>
+            <div className="flex flex-row gap-3">
+              {/* Shelves Dropdown */}
+              <div className="relative" ref={shelfDropdownRef}>
+                <button
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium transition-all duration-200 border focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                    isShelfDropdownOpen 
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-lg' 
+                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-blue-50 hover:border-blue-500 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:border-blue-400 dark:hover:text-blue-400 shadow-sm hover:shadow-md'
+                  }`}
+                  onClick={() => setIsShelfDropdownOpen((prev) => !prev)}
+                  aria-expanded={isShelfDropdownOpen}
+                  aria-haspopup="true"
+                  role="button"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  <span>Shelves</span>
+                  <span 
+                    className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                      isShelfDropdownOpen 
+                        ? 'bg-white/20 text-white' 
+                        : 'bg-blue-600 text-white'
+                    }`}
+                  >
+                    {selectedShelves.length}
+                  </span>
+                  <svg 
+                    className={`w-4 h-4 transition-transform duration-200 ${isShelfDropdownOpen ? 'rotate-180' : ''}`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {isShelfDropdownOpen && (
+                  <div 
+                    className="absolute z-50 mt-2 w-64 rounded-xl shadow-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 backdrop-blur-sm animate-in fade-in-0 zoom-in-95 duration-200"
+                  >
+                    <div className="p-2">
+                      <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        Select Shelves
+                      </div>
+                      <div className="max-h-48 overflow-y-auto">
+                        {shelfList.map((shelf) => (
+                          <label 
+                            key={shelf} 
+                            className="flex items-center px-3 py-2.5 cursor-pointer rounded-lg transition-colors duration-150 text-gray-700 dark:text-gray-300 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedShelves.includes(shelf)}
+                              onChange={() => {
+                                const newSelectedShelves = selectedShelves.includes(shelf)
+                                  ? selectedShelves.filter((s) => s !== shelf)
+                                  : [...selectedShelves, shelf];
+                                updateUrl(newSelectedShelves, selectedLanguages, currentPage, pageSize);
+                              }}
+                              className="w-4 h-4 rounded border-2 border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-colors duration-150"
+                            />
+                            <span className="ml-3 text-sm font-medium">{shelf}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="flex flex-row gap-3">
-                {/* Shelves Dropdown */}
-                <div className="relative" ref={shelfDropdownRef}>
-                  <button
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all duration-200 border hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2"
-                    style={{
-                      backgroundColor: isShelfDropdownOpen ? 'var(--active-theme-color)' : 'var(--bg-color)',
-                      color: isShelfDropdownOpen ? 'white' : 'var(--text-color)',
-                      borderColor: 'var(--border-color)',
-                      boxShadow: isShelfDropdownOpen ? '0 4px 12px rgba(0, 0, 0, 0.15)' : '0 1px 3px rgba(0, 0, 0, 0.1)'
-                    }}
-                    onClick={() => setIsShelfDropdownOpen((prev) => !prev)}
-                    onMouseEnter={(e) => {
-                      if (!isShelfDropdownOpen) {
-                        e.currentTarget.style.backgroundColor = 'var(--active-theme-light)';
-                        e.currentTarget.style.borderColor = 'var(--active-theme-color)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isShelfDropdownOpen) {
-                        e.currentTarget.style.backgroundColor = 'var(--bg-color)';
-                        e.currentTarget.style.borderColor = 'var(--border-color)';
-                      }
-                    }}
-                    aria-expanded={isShelfDropdownOpen}
-                    aria-haspopup="true"
-                    role="button"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
-                    <span>Shelves</span>
-                    <span 
-                      className="px-2 py-0.5 rounded-full text-xs font-semibold" 
-                      style={{ 
-                        backgroundColor: isShelfDropdownOpen ? 'rgba(255, 255, 255, 0.2)' : 'var(--active-theme-color)', 
-                        color: isShelfDropdownOpen ? 'white' : 'white' 
-                      }}
-                    >
-                      {selectedShelves.length}
-                    </span>
-                    <svg 
-                      className={`w-4 h-4 transition-transform duration-200 ${isShelfDropdownOpen ? 'rotate-180' : ''}`} 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  
-                  {isShelfDropdownOpen && (
-                    <div 
-                      className="absolute z-50 mt-2 w-64 rounded-xl shadow-xl border backdrop-blur-sm animate-in fade-in-0 zoom-in-95 duration-200" 
-                      style={{ 
-                        backgroundColor: 'var(--bg-color)', 
-                        borderColor: 'var(--border-color)',
-                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
-                      }}
-                    >
-                      <div className="p-2">
-                        <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-color-2)' }}>
-                          Select Shelves
-                        </div>
-                        <div className="max-h-48 overflow-y-auto">
-                          {shelfList.map((shelf) => (
-                            <label 
-                              key={shelf} 
-                              className="flex items-center px-3 py-2.5 cursor-pointer rounded-lg transition-colors duration-150 group" 
-                              style={{ color: 'var(--text-color)' }}
-                              onMouseEnter={(e) => { 
-                                e.currentTarget.style.backgroundColor = 'var(--active-theme-light)'; 
-                              }} 
-                              onMouseLeave={(e) => { 
-                                e.currentTarget.style.backgroundColor = 'transparent'; 
-                              }}
-                            >
-                              <input
-                                type="checkbox"
-                                checked={selectedShelves.includes(shelf)}
-                                onChange={() => {
-                                  const newSelectedShelves = selectedShelves.includes(shelf)
-                                    ? selectedShelves.filter((s) => s !== shelf)
-                                    : [...selectedShelves, shelf];
-                                  updateUrl(newSelectedShelves, selectedLanguages, currentPage, pageSize);
-                                }}
-                                className="w-4 h-4 rounded border-2 focus:ring-2 focus:ring-offset-0 transition-colors duration-150"
-                                style={{
-                                  accentColor: 'var(--active-theme-color)',
-                                  borderColor: selectedShelves.includes(shelf) ? 'var(--active-theme-color)' : 'var(--border-color)'
-                                }}
-                              />
-                              <span className="ml-3 text-sm font-medium group-hover:text-current">{shelf}</span>
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
 
-                {/* Languages Dropdown */}
-                <div className="relative" ref={languageDropdownRef}>
-                  <button
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all duration-200 border hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2"
-                    style={{
-                      backgroundColor: isLanguageDropdownOpen ? 'var(--active-theme-color)' : 'var(--bg-color)',
-                      color: isLanguageDropdownOpen ? 'white' : 'var(--text-color)',
-                      borderColor: 'var(--border-color)',
-                      boxShadow: isLanguageDropdownOpen ? '0 4px 12px rgba(0, 0, 0, 0.15)' : '0 1px 3px rgba(0, 0, 0, 0.1)'
-                    }}
-                    onClick={() => setIsLanguageDropdownOpen((prev) => !prev)}
-                    onMouseEnter={(e) => {
-                      if (!isLanguageDropdownOpen) {
-                        e.currentTarget.style.backgroundColor = 'var(--active-theme-light)';
-                        e.currentTarget.style.borderColor = 'var(--active-theme-color)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isLanguageDropdownOpen) {
-                        e.currentTarget.style.backgroundColor = 'var(--bg-color)';
-                        e.currentTarget.style.borderColor = 'var(--border-color)';
-                      }
-                    }}
-                    aria-expanded={isLanguageDropdownOpen}
-                    aria-haspopup="true"
-                    role="button"
+              {/* Languages Dropdown */}
+              <div className="relative" ref={languageDropdownRef}>
+                <button
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium transition-all duration-200 border focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                    isLanguageDropdownOpen 
+                      ? 'bg-blue-600 text-white border-blue-600 shadow-lg' 
+                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-blue-50 hover:border-blue-500 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:border-blue-400 dark:hover:text-blue-400 shadow-sm hover:shadow-md'
+                  }`}
+                  onClick={() => setIsLanguageDropdownOpen((prev) => !prev)}
+                  aria-expanded={isLanguageDropdownOpen}
+                  aria-haspopup="true"
+                  role="button"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                  </svg>
+                  <span>Languages</span>
+                  <span 
+                    className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                      isLanguageDropdownOpen 
+                        ? 'bg-white/20 text-white' 
+                        : 'bg-blue-600 text-white'
+                    }`}
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-                    </svg>
-                    <span>Languages</span>
-                    <span 
-                      className="px-2 py-0.5 rounded-full text-xs font-semibold" 
-                      style={{ 
-                        backgroundColor: isLanguageDropdownOpen ? 'rgba(255, 255, 255, 0.2)' : 'var(--active-theme-color)', 
-                        color: isLanguageDropdownOpen ? 'white' : 'white' 
-                      }}
-                    >
-                      {selectedLanguages.length}
-                    </span>
-                    <svg 
-                      className={`w-4 h-4 transition-transform duration-200 ${isLanguageDropdownOpen ? 'rotate-180' : ''}`} 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  
-                  {isLanguageDropdownOpen && (
-                    <div 
-                      className="absolute z-50 mt-2 w-64 rounded-xl shadow-xl border backdrop-blur-sm animate-in fade-in-0 zoom-in-95 duration-200" 
-                      style={{ 
-                        backgroundColor: 'var(--bg-color)', 
-                        borderColor: 'var(--border-color)',
-                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
-                      }}
-                    >
-                      <div className="p-2">
-                        <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--text-color-2)' }}>
-                          Select Languages
-                        </div>
-                        <div className="max-h-48 overflow-y-auto">
-                          {languageList.map((language) => (
-                            <label 
-                              key={language} 
-                              className="flex items-center px-3 py-2.5 cursor-pointer rounded-lg transition-colors duration-150 group" 
-                              style={{ color: 'var(--text-color)' }}
-                              onMouseEnter={(e) => { 
-                                e.currentTarget.style.backgroundColor = 'var(--active-theme-light)'; 
-                              }} 
-                              onMouseLeave={(e) => { 
-                                e.currentTarget.style.backgroundColor = 'transparent'; 
+                    {selectedLanguages.length}
+                  </span>
+                  <svg 
+                    className={`w-4 h-4 transition-transform duration-200 ${isLanguageDropdownOpen ? 'rotate-180' : ''}`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {isLanguageDropdownOpen && (
+                  <div 
+                    className="absolute z-50 mt-2 w-64 rounded-xl shadow-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 backdrop-blur-sm animate-in fade-in-0 zoom-in-95 duration-200"
+                  >
+                    <div className="p-2">
+                      <div className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                        Select Languages
+                      </div>
+                      <div className="max-h-48 overflow-y-auto">
+                        {languageList.map((language) => (
+                          <label 
+                            key={language} 
+                            className="flex items-center px-3 py-2.5 cursor-pointer rounded-lg transition-colors duration-150 text-gray-700 dark:text-gray-300 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedLanguages.includes(language)}
+                              onChange={() => {
+                                const newSelectedLanguages = selectedLanguages.includes(language)
+                                  ? selectedLanguages.filter((l) => l !== language)
+                                  : [...selectedLanguages, language];
+                                updateUrl(selectedShelves, newSelectedLanguages, currentPage, pageSize);
                               }}
-                            >
-                              <input
-                                type="checkbox"
-                                checked={selectedLanguages.includes(language)}
-                                onChange={() => {
-                                  const newSelectedLanguages = selectedLanguages.includes(language)
-                                    ? selectedLanguages.filter((l) => l !== language)
-                                    : [...selectedLanguages, language];
-                                  updateUrl(selectedShelves, newSelectedLanguages, currentPage, pageSize);
-                                }}
-                                className="w-4 h-4 rounded border-2 focus:ring-2 focus:ring-offset-0 transition-colors duration-150"
-                                style={{
-                                  accentColor: 'var(--active-theme-color)',
-                                  borderColor: selectedLanguages.includes(language) ? 'var(--active-theme-color)' : 'var(--border-color)'
-                                }}
-                              />
-                              <span className="ml-3 text-sm font-medium group-hover:text-current">{language}</span>
-                            </label>
-                          ))}
-                        </div>
+                              className="w-4 h-4 rounded border-2 border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-colors duration-150"
+                            />
+                            <span className="ml-3 text-sm font-medium">{language}</span>
+                          </label>
+                        ))}
                       </div>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
-
-            {props.isLoadingBook && (
-              <div className=" w-full">
-                <LoadingSkeleton />
-              </div>
-            )}
-            <ul
-              className="book-list-item-box w-full h-[calc(100vh_-_180px)] overflow-auto grid 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-2 justify-items-center"
-              onScroll={() => {
-                lazyLoad();
-              }}
-            >
-              {renderBookList()}
-            </ul>
           </div>
+
+          {props.isLoadingBook && (
+            <div className=" w-full">
+              <LoadingSkeleton />
+            </div>
+          )}
+          <ul
+            className="bg-white dark:bg-gray-800 w-full h-[calc(100vh_-_180px)] overflow-auto grid 2xl:grid-cols-6 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-2 justify-items-center rounded-xl"
+            onScroll={() => {
+              lazyLoad();
+            }}
+          >
+            {renderBookList()}
+          </ul>
         </div>
         {/* <div className="book-list-header">
           <SelectBook />

@@ -1,7 +1,6 @@
 //src/components/bookCardItem/component.tsx
 import React, { useState, useEffect, useCallback } from "react";
 import RecentBooks from "../../utils/readUtils/recordRecent";
-import "./bookCardItem.css";
 import { BookCardProps } from "./interface";
 import StorageUtil from "../../utils/serviceUtils/storageUtil";
 import { withRouter } from "react-router-dom";
@@ -26,12 +25,12 @@ const FavoriteConfirmModal: React.FC<FavoriteConfirmModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in">
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-sm mx-4 shadow-xl">
         <div className="text-center">
-          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
             <svg
-              className="h-6 w-6 text-red-600"
+              className="h-6 w-6 text-red-600 dark:text-red-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -44,10 +43,10 @@ const FavoriteConfirmModal: React.FC<FavoriteConfirmModalProps> = ({
               />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
             {isFavorite ? "Remove from Favorites?" : "Add to Favorites?"}
           </h3>
-          <p className="text-sm text-gray-500 mb-6">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
             {isFavorite
               ? "This book will be removed from your favorites list."
               : "This book will be added to your favorites list."}
@@ -55,7 +54,7 @@ const FavoriteConfirmModal: React.FC<FavoriteConfirmModalProps> = ({
           <div className="flex space-x-3">
             <button
               onClick={onCancel}
-              className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-400 transition-colors"
+              className="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
             >
               Cancel
             </button>
@@ -63,8 +62,8 @@ const FavoriteConfirmModal: React.FC<FavoriteConfirmModalProps> = ({
               onClick={onConfirm}
               className={`flex-1 px-4 py-2 rounded-md text-sm font-medium text-white transition-colors ${
                 isFavorite
-                  ? "bg-red-600 hover:bg-red-700"
-                  : "bg-blue-600 hover:bg-blue-700"
+                  ? "bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600"
+                  : "bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
               }`}
             >
               {isFavorite ? "Remove" : "Add"}
@@ -139,31 +138,21 @@ const BookCardItem: React.FC<BookCardProps> = (props) => {
 
   return (
     <>
-      <div className="book-list-item w-52 h-fit m-2 float-left relative col-span-1">
+      <div className="w-52 h-fit m-2 float-left relative col-span-1 animate-fade-in">
         <div
-          className="book-item-cover w-full p-5 opacity-100 cursor-pointer flex justify-center relative"
+          className={`w-full p-5 opacity-100 cursor-pointer flex justify-center relative rounded-sm transition-all duration-300 ${
+            StorageUtil.getReaderConfig("isDisableCrop") === "yes"
+              ? "h-[308px] items-end bg-transparent shadow-none"
+              : "h-[278px] items-center overflow-hidden hover:shadow-lg"
+          }`}
           onClick={handleJump}
           onMouseEnter={() => setIsHover(true)}
           onMouseLeave={() => setIsHover(false)}
-          style={
-            StorageUtil.getReaderConfig("isDisableCrop") === "yes"
-              ? {
-                  height: "308px",
-                  alignItems: "flex-end",
-                  background: "rgba(255, 255,255, 0)",
-                  boxShadow: "0px 0px 5px rgba(0, 0, 0, 0)",
-                }
-              : {
-                  height: "278px",
-                  alignItems: "center",
-                  overflow: "hidden",
-                }
-          }
         >
           <img
             data-src={props.book.thumbnail}
             alt=""
-            className="lazy-image book-item-image"
+            className={`lazy-image rounded-sm transition-transform duration-300 ${isHover ? 'scale-105' : ''}`}
             style={
               direction === "horizontal" || StorageUtil.getReaderConfig("isDisableCrop") === "yes"
                 ? { width: "100%" }
@@ -177,10 +166,10 @@ const BookCardItem: React.FC<BookCardProps> = (props) => {
             className="absolute top-2 right-2 z-10"
             onClick={handleFavoriteClick}
           >
-            <div className="heart-container">
+            <div className="bg-white/90 dark:bg-gray-800/90 rounded-full p-1.5 shadow-md hover:shadow-lg hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 hover:scale-110 backdrop-blur-sm">
               {props.isFavorite ? (
                 <svg
-                  className="w-6 h-6 text-red-500 hover:text-red-600 transition-colors cursor-pointer"
+                  className="w-6 h-6 text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-500 transition-colors cursor-pointer"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -192,7 +181,7 @@ const BookCardItem: React.FC<BookCardProps> = (props) => {
                 </svg>
               ) : (
                 <svg
-                  className="w-6 h-6 text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+                  className="w-6 h-6 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-colors cursor-pointer"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -209,7 +198,9 @@ const BookCardItem: React.FC<BookCardProps> = (props) => {
           </div>
         </div>
 
-        <p className="book-item-title">{props.book.name}</p>
+        <p className="w-4/5 mx-auto mt-3 h-[31px] text-xs leading-[15px] opacity-100 text-left overflow-hidden line-clamp-2 relative text-gray-800 dark:text-gray-200">
+          {props.book.name}
+        </p>
       </div>
 
       <FavoriteConfirmModal

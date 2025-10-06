@@ -19,13 +19,18 @@ export const initTheme = () => {
     if (isNight) {
     }
   }
+  
+  // Apply Tailwind dark mode class
+  const appSkin = StorageUtil.getReaderConfig("appSkin");
   if (
-    StorageUtil.getReaderConfig("appSkin") === "night" ||
-    (StorageUtil.getReaderConfig("appSkin") === "system" &&
-      StorageUtil.getReaderConfig("isOSNight") === "yes")
+    appSkin === "night" ||
+    appSkin === "dark" ||
+    (appSkin === "system" && StorageUtil.getReaderConfig("isOSNight") === "yes")
   ) {
+    document.documentElement.classList.add('dark');
     style.href = "./assets/styles/dark.css";
   } else {
+    document.documentElement.classList.remove('dark');
     style.href = "./assets/styles/default.css";
   }
   document.head.appendChild(style);

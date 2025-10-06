@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
@@ -46,7 +47,7 @@ module.exports = {
         gray: {
           "main-bg": "#E0E0E0",
         },
-        // Project theme colors
+        // Project theme colors - mapped to CSS variables for dynamic theming
         primary: {
           50: "rgba(1, 121, 202, 0.1)",
           100: "rgba(1, 121, 202, 0.2)",
@@ -54,6 +55,38 @@ module.exports = {
           600: "rgba(0, 107, 182, 1)",
           700: "rgba(0, 93, 162, 1)",
         },
+        // Dynamic theme colors using CSS variables
+        theme: {
+          DEFAULT: "var(--active-theme-color)",
+          light: "var(--active-theme-light)",
+        },
+        app: {
+          bg: "var(--bg-color)",
+          "bg-2": "var(--bg-color-2)",
+          text: "var(--text-color)",
+          "text-2": "var(--text-color-2)",
+          border: "var(--border-color)",
+        },
+        progress: {
+          bar: "var(--progress-bar-bg)",
+          fill: "var(--progress-fill-bg)",
+        },
+      },
+      backgroundColor: {
+        theme: "var(--active-theme-color)",
+        "theme-light": "var(--active-theme-light)",
+        app: "var(--bg-color)",
+        "app-2": "var(--bg-color-2)",
+      },
+      textColor: {
+        theme: "var(--active-theme-color)",
+        app: "var(--text-color)",
+        "app-2": "var(--text-color-2)",
+      },
+      borderColor: {
+        theme: "var(--active-theme-color)",
+        "theme-light": "var(--active-theme-light)",
+        app: "var(--border-color)",
       },
       margin: {
         2.5: "10px",
@@ -76,6 +109,25 @@ module.exports = {
       const newUtilities = {
         '.scrollbar-thin': {
           'scrollbar-width': 'thin',
+          '&::-webkit-scrollbar': {
+            'width': '2px',
+            'height': '0.5rem',
+          },
+        },
+        '.scrollbar-thumb-transparent': {
+          '&::-webkit-scrollbar-thumb': {
+            'display': 'none',
+          },
+        },
+        '.hover\\:scrollbar-thumb-gray-400:hover::-webkit-scrollbar-thumb': {
+          'display': 'block',
+          'width': '1px',
+          'background-color': 'rgb(156 163 175)',
+        },
+        '.dark .dark\\:hover\\:scrollbar-thumb-gray-600:hover::-webkit-scrollbar-thumb': {
+          'display': 'block',
+          'width': '1px',
+          'background-color': 'rgb(75 85 99)',
         },
         '.scrollbar-thumb-gray-300': {
           '&::-webkit-scrollbar-thumb': {
@@ -93,9 +145,6 @@ module.exports = {
           '&::-webkit-scrollbar-track': {
             'background': 'transparent',
           },
-        },
-        '.scrollbar-thin::-webkit-scrollbar': {
-          'width': '6px',
         },
       }
       addUtilities(newUtilities)

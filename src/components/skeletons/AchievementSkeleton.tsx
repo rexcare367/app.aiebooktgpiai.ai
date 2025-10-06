@@ -23,13 +23,6 @@ const AchievementSkeleton: React.FC = () => {
 
       {/* Table skeleton */}
       <div className="rounded-xl border border-slate-100 dark:border-slate-800 overflow-hidden">
-        {/* Table header */}
-        <div className="grid grid-cols-12 bg-slate-50 dark:bg-slate-900 px-4 py-2">
-          <div className="col-span-2 h-3 bg-gray-300 rounded w-8"></div>
-          <div className="col-span-6 h-3 bg-gray-300 rounded w-16"></div>
-          <div className="col-span-2 h-3 bg-gray-300 rounded w-12"></div>
-          <div className="col-span-2 h-3 bg-gray-300 rounded w-16"></div>
-        </div>
         
         {/* Table rows */}
         <div className="divide-y divide-slate-100 dark:divide-slate-800">

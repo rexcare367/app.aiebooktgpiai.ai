@@ -126,33 +126,6 @@ export const langList = [
   { label: "Malay", value: "myML" },
   { label: "Mandarin", value: "myMN" },
   { label: "Tamil", value: "myTM" },
-  // { label: "简体中文", value: "zhCN" },
-  // { label: "繁體中文", value: "zhTW" },
-  // { label: "繁體中文-澳門", value: "zhMO" },
-  // { label: "English", value: "en" },
-  // { label: "Pусский", value: "ru" },
-  // { label: "Español", value: "es" },
-  // { label: "Français", value: "fr" },
-  // { label: "Português", value: "ptBR" },
-  // { label: "فارسی", value: "fa" },
-  // { label: "日本語", value: "ja" },
-  // { label: "Türkçe", value: "tr" },
-  // { label: "عربي", value: "ar" },
-  // { label: "čeština", value: "cs" },
-  // { label: "Deutsch", value: "de" },
-  // { label: "한국어", value: "ko" },
-  // { label: "Polski", value: "pl" },
-  // { label: "Română", value: "ro" },
-  // { label: "แบบไทย", value: "th" },
-  // { label: "italiano", value: "it" },
-  // { label: "Nederlands", value: "nl" },
-  // { label: "বাংলা", value: "bn" },
-  // { label: "български", value: "bg" },
-  // { label: "bahasa Indonesia", value: "id" },
-  // { label: "հայերեն", value: "hy" },
-  // { label: "བོད་སྐད།", value: "bo" },
-  // { label: "हिंदी", value: "hi" },
-  // { label: "Magyar", value: "hu" },
 ];
 
 export const searchList = [
@@ -167,9 +140,8 @@ export const searchList = [
   { label: "Wikipedia", value: "wiki" },
 ];
 export const skinList = [
-  // { label: "Follow OS", value: "system" },
   { label: "Light mode", value: "light" },
-  // { label: "Night mode", value: "night" },
+  { label: "Dark mode", value: "dark" },
 ];
 
 export const readerSettingList = [

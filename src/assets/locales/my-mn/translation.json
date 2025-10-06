@@ -103,6 +103,8 @@
     "Open url with built-in browser": "用内置浏览器打开URL",
     "Light mode": "浅色模式",
     "Night mode": "夜间模式",
+    "Light Mode": "浅色模式",
+    "Dark Mode": "深色模式",
     "Turn on bionic reading": "开启仿生阅读",
     "This process is irreversible, and will completely overwrite your current library, make sure you know what you're doing before proceeding": "此过程不可逆转，将完全覆盖您当前的书库，请确认后再继续",
     "Lemmatize words when looking up in a dictionary": "查词时进行词形还原",
