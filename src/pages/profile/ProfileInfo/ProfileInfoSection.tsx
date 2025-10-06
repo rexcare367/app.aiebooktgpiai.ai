@@ -1,12 +1,13 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import toast from "react-hot-toast";
-import "./ProfileInfoSection.css";
-import { User, Mail, Phone, MapPin, Shield, Pencil, Loader2, School } from "lucide-react";
+import { Pencil, Loader2 } from "lucide-react";
 import api from "../../../utils/axios";
+import authService, { UserData } from "../../../utils/authService";
 
 const ProfileInfoSection = () => {
-  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const userData: UserData | null = authService.getUserData();
+  
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
@@ -17,6 +18,18 @@ const ProfileInfoSection = () => {
   const [guardianName, setGuardianName] = useState<string>("");
   const [school, setSchool] = useState<string>("");
   const [avatar, setAvatar] = useState<string>("");
+
+  // Store original values for reset
+  const [originalValues, setOriginalValues] = useState({
+    username: "",
+    email: "",
+    phoneNumber: "",
+    address: "",
+    name: "",
+    guardianName: "",
+    school: "",
+    avatar: ""
+  });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -49,14 +62,28 @@ const ProfileInfoSection = () => {
       const data = root.data ?? root; // support either { data: {...} } or flat
       const user = data.user ?? data; // support nesting under user
 
-      setUsername(user.ic_number || user.icNumber || user.username || "");
-      setEmail(user.email || "");
-      setPhoneNumber(user.phone || user.phone_number || "");
-      setAddress(user.address || "");
-      setName(user.name || user.full_name || "");
-      setGuardianName(user.guardian_name || user.guardianName || "");
-      setAvatar(user.avatar_url || user.avatar || "");
-      setSchool(user.school || "");
+      const profileData = {
+        username: user.ic_number || user.icNumber || user.username || "",
+        email: user.email || "",
+        phoneNumber: user.phone || user.phone_number || "",
+        address: user.address || "",
+        name: user.name || user.full_name || "",
+        guardianName: user.guardian_name || user.guardianName || "",
+        avatar: user.avatar_url || user.avatar || "",
+        school: user.school || ""
+      };
+
+      setUsername(profileData.username);
+      setEmail(profileData.email);
+      setPhoneNumber(profileData.phoneNumber);
+      setAddress(profileData.address);
+      setName(profileData.name);
+      setGuardianName(profileData.guardianName);
+      setAvatar(profileData.avatar);
+      setSchool(profileData.school);
+
+      // Store original values for reset
+      setOriginalValues(profileData);
     } catch (error) {
       console.error("Failed to fetch profile:", error);
       toast.error((error as any)?.response?.data?.message || "Failed to load profile");
@@ -81,10 +108,21 @@ const ProfileInfoSection = () => {
         school: school,
       };
 
-      await api.patch(`/api/users/${username}`, payload);
+      await api.patch(`/api/users/${userData?.id}`, payload);
 
       toast.success("Profile updated successfully");
-      setIsEditing(false);
+      
+      // Update original values after successful save
+      setOriginalValues({
+        username,
+        email,
+        phoneNumber,
+        address,
+        name,
+        guardianName,
+        school,
+        avatar
+      });
     } catch (error) {
       console.error("Failed to update profile:", error);
       toast.error((error as any)?.response?.data?.message || "Failed to update profile");
@@ -93,19 +131,46 @@ const ProfileInfoSection = () => {
     }
   };
 
+  const handleReset = () => {
+    setUsername(originalValues.username);
+    setEmail(originalValues.email);
+    setPhoneNumber(originalValues.phoneNumber);
+    setAddress(originalValues.address);
+    setName(originalValues.name);
+    setGuardianName(originalValues.guardianName);
+    setSchool(originalValues.school);
+    setAvatar(originalValues.avatar);
+  };
+
   return isLoading ? (
-    <div className="profile-info-container flex items-center justify-center min-h-[200px]">
-      <Loader2 className="w-8 h-8 animate-spin" />
+    <div className="bg-white dark:bg-gray-800 flex items-center justify-center min-h-[200px] rounded-2xl p-8 shadow-lg dark:shadow-gray-900/30 dark:text-white">
+      <Loader2 className="w-10 h-10 animate-spin text-theme" />
     </div>
   ) : (
-    <div className="profile-info-container">
-      <div className="profile-header">
-        <div className="relative user-avatar group">
-          <img src={avatar} alt="User avatar" className=" rounded-full h-20 w-20" />
-          {isUpdating && <Loader2 className="absolute w-16 h-16 top-7 left-7 animate-spin" />}
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 lg:p-8 transition-all duration-300 shadow-lg hover:shadow-xl dark:shadow-gray-900/30 dark:hover:shadow-gray-900/50 border-2 border-transparent/20 border-solid dark:text-white">
+      {/* Profile Header */}
+      <div className="flex flex-col items-center gap-4 pb-6 mb-6 border-b-2 border-gray-200 dark:border-gray-700">
+        {/* Avatar Section */}
+        <div className="relative group">
+          <div className="relative">
+            <div className="w-24 h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden shadow-lg dark:shadow-gray-900/50 transition-all duration-300 ring-4 ring-gray-200 dark:ring-gray-700">
+              <img 
+                src={avatar || "/assets/icon.png"} 
+                alt="User avatar" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+          
+          {isUpdating && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 dark:bg-white/30">
+              <Loader2 className="w-8 h-8 animate-spin text-white dark:text-gray-800" />
+            </div>
+          )}
 
+          {/* Edit Avatar Button */}
           <button
-            className="absolute bottom-0 right-0 transition-opacity opacity-0 group-hover:opacity-100"
+            className="bg-theme absolute bottom-0 right-0 p-2 rounded-full shadow-lg dark:shadow-gray-900/50 transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-y-1 group-hover:translate-y-0 text-white"
             onClick={() => fileInputRef.current?.click()}
             disabled={isUpdating}
             title="Change avatar"
@@ -115,128 +180,94 @@ const ProfileInfoSection = () => {
           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
         </div>
 
-        <div className="profile-title-section">
-          <h1 className=" text-lg font-bold">{username || "User"}</h1>
-          <h1 className="text-sm font-bold">{name || "User"}</h1>
+        {/* User Info */}
+        <div className="text-center">
+          <h1 className="text-xl lg:text-2xl font-bold mb-1 text-app">
+            {name || "User"}
+          </h1>
+          <p className="text-sm lg:text-base font-medium text-app-2 dark:text-gray-300">
+            {username || "ID not set"}
+          </p>
         </div>
-        {!isEditing ? (
-          <button className="profile-edit-btn" onClick={() => setIsEditing(true)} title="Edit profile">
-            <Pencil size={24} />
-          </button>
-        ) : null}
       </div>
 
-      {!isEditing ? (
-        <div className="profile-info-grid">
-          <div className="info-item">
-            <div className="info-icon">
-              <User size={24} />
-            </div>
-            <div className="info-content">
-              <div className="info-label">IC Number</div>
-              <div className="info-value">{username || "Not set"}</div>
-            </div>
+      {/* Profile Information Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-7 w-full">
+          <div className="flex flex-col gap-2 w-full">
+            <label className="text-base md:text-lg font-medium text-app-2 dark:text-gray-300">Full name</label>
+            <input 
+              className="w-full rounded-md px-4 py-2 text-sm leading-tight border-2 bg-transparent border-transparent/20 text-app caret-theme transition-all duration-200 focus:outline-none focus:border-theme focus:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 " 
+              value={name} 
+              onChange={(e) => setName(e.target.value)} 
+            />
+          </div>
+          <div className="flex flex-col gap-2 w-full">
+            <label className="text-base md:text-lg font-medium text-app-2 dark:text-gray-300">School</label>
+            <input 
+              className="w-full rounded-md px-4 py-2 text-sm leading-tight border-2 bg-transparent border-transparent/20 text-app caret-theme transition-all duration-200 focus:outline-none focus:border-theme focus:shadow-lg disabled:cursor-not-allowed disabled:opacity-60" 
+              value={school} 
+              onChange={(e) => setSchool(e.target.value)} 
+            />
+          </div>
+          <div className="flex flex-col gap-2 w-full">
+            <label className="text-base md:text-lg font-medium text-app-2 dark:text-gray-300">Phone</label>
+            <input 
+              className="w-full rounded-md px-4 py-2 text-sm leading-tight border-2 bg-transparent border-transparent/20 text-app caret-theme transition-all duration-200 focus:outline-none focus:border-theme focus:shadow-lg disabled:cursor-not-allowed disabled:opacity-60" 
+              value={phoneNumber} 
+              onChange={(e) => setPhoneNumber(e.target.value)} 
+            />
+          </div>
+          <div className="flex flex-col gap-2 w-full">
+            <label className="text-base md:text-lg font-medium text-app-2 dark:text-gray-300">Guardian name</label>
+            <input 
+              className="w-full rounded-md px-4 py-2 text-sm leading-tight border-2 bg-transparent border-transparent/20 text-app caret-theme transition-all duration-200 focus:outline-none focus:border-theme focus:shadow-lg disabled:cursor-not-allowed disabled:opacity-60" 
+              value={guardianName} 
+              onChange={(e) => setGuardianName(e.target.value)} 
+            />
+          </div>
+          <div className="flex flex-col gap-2 w-full col-span-full">
+            <label className="text-base md:text-lg font-medium text-app-2 dark:text-gray-300">Address</label>
+            <input 
+              className="w-full rounded-md px-4 py-2 text-sm leading-tight border-2 bg-transparent border-transparent/20 text-app caret-theme transition-all duration-200 focus:outline-none focus:border-theme focus:shadow-lg disabled:cursor-not-allowed disabled:opacity-60" 
+              value={address} 
+              onChange={(e) => setAddress(e.target.value)} 
+            />
+          </div>
+          <div className="flex flex-col gap-2 w-full">
+            <label className="text-base md:text-lg font-medium text-app-2 dark:text-gray-300">Email</label>
+            <input 
+              className="w-full rounded-md px-4 py-2 text-sm leading-tight border-2 bg-transparent border-transparent/20 text-app caret-theme transition-all duration-200 focus:outline-none focus:border-theme focus:shadow-lg disabled:cursor-not-allowed disabled:opacity-60" 
+              type="email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+            />
+          </div>
+          <div className="flex flex-col gap-2 w-full">
+            <label className="text-base md:text-lg font-medium text-app-2 dark:text-gray-300">IC Number</label>
+            <input 
+              className="w-full rounded-md px-4 py-2 text-sm leading-tight border-2 bg-transparent border-transparent/20 text-app caret-theme transition-all duration-200 focus:outline-none focus:border-theme focus:shadow-lg disabled:cursor-not-allowed disabled:opacity-60" 
+              value={username} 
+              onChange={(e) => setUsername(e.target.value)} 
+            />
           </div>
 
-          <div className="info-item">
-            <div className="info-icon">
-              <Mail size={24} />
-            </div>
-            <div className="info-content">
-              <div className="info-label">Email</div>
-              <div className="info-value">{email || "Not set"}</div>
-            </div>
-          </div>
-
-          <div className="info-item">
-            <div className="info-icon">
-              <Phone size={24} />
-            </div>
-            <div className="info-content">
-              <div className="info-label">Phone</div>
-              <div className="info-value">{phoneNumber || "Not set"}</div>
-            </div>
-          </div>
-
-          <div className="info-item">
-            <div className="info-icon">
-              <MapPin size={24} />
-            </div>
-            <div className="info-content">
-              <div className="info-label">Address</div>
-              <div className="info-value">{address || "Not set"}</div>
-            </div>
-          </div>
-
-          <div className="info-item">
-            <div className="info-icon">
-              <Shield size={24} />
-            </div>
-            <div className="info-content">
-              <div className="info-label">Guardian Name</div>
-              <div className="info-value">{guardianName || "Not set"}</div>
-            </div>
-          </div>
-
-          <div className="info-item">
-            <div className="info-icon">
-              <School size={24} />
-            </div>
-            <div className="info-content">
-              <div className="info-label">School</div>
-              <div className="info-value">{school || "Not set"}</div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="profile-form">
-          <div className="form-group">
-            <label>Full name</label>
-            <input className="form-input" value={name} onChange={(e) => setName(e.target.value)} />
-          </div>
-          <div className="form-group">
-            <label>School</label>
-            <input className="form-input" value={school} onChange={(e) => setSchool(e.target.value)} />
-          </div>
-          <div className="form-group">
-            <label>Phone</label>
-            <input className="form-input" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
-          </div>
-          <div className="form-group">
-            <label>Guardian name</label>
-            <input className="form-input" value={guardianName} onChange={(e) => setGuardianName(e.target.value)} />
-          </div>
-          <div className="form-group" style={{ gridColumn: "1 / -1" }}>
-            <label>Address</label>
-            <input className="form-input" value={address} onChange={(e) => setAddress(e.target.value)} />
-          </div>
-          <div className="form-group">
-            <label>Email</label>
-            <input className="form-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          </div>
-          <div className="form-group">
-            <label>IC Number</label>
-            <input className="form-input" value={username} onChange={(e) => setUsername(e.target.value)} />
-          </div>
-
-          <div className="profile-action-buttons" style={{ gridColumn: "1 / -1" }}>
-            <button className="form-button" onClick={handleSave} disabled={isUpdating}>
+          <div className="mt-8 lg:mt-10 flex flex-wrap justify-end md:justify-end gap-5 pb-6 lg:pb-8 col-span-full">
+            <button 
+              className="bg-theme rounded-xl px-6 py-3 border-none w-full md:w-auto cursor-pointer min-w-[120px] text-base md:text-lg transition-all duration-200 font-medium text-white hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60" 
+              onClick={handleSave} 
+              disabled={isUpdating}
+            >
               {isUpdating ? "Saving..." : "Save"}
             </button>
             <button
-              className="form-button"
-              style={{ backgroundColor: "#9CA3AF" }}
-              onClick={() => {
-                setIsEditing(false);
-                fetchProfileInformation();
-              }}
+              className="bg-gray-400 dark:bg-gray-600 rounded-xl px-6 py-3 border-none w-full md:w-auto cursor-pointer min-w-[120px] text-base md:text-lg transition-all duration-200 font-medium text-white hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={handleReset}
               disabled={isUpdating}
             >
-              Cancel
+              Reset
             </button>
           </div>
         </div>
-      )}
     </div>
   );
 };

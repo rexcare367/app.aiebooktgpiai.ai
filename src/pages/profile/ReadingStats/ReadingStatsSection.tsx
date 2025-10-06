@@ -3,8 +3,7 @@ import axios, { AxiosError } from "axios";
 import api from "../../../utils/axios";
 
 import { toast } from "react-hot-toast";
-import { BookOpen, Calendar, Book, Clock, RefreshCw } from "lucide-react";
-import "./ReadingStatsSection.css";
+import { BookOpen, Calendar, Book, Clock, RefreshCw, Loader2 } from "lucide-react";
 import BookUtil from "../../../utils/fileUtils/bookUtil";
 import StorageUtil from "../../../utils/serviceUtils/storageUtil";
 import { useHistory } from "react-router-dom";
@@ -232,74 +231,78 @@ const ReadingStatsSection = () => {
     handleGetReadingProgress();
   }, [handleGetReadingProgress]);
 
-  // if (isLoading || !readingProgress.books.length) {
-  //   return (
-  //     <div className="reading-stats-container">
-  //       <div className="empty-state">
-  //         <BookOpen className="empty-icon" />
-  //         <h2 className="empty-title">
-  //           {isLoading ? "Loading..." : "You haven't read any books yet!"}
-  //         </h2>
-  //         {!isLoading && (
-  //           <p className="empty-subtitle">Your reading adventures will appear here</p>
-  //         )}
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   return (
-    <div className="reading-stats-container">
-      <div className="reading-stats-header">
-        <h2 className="reading-stats-title">Reading Statistics</h2>
+    <div className="rounded-2xl p-6 lg:p-8 transition-all duration-300 hover:shadow-xl bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-900/30 dark:hover:shadow-gray-900/50 border-2 border-transparent/20 border-solid">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-app">
+        <h2 className="text-xl lg:text-2xl font-bold text-app">
+          Reading Statistics
+        </h2>
         <button
-          className="refetch-button"
+          className="p-2 rounded-lg transition-all duration-300 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed bg-theme-light text-theme"
           onClick={handleGetReadingProgress}
           disabled={isLoading}
           title="Refresh data"
         >
-          <RefreshCw className={`refetch-icon ${isLoading ? 'spinning' : ''}`} />
+          <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
         </button>
       </div>
+
+      {/* Stats Cards */}
       {stats && (
-        <div className="analytics-panel">
-          <div className="stats-grid">
-            <div className="stat-card mint">
-              <div className="icon-box">
-                <BookOpen />
-              </div>
-              <div className="stat-title">Total Books Read</div>
-              <div className="stat-value">{stats.total_read_books_count}</div>
-              <div className="stat-icon-large">
-                <BookOpen />
-              </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mb-6">
+          {/* Total Books Card */}
+          <div className="relative overflow-hidden rounded-xl p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group bg-transparent border-solid border border-transparent/20">
+            <div className="inline-flex p-3 rounded-lg mb-3 transition-all duration-300 group-hover:scale-110 bg-blue-500/15 dark:bg-blue-400/15">
+              <BookOpen className="w-6 h-6 text-blue-500 dark:text-blue-400" />
             </div>
-            <div className="stat-card lilac">
-              <div className="icon-box">
-                <Clock />
-              </div>
-              <div className="stat-title">Total Reading Time</div>
-              <div className="stat-value">{formatDuration(stats.total_reading_duration)}</div>
-              <div className="stat-icon-large">
-                <Clock />
-              </div>
+            <p className="text-sm font-medium mb-1 text-app-2">
+              Total Books Read
+            </p>
+            <p className="text-2xl lg:text-3xl font-bold text-app">
+              {stats.total_read_books_count}
+            </p>
+            <div className="absolute -bottom-2 -right-2 opacity-5 text-app">
+              <BookOpen className="w-20 h-20" />
             </div>
-            <div className="stat-card blue">
-              <div className="icon-box">
-                <Calendar />
-              </div>
-              <div className="stat-title">Last Book Read</div>
-              <div className="stat-value">
-                {stats.last_book_read_timestamp ? formatDate(stats.last_book_read_timestamp) : "-"}
-              </div>
-              <div className="stat-icon-large">
-                <Calendar />
-              </div>
+          </div>
+
+          {/* Total Reading Time Card */}
+          <div className="relative overflow-hidden rounded-xl p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group  bg-transparent border-solid border border-transparent/20">
+            <div className="inline-flex p-3 rounded-lg mb-3 transition-all duration-300 group-hover:scale-110 bg-purple-500/15 dark:bg-purple-400/15">
+              <Clock className="w-6 h-6 text-purple-500 dark:text-purple-400" />
+            </div>
+            <p className="text-sm font-medium mb-1 text-app-2">
+              Total Reading Time
+            </p>
+            <p className="text-2xl lg:text-3xl font-bold text-app">
+              {formatDuration(stats.total_reading_duration)}
+            </p>
+            <div className="absolute -bottom-2 -right-2 opacity-5 text-app">
+              <Clock className="w-20 h-20" />
+            </div>
+          </div>
+
+          {/* Last Book Read Card */}
+          <div className="relative overflow-hidden rounded-xl p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group sm:col-span-2 xl:col-span-1  bg-transparent border-solid border border-transparent/20">
+            <div className="inline-flex p-3 rounded-lg mb-3 transition-all duration-300 group-hover:scale-110 bg-emerald-500/15 dark:bg-emerald-400/15">
+              <Calendar className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
+            </div>
+            <p className="text-sm font-medium mb-1 text-app-2">
+              Last Book Read
+            </p>
+            <p className="text-lg lg:text-xl font-bold truncate text-app">
+              {stats.last_book_read_timestamp ? formatDate(stats.last_book_read_timestamp) : "-"}
+            </p>
+            <div className="absolute -bottom-2 -right-2 opacity-5 text-app">
+              <Calendar className="w-20 h-20" />
             </div>
           </div>
         </div>
       )}
-      <div className="reading-controls">
+
+      {/* Search and Filter Controls */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
         <input
           placeholder="Search by title"
           value={search}
@@ -307,62 +310,97 @@ const ReadingStatsSection = () => {
             setSearch(e.target.value);
             setCurrentPage(1);
           }}
-          className="form-input"
+          className="w-full rounded-xl px-4 py-3 text-sm leading-tight bg-transparent border-solid border border-transparent/20 text-app caret-theme transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-theme focus:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60"
         />
         <select
           value={orderBy}
           onChange={(e) => setOrderBy(e.target.value as any)}
-          className="form-input"
+          className="w-full rounded-xl px-4 py-3 text-sm leading-tight bg-transparent border-solid border border-transparent/20 text-app caret-theme transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-theme focus:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <option value="title">Order by Title</option>
         </select>
         <select
           value={orderDir}
           onChange={(e) => setOrderDir(e.target.value as any)}
-          className="form-input"
+          className="w-full rounded-xl px-4 py-3 text-sm leading-tight bg-transparent border-solid border border-transparent/20 text-app caret-theme transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-theme focus:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <option value="desc">Desc</option>
           <option value="asc">Asc</option>
         </select>
       </div>
+
+      {/* Loading Overlay */}
       {isLoadingBook && (
-        <div className="loading-overlay">
-          <div className="loading-spinner">Loading book...</div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4 bg-app">
+            <Loader2 className="w-12 h-12 animate-spin text-theme" />
+            <p className="text-lg font-medium text-app">
+              Loading book...
+            </p>
+          </div>
         </div>
       )}
-      <div className="books-list">
+
+      {/* Books List */}
+      <div className="space-y-3">
+        {paginatedBooks.length === 0 && !isLoading ? (
+          <div className="flex flex-col items-center justify-center py-12 rounded-xl bg-transparent border-solid border border-transparent/20">
+            <BookOpen className="w-16 h-16 mb-4 opacity-30 text-app-2" />
+            <h3 className="text-lg font-semibold mb-2 text-app">
+              No books found
+            </h3>
+            <p className="text-sm text-app-2">
+              {search ? 'Try adjusting your search criteria' : 'Start reading to see your books here'}
+            </p>
+          </div>
+        ) : null}
         {paginatedBooks.map((book, index) => (
           <div
             key={index}
-            className="book-card"
+            className="flex items-center gap-4 p-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer group bg-app-2 dark:bg-transparent border-solid border border-transparent/20"
             onClick={() => handleContinueReadingByBook(book)}
           >
-            <div className="card-content">
-              <div className="book-info">
-                <h2 className="book-title">{formatBookTitle(book.title)}</h2>
-                <div className="book-meta">
-                  {book.language && (
-                    <div className="meta-item">
-                      <Book />
-                      <span>{book.language}</span>
-                    </div>
-                  )}
-                  {book.created_at && (
-                    <div className="meta-item">
-                      <Calendar />
-                      <span>{formatDate(book.created_at)}</span>
-                    </div>
-                  )}
-                </div>
+            {/* Book Icon */}
+            <div className="p-3 rounded-lg flex-shrink-0 transition-transform duration-300 group-hover:scale-110 bg-theme-light">
+              <Book className="w-6 h-6 text-theme" />
+            </div>
+
+            {/* Book Details */}
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base lg:text-lg font-semibold mb-2 truncate text-app">
+                {formatBookTitle(book.title)}
+              </h3>
+              <div className="flex flex-wrap items-center gap-3 text-xs lg:text-sm text-app-2">
+                {book.language && (
+                  <div className="flex items-center gap-1">
+                    <Book className="w-4 h-4" />
+                    <span>{book.language}</span>
+                  </div>
+                )}
+                {book.created_at && (
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    <span>{formatDate(book.created_at)}</span>
+                  </div>
+                )}
               </div>
+            </div>
+
+            {/* Arrow Icon */}
+            <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-theme">
+              <BookOpen className="w-5 h-5" />
             </div>
           </div>
         ))}
       </div>
-      <div className="pagination-container">
-        <div className="pagination-info">
+
+      {/* Pagination */}
+      <div className="mt-6 pt-6 border-t border-app flex flex-col sm:flex-row items-center justify-between gap-4">
+        {/* Pagination Info */}
+        <div className="flex items-center gap-3 text-sm text-app-2">
           <span>Total:</span>
-          <strong>{totalCount}</strong>
+          <strong className="font-bold text-app">{totalCount}</strong>
+          <span className="hidden sm:inline">•</span>
           <span>Page size:</span>
           <select
             value={pageSize}
@@ -370,33 +408,43 @@ const ReadingStatsSection = () => {
               setPageSize(Number(e.target.value));
               setCurrentPage(1);
             }}
-            className="form-input"
+            className="rounded-lg px-3 py-1.5 text-sm bg-transparent border-solid border border-transparent/20 text-app caret-theme transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-theme focus:ring-offset-0"
           >
             <option value={5}>5</option>
             <option value={10}>10</option>
             <option value={20}>20</option>
           </select>
         </div>
-        <div className="pagination-controls">
+
+        {/* Pagination Controls */}
+        <div className="flex items-center gap-2 text-sm">
           <button
-            className="page-button"
+            className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed ${
+              currentPage === 1 ? 'bg-app-2 text-app-2' : 'bg-theme-light text-theme'
+            }`}
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
           >
             Prev
           </button>
-          <span>Page</span>
-          <input
-            className="form-input"
-            value={currentPage}
-            onChange={(e) => {
-              const v = Math.max(1, Math.min(Math.ceil(totalCount / pageSize) || 1, Number(e.target.value) || 1));
-              setCurrentPage(v);
-            }}
-          />
-          <span>of {Math.max(1, Math.ceil(totalCount / pageSize) || 1)}</span>
+          
+          <div className="flex items-center gap-2 text-app-2">
+            <span className="hidden sm:inline">Page</span>
+            <input
+              className="w-16 text-center rounded-lg px-2 py-2 text-sm bg-transparent border-solid border border-transparent/20 text-app caret-theme transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-theme focus:ring-offset-0"
+              value={currentPage}
+              onChange={(e) => {
+                const v = Math.max(1, Math.min(Math.ceil(totalCount / pageSize) || 1, Number(e.target.value) || 1));
+                setCurrentPage(v);
+              }}
+            />
+            <span>of {Math.max(1, Math.ceil(totalCount / pageSize) || 1)}</span>
+          </div>
+          
           <button
-            className="page-button"
+            className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed ${
+              currentPage >= (Math.ceil(totalCount / pageSize) || 1) ? 'bg-app-2 text-app-2' : 'bg-theme-light text-theme'
+            }`}
             onClick={() => setCurrentPage((p) => Math.min(Math.ceil(totalCount / pageSize) || 1, p + 1))}
             disabled={currentPage >= (Math.ceil(totalCount / pageSize) || 1)}
           >

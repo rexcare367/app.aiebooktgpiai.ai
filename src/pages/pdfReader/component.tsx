@@ -50,6 +50,51 @@ const Viewer: React.FC<ViewerProps> = (props) => {
 
   // Refs for cleanup
   const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const saveIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Function to save reading progress
+  const saveReadingProgress = useCallback(async (useBeacon = false) => {
+    const book = props.currentBook;
+    if (
+      !book.key ||
+      !RecordLocation.getPDFLocation(book.md5.split("-")[0]) ||
+      !RecordLocation.getPDFLocation(book.md5.split("-")[0]).page ||
+      !book.page
+    ) {
+      return;
+    }
+
+    const percentage = RecordLocation.getPDFLocation(book.md5.split("-")[0]).page / book.page;
+    
+    // Get auth token for sendBeacon
+    const token = localStorage.getItem("auth_token");
+    
+    const data = {
+      user_ic: user_ic,
+      book_id: book.key,
+      percentage: percentage.toString(),
+      started_time: startedTime,
+      duration: duration,
+      score: score,
+      auth_token: token, // Include token in body for sendBeacon
+    };
+
+    if (useBeacon && navigator.sendBeacon) {
+      // Use sendBeacon for reliable submission on page unload
+      const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+      const baseURL = api.defaults.baseURL || "http://localhost:8000";
+      navigator.sendBeacon(`${baseURL}/api/ebooks/reading_progress/add`, blob);
+      console.log('Reading progress sent via beacon');
+    } else {
+      // Use regular API call for periodic saves
+      try {
+        await api.post(`/api/ebooks/reading_progress/add`, data);
+        console.log('Reading progress saved successfully');
+      } catch (error) {
+        console.error('Failed to save reading progress:', error);
+      }
+    }
+  }, [props.currentBook, user_ic, startedTime, duration, score]);
 
   // Event handlers
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
@@ -115,9 +160,7 @@ const Viewer: React.FC<ViewerProps> = (props) => {
       setTitle(book.name + " - AI eBook Library Tanjong Piai");
       setHref(BookUtil.getPDFUrl(book));
 
-      // Load existing reading time from localStorage
-      const existingTime = ReadingTime.getTime(book.key) || 0;
-      setDuration(existingTime);
+      // Duration loading is now handled in the book change effect
     });
 
     document.querySelector(".ebook-viewer")?.setAttribute("style", "height:100%; overflow: hidden;");
@@ -178,45 +221,37 @@ const Viewer: React.FC<ViewerProps> = (props) => {
       }, 3000);
     };
 
-    const beforeUnloadHandler = async (e: BeforeUnloadEvent) => {
-      e.preventDefault();
+    const beforeUnloadHandler = (e: BeforeUnloadEvent) => {
+      // Use sendBeacon for reliable data submission on page unload
+      saveReadingProgress(true);
+    };
 
-      const book = props.currentBook;
-      if (
-        RecordLocation.getPDFLocation(book.md5.split("-")[0]) &&
-        RecordLocation.getPDFLocation(book.md5.split("-")[0]).page &&
-        book.page
-      ) {
-        let percentage = RecordLocation.getPDFLocation(book.md5.split("-")[0]).page / book.page + "";
-
-        // Save final duration to localStorage
-        if (book.key) {
-          ReadingTime.setTime(book.key, duration);
-        }
-
-        // Get user ID from Clerk - this will need to be passed down from parent component
-        api.post(`/api/ebooks/reading_progress/add`, {
-          user_ic: user_ic,
-          book_id: book.key,
-          percentage: percentage,
-          started_time: startedTime,
-          duration: duration,
-          score: score,
-        });
+    const visibilityChangeHandler = () => {
+      if (document.hidden) {
+        // Page is being hidden, save progress
+        saveReadingProgress(true);
       }
-
-      e.returnValue = "";
     };
 
     window.addEventListener("beforeunload", beforeUnloadHandler);
+    // window.addEventListener("visibilitychange", visibilityChangeHandler);
     window.addEventListener("keydown", handleKeyDown);
 
     // Cleanup function
     return () => {
       window.removeEventListener("beforeunload", beforeUnloadHandler);
+      // window.removeEventListener("visibilitychange", visibilityChangeHandler);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [props, isDisablePopup, isTouch, handleHighlight, handleKeyDown, startedTime, score]);
+  }, [props, isDisablePopup, isTouch, handleHighlight, handleKeyDown, startedTime, score, saveReadingProgress]);
+
+  // Effect to reset duration when book changes and load existing time for current book
+  useEffect(() => {
+    if (!props.currentBook.key) return;
+
+    // Reset duration to 0 when switching books, then load existing time for current book
+    setDuration(0);
+  }, [props.currentBook.key]);
 
   // Separate effect for duration tracking - runs when book is loaded
   useEffect(() => {
@@ -225,6 +260,7 @@ const Viewer: React.FC<ViewerProps> = (props) => {
     // Clear any existing interval
     if (durationIntervalRef.current) {
       clearInterval(durationIntervalRef.current);
+      durationIntervalRef.current = null;
     }
 
     // Set up duration interval
@@ -242,19 +278,57 @@ const Viewer: React.FC<ViewerProps> = (props) => {
     return () => {
       if (durationIntervalRef.current) {
         clearInterval(durationIntervalRef.current);
+        durationIntervalRef.current = null;
       }
     };
   }, [props.currentBook.key]);
 
-  // Separate effect to handle duration cleanup on unmount
+  // Effect to save duration when it changes
+  useEffect(() => {
+    if (props.currentBook.key && duration > 0) {
+      ReadingTime.setTime(props.currentBook.key, duration);
+    }
+  }, [props.currentBook.key, duration]);
+
+  // Effect to handle cleanup on unmount
   useEffect(() => {
     return () => {
-      // Save duration when component unmounts
+      // Final cleanup - clear interval and save duration
+      if (durationIntervalRef.current) {
+        clearInterval(durationIntervalRef.current);
+        durationIntervalRef.current = null;
+      }
+      
+      // Save final duration when component unmounts
       if (props.currentBook.key && duration > 0) {
         ReadingTime.setTime(props.currentBook.key, duration);
       }
     };
-  }, [props.currentBook.key, duration]);
+  }, []);
+
+  // Effect for periodic saving of reading progress (every 30 seconds)
+  useEffect(() => {
+    if (!props.currentBook.key) return;
+
+    // Clear any existing interval
+    if (saveIntervalRef.current) {
+      clearInterval(saveIntervalRef.current);
+      saveIntervalRef.current = null;
+    }
+
+    // Set up periodic save interval (every 30 seconds)
+    saveIntervalRef.current = setInterval(() => {
+      saveReadingProgress(false);
+    }, 30000);
+
+    // Cleanup function
+    return () => {
+      if (saveIntervalRef.current) {
+        clearInterval(saveIntervalRef.current);
+        saveIntervalRef.current = null;
+      }
+    };
+  }, [props.currentBook.key, saveReadingProgress]);
 
   return (
     <div className="ebook-viewer" id="page-area">

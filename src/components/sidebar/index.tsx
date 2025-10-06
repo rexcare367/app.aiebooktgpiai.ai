@@ -1,11 +1,10 @@
 // src/pages/sidebar/index.tsx
 import React, { useCallback, useEffect, useState, useMemo, memo } from "react";
-import "./sidebar.css";
 import { sideMenu } from "../../constants/sideMenu";
 import { useHistory, useLocation } from "react-router-dom";
 import StorageUtil from "../../utils/serviceUtils/storageUtil";
 import { openExternalUrl } from "../../utils/serviceUtils/urlUtil";
-import { X, LogOut, Globe, Settings, Menu } from "lucide-react";
+import { X, LogOut, Globe, Settings, Menu, Moon, Sun } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import i18n from "../../i18n";
 import { langList } from "../../constants/settingList";
@@ -123,27 +122,28 @@ const Sidebar: React.FC<SidebarProps> = memo((props) => {
       return (
         <li
           key={item.name}
-          className={`side-menu-item ${
-            isActive ? "rounded-r-full" : "hover:rounded-r-full"
-          }`}
+          className={`
+            side-menu-item-hover
+            mt-0.5 mb-[3px] list-none text-[15px] w-full cursor-pointer 
+            overflow-hidden whitespace-nowrap text-ellipsis relative bottom-px
+            transition-all duration-100
+            ${isActive ? "rounded-r-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400" : "hover:rounded-r-full text-gray-800 dark:text-gray-200"}
+            ${props.isCollapsed ? "!w-10 !ml-[15px]" : "-ml-5"}
+          `}
           id={`sidebar-${item.icon}`}
           onClick={() => handleSidebarSelect(item.mode, menuIndex)}
-          style={{
-            ...(props.isCollapsed ? { width: 40, marginLeft: 15 } : {}),
-            backgroundColor: isActive ? 'var(--active-theme-light)' : 'transparent',
-            color: isActive ? 'var(--active-theme-color)' : 'var(--text-color)'
-          }}
         >
           <div 
-            className="side-menu-selector"
-            style={{
-              backgroundColor: isActive ? 'var(--active-theme-light)' : 'transparent'
-            }}
+            className={`side-menu-selector-hover w-full h-[39px] leading-[39px] z-40 flex items-center font-medium ${
+              isActive ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-transparent'
+            }`}
           >
-            <div className="side-menu-icon" style={props.isCollapsed ? {} : { marginLeft: "38px" }}>
+            <div 
+              className={`text-[22px] my-[9px_12px_7px] mx-3 flex justify-center items-center w-[30px] ${!props.isCollapsed ? "ml-[38px]" : ""}`}
+            >
               {item.icon}
             </div>
-            <span style={props.isCollapsed ? { display: "none", width: "70%" } : { width: "60%" }}>
+            <span className={props.isCollapsed ? "hidden w-[70%]" : "w-[60%]"}>
               {props.t(item.name)}
             </span>
           </div>
@@ -174,6 +174,30 @@ const Sidebar: React.FC<SidebarProps> = memo((props) => {
     window.location.reload();
   }, []);
 
+  // Theme toggle handler using Tailwind dark mode
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Check localStorage or default to light mode
+    const savedTheme = StorageUtil.getReaderConfig("appSkin");
+    if (savedTheme === "night" || savedTheme === "dark") {
+      document.documentElement.classList.add('dark');
+      return true;
+    }
+    return false;
+  });
+
+  const handleThemeToggle = useCallback(() => {
+    const newDarkMode = !isDarkMode;
+    setIsDarkMode(newDarkMode);
+    
+    if (newDarkMode) {
+      document.documentElement.classList.add('dark');
+      StorageUtil.setReaderConfig("appSkin", "night");
+    } else {
+      document.documentElement.classList.remove('dark');
+      StorageUtil.setReaderConfig("appSkin", "light");
+    }
+  }, [isDarkMode]);
+
   // Memoize settings button handler
   const handleSettingsClick = useCallback(() => {
     props.handleSetting(true);
@@ -190,15 +214,28 @@ const Sidebar: React.FC<SidebarProps> = memo((props) => {
 
   return (
     <>
+      {/* Custom styles for hover effects using Tailwind */}
+      <style>{`
+        .side-menu-item-hover:hover {
+          background-color: rgb(239 246 255) !important; /* bg-blue-50 */
+          color: rgb(37 99 235) !important; /* text-blue-600 */
+        }
+        .dark .side-menu-item-hover:hover {
+          background-color: rgb(30 58 138 / 0.2) !important; /* bg-blue-900/20 */
+          color: rgb(96 165 250) !important; /* text-blue-400 */
+        }
+        .side-menu-item-hover:hover .side-menu-selector-hover {
+          background-color: rgb(239 246 255) !important; /* bg-blue-50 */
+        }
+        .dark .side-menu-item-hover:hover .side-menu-selector-hover {
+          background-color: rgb(30 58 138 / 0.2) !important; /* bg-blue-900/20 */
+        }
+      `}</style>
+
       {/* Mobile hamburger menu button - always visible when sidebar is hidden */}
       {isMobile && !props.isSidebarShow && (
         <div
-          className="fixed top-1 left-1 z-50 cursor-pointer p-1 rounded-md"
-          style={{
-            backgroundColor: 'var(--bg-color)',
-            border: '1px solid var(--border-color)',
-            color: 'var(--text-color)'
-          }}
+          className="fixed top-1 left-1 z-50 cursor-pointer p-1 rounded-md bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200"
           onClick={handleShowSidebar}
         >
           <Menu className="w-5 h-5" />
@@ -206,18 +243,14 @@ const Sidebar: React.FC<SidebarProps> = memo((props) => {
       )}
 
       <div
-        className={`h-full w-fit z-50 ${
-          isMobile && props.isSidebarShow && "absolute top-0 left-0  border-r-2 border-solid"
+        className={`h-full w-fit z-50 bg-white dark:bg-gray-800 ${
+          isMobile && props.isSidebarShow && "absolute top-0 left-0 border-r-2 border-solid border-gray-200 dark:border-gray-700"
         } ${isMobile && !props.isSidebarShow && "hidden"}`}
-        style={{
-          backgroundColor: 'var(--bg-color)',
-          borderColor: 'var(--border-color)'
-        }}
       >
         <div className="flex justify-center items-center gap-3">
           {isMobile && props.isSidebarShow && (
             <div
-              className="relative cursor-pointer text-xl flex justify-center items-center"
+              className="relative cursor-pointer text-xl flex justify-center items-center text-gray-800 dark:text-gray-200"
               onClick={handleHideSidebar}
             >
               <X className="w-4" />
@@ -237,30 +270,27 @@ const Sidebar: React.FC<SidebarProps> = memo((props) => {
               e.preventDefault();
               handleJump("/");
             }}
-            style={isCollapsed ? { display: "none" } : {}}
-            className="mr-3 w-32 relative cursor-pointer"
+            className={`mr-3 w-32 relative cursor-pointer ${isCollapsed ? "hidden" : ""}`}
           />
         </div>
         <div
-          className="side-menu-container-parent w-[210px] h-[calc(100%-100px)] overflow-x-hidden overflow-y-scroll relative top-[30px] "
-          style={isCollapsed ? { width: "70px" } : {}}
+          className={`
+            relative w-[210px] h-[calc(100%-100px)] overflow-x-hidden top-[30px]
+            scrollbar-thin scrollbar-thumb-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-600
+            ${isCollapsed ? "!w-[70px]" : ""}
+          `}
         >
-          <div className="sidebar-menu">{sidebarMenuItems}</div>
+          <div>{sidebarMenuItems}</div>
 
           {/* Language Selector */}
-          <div className="sidebar-footer">
+          <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <div className="mb-4">
               <div className="flex items-center gap-2 mb-3">
-                <Globe className="w-4 h-4" style={{ color: 'var(--active-theme-color)' }} />
-                <span className="text-sm font-medium" style={{ color: 'var(--text-color)' }}>{props.t("Language")}</span>
+                <Globe className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{props.t("Language")}</span>
               </div>
               <select
-                className="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2"
-                style={{
-                  borderColor: 'var(--border-color)',
-                  backgroundColor: 'var(--bg-color)',
-                  color: 'var(--text-color)'
-                }}
+                className="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200"
                 value={currentLanguage}
                 onChange={handleLanguageChange}
               >
@@ -268,41 +298,55 @@ const Sidebar: React.FC<SidebarProps> = memo((props) => {
               </select>
             </div>
 
+            {/* Theme Toggle */}
             <div
-              className="flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-colors duration-200 cursor-pointer mb-2"
-              style={{
-                backgroundColor: 'var(--active-theme-light)',
-                color: 'var(--active-theme-color)'
-              }}
+              className="flex items-center justify-between px-4 py-2 rounded-lg transition-all duration-200 mb-2 bg-blue-50 dark:bg-gray-700 border border-blue-200 dark:border-gray-600"
+            >
+              <div className="flex items-center gap-2">
+                {isDarkMode ? (
+                  <Moon className="w-4 h-4 text-blue-600 dark:text-yellow-400" />
+                ) : (
+                  <Sun className="w-4 h-4 text-yellow-500" />
+                )}
+                <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                  { isDarkMode ? (props.t("Dark Mode")) : (props.t("Light Mode"))}
+                </span>
+              </div>
+              
+              {/* Toggle Switch */}
+              <button
+                onClick={handleThemeToggle}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  isDarkMode ? 'bg-blue-600' : 'bg-gray-300'
+                }`}
+                role="switch"
+                aria-checked={isDarkMode}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
+                    isDarkMode ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                >
+                  {isDarkMode ? (
+                    <Moon className="w-3 h-3 text-blue-600 m-0.5" />
+                  ) : (
+                    <Sun className="w-3 h-3 text-yellow-500 m-0.5" />
+                  )}
+                </span>
+              </button>
+            </div>
+
+            <div
+              className="flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-200 cursor-pointer mb-2 bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
               onClick={handleSettingsClick}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--active-theme-color)';
-                e.currentTarget.style.color = 'white';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--active-theme-light)';
-                e.currentTarget.style.color = 'var(--active-theme-color)';
-              }}
             >
               <Settings className="w-4 h-4" />
               <span className="text-sm">{props.t("Settings")}</span>
             </div>
 
             <div
-              className="flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-colors duration-200 cursor-pointer"
-              style={{
-                backgroundColor: 'var(--active-theme-light)',
-                color: 'var(--active-theme-color)',
-              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-200 cursor-pointer bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-white dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
               onClick={handleSignOut}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--active-theme-color)';
-                e.currentTarget.style.color = 'white';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--active-theme-light)';
-                e.currentTarget.style.color = 'var(--active-theme-color)';
-              }}
             >
               <LogOut className="w-4 h-4" />
               <span className="text-sm">{props.t("Sign Out")}</span>

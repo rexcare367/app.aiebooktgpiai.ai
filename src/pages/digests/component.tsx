@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "./digestList.css";
 import { DigestListProps, DigestListStates } from "./interface";
 import CardList from "../cardList";
 import NoteTag from "../../components/noteTag";
@@ -10,6 +9,7 @@ import api from "../../utils/axios";
 import toast from "react-hot-toast";
 import authService, { UserData } from "../../utils/authService";
 import DigestSkeleton from "../../components/skeletons/DigestSkeleton";
+import { Trophy } from "lucide-react";
 
 const DigestList: React.FC<DigestListProps> = (props) => {
   const userData: UserData | null = authService.getUserData();
@@ -53,15 +53,21 @@ const DigestList: React.FC<DigestListProps> = (props) => {
     setTag(newTag);
   };
 
-  console.log('notes', notes)
-
   return <Manager><div
-  className="digest-list-container-parent h-[calc(100vh_-_78px)] rounded-xl"
+  className="w-full h-[calc(100vh_-_75px)] overflow-hidden rounded-xl p-4"
   style={props.isCollapsed ? { width: "calc(100vw - 70px)", left: "70px" } : {}}
 >
-  <div className="note-tags">
+  {/* <div className="note-tags">
     <NoteTag {...{ handleTag: handleTag }} />
-  </div>
+  </div> */}
+  <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-3">
+            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-md">
+              <Trophy className="h-7 w-7" />
+            </div>
+            Digests
+          </h1>
+        </div>
   {isLoading ? (
     <DigestSkeleton />
   ) : notes.length === 0 ? (

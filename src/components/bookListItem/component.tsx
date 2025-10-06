@@ -1,5 +1,4 @@
 import React from "react";
-import "./bookListItem.css";
 import RecordLocation from "../../utils/readUtils/recordLocation";
 import { BookItemProps, BookItemState } from "./interface";
 // import { Trans } from "react-i18next";
@@ -123,7 +122,7 @@ class BookListItem extends React.Component<BookItemProps, BookItemState> {
     return (
       <>
         <div
-          className="book-list-item-container"
+          className="m-3 mr-6 relative"
           onContextMenu={(event) => {
             this.handleMoreAction(event);
           }}
@@ -132,11 +131,10 @@ class BookListItem extends React.Component<BookItemProps, BookItemState> {
           this.props.book.cover === "noCover" ||
           (this.props.book.format === "PDF" && StorageUtil.getReaderConfig("isDisablePDFCover") === "yes") ? (
             <div
-              className="book-item-list-cover"
+              className="w-[43px] h-[65px] opacity-100 cursor-pointer rounded-sm inline-block transition-transform duration-200 hover:scale-105"
               onClick={() => {
                 this.handleJump();
               }}
-              style={{ height: "65px" }}
               onMouseEnter={() => {
                 this.setState({ isHover: true });
               }}
@@ -144,7 +142,7 @@ class BookListItem extends React.Component<BookItemProps, BookItemState> {
                 this.setState({ isHover: false });
               }}
             >
-              <div className="book-item-image" style={{ height: "65px" }}>
+              <div className="h-[65px]">
                 <EmptyCover
                   {...{
                     format: this.props.book.format,
@@ -156,7 +154,7 @@ class BookListItem extends React.Component<BookItemProps, BookItemState> {
             </div>
           ) : (
             <div
-              className="book-item-list-cover"
+              className="w-[43px] opacity-100 cursor-pointer rounded-sm inline-block transition-transform duration-200 hover:scale-105"
               onClick={() => {
                 this.handleJump();
               }}
@@ -170,8 +168,7 @@ class BookListItem extends React.Component<BookItemProps, BookItemState> {
               <img
                 data-src={this.props.book.cover}
                 alt=""
-                className="lazy-image book-item-image"
-                style={{ width: "100%" }}
+                className="lazy-image w-full rounded-sm"
                 onLoad={(res: any) => {
                   if (res.target.naturalHeight / res.target.naturalWidth > 74 / 47) {
                     this.setState({ direction: "horizontal" });
@@ -184,7 +181,9 @@ class BookListItem extends React.Component<BookItemProps, BookItemState> {
           )}
           {this.props.isSelectBook || this.state.isHover ? (
             <span
-              className="icon-message book-selected-icon"
+              className={`icon-message absolute left-[18px] bottom-[5px] ${
+                this.props.isSelected ? 'opacity-100' : 'opacity-50 text-gray-300 dark:text-gray-600'
+              }`}
               onMouseEnter={() => {
                 this.setState({ isHover: true });
               }}
@@ -202,24 +201,21 @@ class BookListItem extends React.Component<BookItemProps, BookItemState> {
                 this.setState({ isHover: false });
                 event?.stopPropagation();
               }}
-              style={
-                this.props.isSelected
-                  ? { left: "18px", bottom: "5px", opacity: 1 }
-                  : { left: "18px", bottom: "5px", color: "#eee" }
-              }
             ></span>
           ) : null}
           <p
-            className="book-item-list-title"
+            className="inline-block w-[calc(100%-80px)] h-full absolute top-0 left-[60px] cursor-pointer"
             onClick={() => {
               this.handleJump();
             }}
           >
-            <div className="book-item-list-subtitle">
-              <div className="book-item-list-subtitle-text">{this.props.book.name}</div>
+            <div className="w-[calc(100%-50px)] h-full text-ellipsis overflow-hidden float-left flex items-center pl-2.5">
+              <div className="float-left line-clamp-3 overflow-hidden text-ellipsis text-gray-800 dark:text-gray-200 text-[15px] leading-[18px]">
+                {this.props.book.name}
+              </div>
             </div>
 
-            <p className="book-item-list-percentage">
+            <p className="w-[50px] h-full float-right text-ellipsis overflow-hidden flex items-center pl-2.5 text-[15px] leading-[18px] text-gray-600 dark:text-gray-400">
               {percentage
                 ? Math.floor(parseFloat(percentage) * 100) === 0
                   ? "0%"
@@ -233,17 +229,10 @@ class BookListItem extends React.Component<BookItemProps, BookItemState> {
                 <span>%</span>
               )}
             </p>
-            {/* <div className="book-item-list-author">
-              <Trans>
-                {this.props.book.author
-                  ? this.props.book.author
-                  : "Unknown author"}
-              </Trans>
-            </div> */}
           </p>
         </div>
         {this.props.isOpenActionDialog && this.props.book.key === this.props.currentBook.key ? (
-          <div className="action-dialog-parent">
+          <div className="fixed top-0 left-[200px] z-10">
             <ActionDialog {...actionProps} />
           </div>
         ) : null}

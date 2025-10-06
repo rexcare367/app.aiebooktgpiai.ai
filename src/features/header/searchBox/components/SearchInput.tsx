@@ -23,49 +23,13 @@ const SearchInput: React.FC<SearchInputProps> = ({ props, state, handlers, searc
     }
   };
 
-  const getInputStyles = () => {
-    const baseStyles = {
-      backgroundColor: 'var(--bg-color-2)',
-      color: 'var(--text-color)',
-      border: '1px solid var(--border-color)',
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      paddingLeft: '40px', // Space for search icon
-    };
-
-    if (props.mode === "nav") {
-      return {
-        height: props.height,
-        paddingRight: state.inputValue ? "60px" : "30px", // Space for clear icon when there's input
-        ...baseStyles,
-      };
-    }
-
-    return {
-      ...baseStyles,
-      paddingRight: state.inputValue ? "40px" : "12px", // Space for clear icon when there's input
-    };
-  };
-
-  const getContainerStyles = () => {
-    return {
-      position: 'relative' as const,
-      display: 'flex',
-      alignItems: 'center',
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    };
-  };
-
   return (
-    <div style={getContainerStyles()}>
+    <div className="relative flex items-center transition-all duration-300 ease-out dark:text-white">
       {/* Search Icon */}
       <div 
-        className="absolute left-3 z-10 pointer-events-none"
-        style={{
-          color: 'var(--text-color-2)',
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          transform: state.isFocused ? 'scale(1.1)' : 'scale(1)',
-          opacity: state.isFocused ? 1 : 0.7,
-        }}
+        className={`absolute left-3 z-10 pointer-events-none text-text-2 transition-all duration-300 ease-out ${
+          state.isFocused ? 'scale-110 opacity-100' : 'scale-100 opacity-70'
+        }`}
       >
         <svg 
           width="16" 
@@ -84,13 +48,14 @@ const SearchInput: React.FC<SearchInputProps> = ({ props, state, handlers, searc
 
       <input
         ref={searchBoxRef}
-        className="search-input rounded-xl text-sm outline-none border-none w-40 md:w-60 md:h-10 h-8 focus:w-48 md:focus:w-64"
-        style={getInputStyles()}
+        className={`rounded-xl text-sm border-2 bg-transparent !border-gray-200 dark:!border-transparent/20 transition-all duration-300 ease-out pl-10 ${
+          props.mode === "nav" 
+            ? `${props.height} ${state.inputValue ? 'pr-15' : 'pr-8'}` 
+            : `${state.inputValue ? 'pr-10' : 'pr-3'}`
+        } w-40 md:w-60 md:h-10 h-8 focus:w-48 md:focus:w-64`}
         value={state.inputValue}
         onChange={(e) => handlers.handleSearch(e.target.value)}
         onKeyDown={handlers.handleKeyDown}
-        onFocus={handlers.handleFocus}
-        onBlur={handlers.handleBlur}
         onCompositionStart={handlers.handleCompositionStart}
         onCompositionEnd={handlers.handleCompositionEnd}
         placeholder={getPlaceholderText()}
@@ -101,22 +66,8 @@ const SearchInput: React.FC<SearchInputProps> = ({ props, state, handlers, searc
       {/* Clear Icon - Only show when there's input */}
       {state.inputValue && (
         <div 
-          className="absolute right-3 z-10 cursor-pointer"
+          className="absolute right-3 z-10 cursor-pointer text-text-2 transition-all duration-200 ease-out scale-100 opacity-80 hover:opacity-100 hover:scale-110"
           onClick={handlers.handleCancel}
-          style={{
-            color: 'var(--text-color-2)',
-            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-            transform: 'scale(1)',
-            opacity: 0.8,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.opacity = '1';
-            e.currentTarget.style.transform = 'scale(1.1)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.opacity = '0.8';
-            e.currentTarget.style.transform = 'scale(1)';
-          }}
           role="button"
           tabIndex={0}
           aria-label="Clear search"

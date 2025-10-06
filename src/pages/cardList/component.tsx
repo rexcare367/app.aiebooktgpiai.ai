@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./cardList.css";
 import NoteModel from "../../models/Note";
 import { CardListProps } from "./interface";
 import DeleteIcon from "../../components/deleteIcon";
@@ -139,7 +138,7 @@ const CardList: React.FC<CardListProps> = (props) => {
   const renderCardListItem = (card: any) => {
     return (
       <li
-        className="card-list-item"
+        className="float-left cursor-pointer h-[250px] border-[15px] border-transparent relative"
         onMouseOver={() => {
           handleShowDelete(card.id);
         }}
@@ -156,27 +155,27 @@ const CardList: React.FC<CardListProps> = (props) => {
             : {}
         }
       >
-        <div className="card-list-item-card">
-          <div style={{ position: "relative", bottom: "25px" }}>
+        <div className="h-full rounded-lg p-2.5 shadow-md bg-white">
+          <div className="relative -bottom-6">
             {deleteKey === card.id ? <DeleteIcon {...card} /> : null}
           </div>
-          <div className="card-list-item-header">
-            <div className="card-list-item-date">
+          <div className="flex flex-col mb-2.5">
+            <div className="text-xs mb-1.5" style={{ color: '#888' }}>
               {moment(`${card.date.year}-${card.date.month}-${card.date.day}`).format("DD MMMM YYYY")}
             </div>
-            <div className="card-list-item-topic">
-              <span className="card-list-item-dot"></span>
+            <div className="flex items-center font-bold text-base">
+              <span className="w-2 h-2 rounded-full mr-2" style={{ backgroundColor: '#ff9800' }}></span>
               <span>{card.book.title}</span>
             </div>
           </div>
           <div className={`relative w-full mb-2.5 ${mode === "note" ? "h-16" : "h-28"}`}>
-            <div className="w-full h-full overflow-y-scroll mx-2.5 relative cursor-text text-sm pr-1 overflow-x-hidden">
+            <div className="w-full h-full overflow-auto mx-2.5 relative cursor-text text-sm pr-1 ">
               {mode === "note" ? card.notes : card.text}
             </div>
           </div>
             {mode === "note" ? (
-              <div className=" relative w-full h-16 opacity-100">
-                <div className="card-list-item-text">{card.text}</div>
+              <div className="relative w-full h-16 opacity-100">
+                <div className="w-[calc(100%-20px)] h-full overflow-auto mx-2.5 my-0 relative cursor-text leading-[1.5] text-sm pr-1">{card.text}</div>
               </div>
             ) : null}
         </div>
@@ -185,7 +184,7 @@ const CardList: React.FC<CardListProps> = (props) => {
   };
 
   return (
-    <div className="w-full overflow-y-scroll content-start select-text h-full grid 2xl:grid-cols-5 xl:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-2">
+    <div className="w-full overflow-auto content-start select-text h-full grid 2xl:grid-cols-5 xl:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-2">
       {cards.map((card) => renderCardListItem(card))}
     </div>
   );

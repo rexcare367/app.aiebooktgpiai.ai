@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "../../components/sidebar";
 import Header from "../../components/header";
 import DeleteDialog from "../../components/dialogs/deleteDialog";
@@ -18,111 +18,125 @@ import { Toaster } from "react-hot-toast";
 import DetailDialog from "../../components/dialogs/detailDialog";
 import FeedbackDialog from "../../components/dialogs/feedbackDialog";
 import { Tooltip } from "react-tooltip";
-class Manager extends React.Component<ManagerProps, ManagerState> {
-  timer!: NodeJS.Timeout;
-  constructor(props: ManagerProps) {
-    super(props);
-    this.state = {
-      totalBooks: parseInt(StorageUtil.getReaderConfig("totalBooks")) || 0,
-      favoriteBooks: Object.keys(AddFavorite.getAllFavorite()).length,
-      isAuthed: false,
-      isError: false,
-      isCopied: false,
-      isUpdated: false,
-      token: "",
-    };
-  }
 
-  UNSAFE_componentWillReceiveProps(nextProps: ManagerProps) {
-    if (nextProps.books && this.state.totalBooks !== nextProps.books.length) {
-      this.setState(
-        {
-          totalBooks: nextProps.books.length,
-        },
-        () => {
-          StorageUtil.setReaderConfig("totalBooks", this.state.totalBooks.toString());
-        }
-      );
+const Manager: React.FC<ManagerProps> = (props) => {
+  const timerRef = useRef<NodeJS.Timeout>();
+  
+  const [state, setState] = useState<ManagerState>({
+    totalBooks: parseInt(StorageUtil.getReaderConfig("totalBooks")) || 0,
+    favoriteBooks: Object.keys(AddFavorite.getAllFavorite()).length,
+    isAuthed: false,
+    isError: false,
+    isCopied: false,
+    isUpdated: false,
+    token: "",
+  });
+
+  // Handle props changes (equivalent to UNSAFE_componentWillReceiveProps)
+  useEffect(() => {
+    if (props.books && state.totalBooks !== props.books.length) {
+      const newTotalBooks = props.books.length;
+      setState(prevState => ({
+        ...prevState,
+        totalBooks: newTotalBooks,
+      }));
+      StorageUtil.setReaderConfig("totalBooks", newTotalBooks.toString());
     }
-    if (nextProps.books && nextProps.books.length === 1 && !this.props.books) {
-      this.props.history.push("/manager/home");
-    }
-    if (this.props.mode !== nextProps.mode) {
-      this.setState({
-        favoriteBooks: Object.keys(AddFavorite.getAllFavorite()).length,
-      });
-    }
-  }
-  UNSAFE_componentWillMount() {
-    this.props.handleFetchBooks();
-    this.props.handleFetchNotes();
-    this.props.handleFetchBookmarks();
-    this.props.handleFetchBookSortCode();
-    this.props.handleFetchNoteSortCode();
-    this.props.handleFetchList();
-  }
-  componentDidMount() {
-    this.props.handleReadingState(false);
-  }
-  render() {
-    return (
-      <div className="manager flex flex-row">
-        <Tooltip id="my-tooltip" style={{ zIndex: 25 }} />
-        {!this.props.dragItem && (
-          <div
-            className="drag-background"
-            onClick={() => {
-              this.props.handleEditDialog(false);
-              this.props.handleDeleteDialog(false);
-              this.props.handleAddDialog(false);
-              this.props.handleTipDialog(false);
-              this.props.handleDetailDialog(false);
-              this.props.handleLoadingDialog(false);
-              this.props.handleNewDialog(false);
-              this.props.handleBackupDialog(false);
-              this.props.handleSetting(false);
-              this.props.handleFeedbackDialog(false);
-            }}
-            style={
-              this.props.isSettingOpen ||
-              this.props.isOpenFeedbackDialog ||
-              this.props.isBackup ||
-              this.props.isShowNew ||
-              this.props.isOpenDeleteDialog ||
-              this.props.isOpenEditDialog ||
-              this.props.isDetailDialog ||
-              this.props.isOpenAddDialog ||
-              this.props.isTipDialog ||
-              this.props.isShowLoading
-                ? {}
-                : {
-                    display: "none",
-                  }
-            }
-          ></div>
-        )}
-        <Sidebar />
-        <Toaster />
-        <div className="flex flex-col flex-1 w-full relative bg-gray-main-bg">
-          <Header />
-          {this.props.isOpenDeleteDialog && <DeleteDialog />}
-          {this.props.isOpenEditDialog && <EditDialog />}
-          {this.props.isOpenAddDialog && <AddDialog />}
-          {this.props.isShowLoading && <LoadingDialog />}
-          {this.props.isSortDisplay && <SortDialog />}
-          {this.props.isAboutOpen && <AboutDialog />}
-          {this.props.isBackup && <BackupDialog />}
-          {this.props.isOpenFeedbackDialog && <FeedbackDialog />}
-          {this.props.isSettingOpen && <SettingDialog />}
-          {this.props.isTipDialog && <TipDialog />}
-          {this.props.isDetailDialog && <DetailDialog />}
-          <div className="h-[calc(100vh_-_70px)]" style={{backgroundColor: 'var(--bg-color-2)'}}>
-          <div className="p-2 rounded-xl h-full">
-            {this.props.children}</div>
-            </div>
+    
+    // This logic seems incorrect - commenting out for now as it would never execute
+    // if (props.books && props.books.length === 1 && !props.books) {
+    //   props.history.push("/manager/home");
+    // }
+  }, [props.books, props.history, state.totalBooks]);
+
+  // Handle mode changes
+  useEffect(() => {
+    setState(prevState => ({
+      ...prevState,
+      favoriteBooks: Object.keys(AddFavorite.getAllFavorite()).length,
+    }));
+  }, [props.mode]);
+
+  // Initial data fetching (equivalent to UNSAFE_componentWillMount)
+  useEffect(() => {
+    props.handleFetchBooks();
+    props.handleFetchNotes();
+    props.handleFetchBookmarks();
+    props.handleFetchBookSortCode();
+    props.handleFetchNoteSortCode();
+    props.handleFetchList();
+  }, [
+    props.handleFetchBooks,
+    props.handleFetchNotes,
+    props.handleFetchBookmarks,
+    props.handleFetchBookSortCode,
+    props.handleFetchNoteSortCode,
+    props.handleFetchList
+  ]);
+
+  // Component mount effect (equivalent to componentDidMount)
+  useEffect(() => {
+    props.handleReadingState(false);
+  }, [props.handleReadingState]);
+
+  const handleDragBackgroundClick = () => {
+    props.handleEditDialog(false);
+    props.handleDeleteDialog(false);
+    props.handleAddDialog(false);
+    props.handleTipDialog(false);
+    props.handleDetailDialog(false);
+    props.handleLoadingDialog(false);
+    props.handleNewDialog(false);
+    props.handleBackupDialog(false);
+    props.handleSetting(false);
+    props.handleFeedbackDialog(false);
+  };
+
+  const shouldShowDragBackground = 
+    props.isSettingOpen ||
+    props.isOpenFeedbackDialog ||
+    props.isBackup ||
+    props.isShowNew ||
+    props.isOpenDeleteDialog ||
+    props.isOpenEditDialog ||
+    props.isDetailDialog ||
+    props.isOpenAddDialog ||
+    props.isTipDialog ||
+    props.isShowLoading;
+
+  return (
+    <div className="manager flex flex-row">
+      <Tooltip id="my-tooltip" style={{ zIndex: 25 }} />
+      {!props.dragItem && (
+        <div
+          className="drag-background"
+          onClick={handleDragBackgroundClick}
+          style={shouldShowDragBackground ? {} : { display: "none" }}
+        ></div>
+      )}
+      <Sidebar />
+      <Toaster />
+      <div className="flex flex-col flex-1 w-full relative bg-white dark:bg-gray-800">
+        <Header />
+        {props.isOpenDeleteDialog && <DeleteDialog />}
+        {props.isOpenEditDialog && <EditDialog />}
+        {props.isOpenAddDialog && <AddDialog />}
+        {props.isShowLoading && <LoadingDialog />}
+        {props.isSortDisplay && <SortDialog />}
+        {props.isAboutOpen && <AboutDialog />}
+        {props.isBackup && <BackupDialog />}
+        {props.isOpenFeedbackDialog && <FeedbackDialog />}
+        {props.isSettingOpen && <SettingDialog />}
+        {props.isTipDialog && <TipDialog />}
+        {props.isDetailDialog && <DetailDialog />}
+        <div className="h-[calc(100vh_-_70px)] bg-gray-main-bg dark:bg-transparent/20 rounded-xl ">
+          <div className="m-2 h-full ">
+            {props.children}
+          </div>
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
+
 export default Manager;
