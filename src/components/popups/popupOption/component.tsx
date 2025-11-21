@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import "./popupOption.css";
 
 import Note from "../../../models/Note";
@@ -19,7 +19,6 @@ import { createOneNote } from "../../../utils/serviceUtils/noteUtil";
 
 import api from "../../../utils/axios";
 // import { speakWithPolly } from "../../../utils/serviceUtils/awsPollyUtil";
-import TTSMakerService from "../../../utils/serviceUtils/ttsMakerService";
 import authService, { UserData } from "../../../utils/authService";
 
 declare var window: any;
@@ -30,8 +29,9 @@ const PopupOption: React.FC<PopupOptionProps> = (props) => {
   // const userId = userData?.id;
   const user_ic = userData?.ic_number;
   const [isProcessing, setIsProcessing] = useState(false);
-  
-  const ttsMakerServiceRef = useRef<TTSMakerService | null>(null);
+  const [showAudioModal, setShowAudioModal] = useState(false);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
 
   const handleNote = () => {
@@ -250,42 +250,45 @@ const PopupOption: React.FC<PopupOptionProps> = (props) => {
     const selectedText = getSelection() || "";
     if (!selectedText) return;
 
+    // Show modal immediately
+    setShowAudioModal(true);
+    setIsGenerating(true);
+    setAudioUrl(null);
+    setIsProcessing(true);
+
     try {
-      setIsProcessing(true);
+      // Call backend API to generate audio
+      const response = await api.post("/api/books/ai/generate-audio", {
+        content: selectedText,
+        model_type: "openai",
+      });
 
-      if (!ttsMakerServiceRef.current) {
-        ttsMakerServiceRef.current = new TTSMakerService();
-      }
-
-      // Split text if needed and get audio URL
-      const chunks = ttsMakerServiceRef.current.splitTextIntoChunks(selectedText);
-      const audioUrls = await Promise.all(
-        chunks.map((chunk) =>
-          ttsMakerServiceRef.current!.createTTSOrder({
-            text: chunk,
-            audio_format: "mp3",
-            audio_speed: 1,
-            audio_high_quality: 1,
-            emotion_style_key: "assistant",
-          })
-        )
-      );
-
-      // Play the audio
-      for (const url of audioUrls) {
-        const audio = new Audio(url);
-        await new Promise((resolve, reject) => {
-          audio.onended = resolve;
-          audio.onerror = reject;
-          audio.play().catch(reject);
-        });
+      if (response.data.success && response.data.data?.audio_url) {
+        // Construct full URL for audio file
+        const baseURL = process.env.REACT_APP_PUBLIC_BACKEND_URL || "http://localhost:8000";
+        const fullAudioUrl = `${baseURL}${response.data.data.audio_url}`;
+        
+        // Set audio URL to show player
+        setAudioUrl(fullAudioUrl);
+        setIsGenerating(false);
+      } else {
+        throw new Error(response.data.message || "Failed to generate audio");
       }
     } catch (error) {
-      console.error("TTS Maker error:", error);
-      toast.error(props.t("Failed to generate speech"));
+      console.error("Audio generation error:", error);
+      const errorMessage = (error as any).response?.data?.message || (error as any).message || "Failed to generate speech";
+      toast.error(props.t(errorMessage) || errorMessage);
+      setShowAudioModal(false);
+      setIsGenerating(false);
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleCloseAudioModal = () => {
+    setShowAudioModal(false);
+    setAudioUrl(null);
+    setIsGenerating(false);
   };
 
   const handleAIChat = () => {
@@ -357,7 +360,33 @@ const PopupOption: React.FC<PopupOptionProps> = (props) => {
     );
   };
 
-  return renderMenuList();
+  return (
+    <>
+      {renderMenuList()}
+      {showAudioModal && (
+        <div className="audio-modal-overlay" onClick={handleCloseAudioModal}>
+          <div className="audio-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="audio-modal-close" onClick={handleCloseAudioModal}>
+              <span className="icon-close"></span>
+            </button>
+            {isGenerating ? (
+              <div className="audio-modal-loading">
+                <div className="audio-loading-spinner"></div>
+                <p className="audio-loading-text">{props.t("Generating audio...") || "Generating audio..."}</p>
+              </div>
+            ) : audioUrl ? (
+              <div className="audio-modal-player">
+                <h3 className="audio-modal-title">{props.t("Audio Player") || "Audio Player"}</h3>
+                <audio controls className="audio-player" src={audioUrl} autoPlay>
+                  {props.t("Your browser does not support the audio element.") || "Your browser does not support the audio element."}
+                </audio>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      )}
+    </>
+  );
 };
 
 export default PopupOption;
