@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PopupDictProps } from './interface';
-import OpenAI from 'openai';
+import api from '../../../utils/axios';
 
 type Language = 'en' | 'ms' | 'ta' | 'zh';
 
@@ -16,16 +16,6 @@ interface UITranslations {
   whenEnlargedShow: string;
   viewDetailedExplanation: string;
   lookingUpDefinition: string;
-}
-
-interface SectionHeaders {
-  translation: string;
-  detailedMeaning: string;
-  wordType: string;
-  usage: string;
-  origin: string;
-  examples: string;
-  relatedWords: string;
 }
 
 const uiTranslationsByLanguage: Record<Language, UITranslations> = {
@@ -59,45 +49,6 @@ const uiTranslationsByLanguage: Record<Language, UITranslations> = {
   }
 };
 
-const sectionHeadersByLanguage: Record<Language, SectionHeaders> = {
-  en: {
-    translation: 'Translation',
-    detailedMeaning: 'Detailed Meaning',
-    wordType: 'Word Type',
-    usage: 'Usage',
-    origin: 'Origin',
-    examples: 'Examples',
-    relatedWords: 'Related Words'
-  },
-  ms: {
-    translation: 'Terjemahan',
-    detailedMeaning: 'Makna Terperinci',
-    wordType: 'Jenis Kata',
-    usage: 'Penggunaan',
-    origin: 'Asal Usul',
-    examples: 'Contoh',
-    relatedWords: 'Kata Berkaitan'
-  },
-  ta: {
-    translation: 'மொழிபெயர்ப்பு',
-    detailedMeaning: 'விரிவான பொருள்',
-    wordType: 'சொல் வகை',
-    usage: 'பயன்பாடு',
-    origin: 'தோற்றம்',
-    examples: 'எடுத்துக்காட்டுகள்',
-    relatedWords: 'தொடர்புடைய சொற்கள்'
-  },
-  zh: {
-    translation: '翻译',
-    detailedMeaning: '详细含义',
-    wordType: '词性',
-    usage: '用法',
-    origin: '词源',
-    examples: '例句',
-    relatedWords: '相关词'
-  }
-};
-
 const languages: LanguageOption[] = [
   { code: 'en', name: 'English', nativeName: 'English' },
   { code: 'ms', name: 'Malay', nativeName: 'Bahasa Melayu' },
@@ -114,91 +65,24 @@ const PopupDict: React.FC<PopupDictProps> = ({ originalText: initialText = "", t
   const [selectedLanguage, setSelectedLanguage] = useState<Language>('en');
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
 
-  const openai = new OpenAI({
-    apiKey: process.env.REACT_APP_OPENAI_API_KEY,
-    dangerouslyAllowBrowser: true
-  });
+  // Map UI language codes to API format
+  const getLanguageForAPI = (lang: Language): string => {
+    const languageMap: Record<Language, string> = {
+      en: 'english',
+      ms: 'malay',
+      ta: 'tamil',
+      zh: 'mandarin'
+    };
+    return languageMap[lang];
+  };
 
   useEffect(() => {
     if (initialText !== originalText) {
       setOriginalText(initialText);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialText]);
 
-  const getTranslationPrompt = (text: string, targetLang: Language) => {
-    const languageNames = {
-      en: 'English',
-      ms: 'Malay',
-      ta: 'Tamil',
-      zh: 'Mandarin Chinese'
-    };
-
-    if (targetLang === 'en') {
-      return `Define this word briefly in one short sentence (max 15 words): ${text}`;
-    }
-
-    return `Translate and define this term in ${languageNames[targetLang]}. 
-    Word: ${text}
-    Provide both the translation and a brief definition in ${languageNames[targetLang]}.`;
-  };
-
-  const getDetailedTranslationPrompt = (text: string, targetLang: Language) => {
-    const languageNames = {
-      en: 'English',
-      ms: 'Malay',
-      ta: 'Tamil',
-      zh: 'Mandarin Chinese'
-    };
-    
-    const headers = sectionHeadersByLanguage[targetLang];
-
-    if (targetLang === 'en') {
-      return `Provide a clean, organized definition for: ${text}
-
-Format as follows (without any # or * symbols):
-[Quick definition in one simple sentence]
-
-When enlarged, show:
-
-${headers.detailedMeaning}:
-[Comprehensive explanation]
-
-${headers.wordType}:
-[Part of speech and basic usage]
-
-${headers.origin}:
-[Brief etymology]
-
-${headers.examples}:
-[2-3 clear examples]
-
-${headers.relatedWords}:
-[Common synonyms and antonyms]`;
-    }
-
-    const ui = uiTranslationsByLanguage[targetLang];
-    return `Provide a detailed translation and explanation in ${languageNames[targetLang]} for: ${text}
-
-Format as follows (without any # or * symbols):
-[Quick translation and definition in one sentence]
-
-${ui.whenEnlargedShow}:
-
-${headers.translation}:
-[Word in ${languageNames[targetLang]}]
-
-${headers.detailedMeaning}:
-[Comprehensive explanation in ${languageNames[targetLang]}]
-
-${headers.usage}:
-[How to use the word in ${languageNames[targetLang]}]
-
-${headers.examples}:
-[2-3 example sentences in ${languageNames[targetLang]}]
-
-${headers.relatedWords}:
-[Similar words in ${languageNames[targetLang]}]`;
-  };
 
   useEffect(() => {
     const lookupWord = async () => {
@@ -210,37 +94,27 @@ ${headers.relatedWords}:
 
       setIsLoading(true);
       try {
-        // Get compact definition
-        const compactCompletion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "user",
-              content: getTranslationPrompt(originalText, selectedLanguage)
-            }
-          ],
-          temperature: 0.3
+        const response = await api.post('/api/books/ai/lookup-word', {
+          originalText: originalText.trim(),
+          selectedLanguage: getLanguageForAPI(selectedLanguage)
         });
 
-        // Get detailed definition
-        const fullCompletion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "user",
-              content: getDetailedTranslationPrompt(originalText, selectedLanguage)
-            }
-          ],
-          temperature: 0.7
-        });
-
-        setCompactDefinition(compactCompletion.choices[0].message.content || "No definition found");
-        setFullDefinition(fullCompletion.choices[0].message.content || "No detailed definition found");
+        if (response.data.success && response.data.data) {
+          const { compact_definition, full_definition } = response.data.data;
+          setCompactDefinition(compact_definition || "No definition found");
+          setFullDefinition(full_definition || "No detailed definition found");
+        } else {
+          setCompactDefinition("Error looking up word");
+          setFullDefinition("Error looking up detailed definition");
+        }
       } catch (error) {
-        setCompactDefinition("Error looking up word");
-        setFullDefinition("Error looking up detailed definition");
+        console.error('Error looking up word:', error);
+        const errorMessage = (error as any)?.response?.data?.message || (error as any)?.message || "Error looking up word";
+        setCompactDefinition(errorMessage);
+        setFullDefinition(errorMessage);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     lookupWord();
@@ -363,7 +237,7 @@ ${headers.relatedWords}:
             </div>
           ) : (
             <div className="definition-content text-gray-700">
-                              {isEnlarged ? (
+              {isEnlarged ? (
                 // Full definition with sections
                 <div className="space-y-6">
                   {fullDefinition.split('\n').map((line, i) => {

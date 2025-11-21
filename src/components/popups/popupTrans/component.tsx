@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { PopupTransProps } from './interface';
-import OpenAI from 'openai';
 import StorageUtil from '../../../utils/serviceUtils/storageUtil';
 import { Trans } from 'react-i18next';
+import api from '../../../utils/axios';
+
+// Map language codes to backend format
+const mapLanguageToBackend = (langCode: string): string => {
+  const languageMap: { [key: string]: string } = {
+    en: "english",
+    ms: "malay",
+    ta: "tamil",
+    zh: "chinese"
+  };
+  return languageMap[langCode] || "english";
+};
 
 const PopupTrans: React.FC<PopupTransProps> = ({ originalText: initialText = "", t }) => {
   const [originalText, setOriginalText] = useState(initialText);
@@ -11,11 +22,6 @@ const PopupTrans: React.FC<PopupTransProps> = ({ originalText: initialText = "",
   const [isEnlarged, setIsEnlarged] = useState(false);
   const [sourceLang, setSourceLang] = useState(StorageUtil.getReaderConfig("transSource") || "auto");
   const [targetLang, setTargetLang] = useState(StorageUtil.getReaderConfig("transTarget") || "en");
-
-  const openai = new OpenAI({
-    apiKey: process.env.REACT_APP_OPENAI_API_KEY,
-    dangerouslyAllowBrowser: true
-  });
 
   const languages = {
     auto: "Auto Detect",
@@ -29,7 +35,7 @@ const PopupTrans: React.FC<PopupTransProps> = ({ originalText: initialText = "",
     if (initialText !== originalText) {
       setOriginalText(initialText);
     }
-  }, [initialText]);
+  }, [initialText, originalText]);
 
   useEffect(() => {
     const translateText = async () => {
@@ -40,23 +46,18 @@ const PopupTrans: React.FC<PopupTransProps> = ({ originalText: initialText = "",
       
       setIsLoading(true);
       try {
-        const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "system",
-              content: `You are a translator. Translate the text from ${sourceLang === 'auto' ? 'the detected language' : languages[sourceLang]} to ${languages[targetLang]}.`
-            },
-            {
-              role: "user",
-              content: originalText
-            }
-          ],
-          temperature: 0.3
+        const response = await api.post('/api/books/ai/translate', {
+          content: originalText,
+          target_language: mapLanguageToBackend(targetLang)
         });
 
-        setTranslatedText(completion.choices[0].message.content || "Translation failed");
+        if (response.data.success && response.data.data) {
+          setTranslatedText(response.data.data.translated_text || "Translation failed");
+        } else {
+          setTranslatedText("Translation failed");
+        }
       } catch (error) {
+        console.error('Translation error:', error);
         setTranslatedText("Error occurred during translation");
       }
       setIsLoading(false);
