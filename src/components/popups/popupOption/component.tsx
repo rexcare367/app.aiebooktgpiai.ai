@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import "./popupOption.css";
 
 import Note from "../../../models/Note";
@@ -16,9 +16,7 @@ import { getIframeDoc } from "../../../utils/serviceUtils/docUtil";
 import { openExternalUrl } from "../../../utils/serviceUtils/urlUtil";
 // import { isElectron } from "react-device-detect";
 import { createOneNote } from "../../../utils/serviceUtils/noteUtil";
-import { useCurrentUserId } from "../../../utils/authUtils";
 
-import axios from "axios";
 import api from "../../../utils/axios";
 // import { speakWithPolly } from "../../../utils/serviceUtils/awsPollyUtil";
 import TTSMakerService from "../../../utils/serviceUtils/ttsMakerService";

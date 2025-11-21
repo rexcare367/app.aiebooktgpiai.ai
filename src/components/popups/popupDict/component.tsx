@@ -363,7 +363,7 @@ ${headers.relatedWords}:
             </div>
           ) : (
             <div className="definition-content text-gray-700">
-                              {isEnlarged ? (
+              {isEnlarged ? (
                 // Full definition with sections
                 <div className="space-y-6">
                   {fullDefinition.split('\n').map((line, i) => {
